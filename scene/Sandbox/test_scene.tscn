@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://dgloj3rkh8mly"]
 
-[ext_resource type="PackedScene" uid="uid://cbdxrqc6rhsnm" path="res://scene/player_test.tscn" id="1_okf0i"]
+[ext_resource type="PackedScene" uid="uid://cbdxrqc6rhsnm" path="res://scene/Sandbox/player_test.tscn" id="1_okf0i"]
 [ext_resource type="Script" uid="uid://dfrw7r5653a77" path="res://sprites/test/player_test.gd" id="2_pa2i8"]
 
 [node name="test_scene" type="Node2D"]

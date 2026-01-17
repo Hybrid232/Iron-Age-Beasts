@@ -1,0 +1,62 @@
+[gd_scene load_steps=4 format=3 uid="uid://d38cvt67w5bgb"]
+
+[ext_resource type="Texture2D" uid="uid://8wovptkau74u" path="res://sprites/test/knight.png" id="1_8eta3"]
+
+[sub_resource type="CSharpScript" id="CSharpScript_vg1k0"]
+script/source = "using Godot;
+using System;
+
+public partial class StevePlayerMovement : CharacterBody2D
+{
+	public const float Speed = 300.0f;
+	public const float JumpVelocity = -400.0f;
+
+	public override void _PhysicsProcess(double delta)
+	{
+		Vector2 velocity = Velocity;
+
+		// Add the gravity.
+		if (!IsOnFloor())
+		{
+			velocity += GetGravity() * (float)delta;
+		}
+
+		// Handle Jump.
+		if (Input.IsActionJustPressed(\"ui_accept\") && IsOnFloor())
+		{
+			velocity.Y = JumpVelocity;
+		}
+
+		// Get the input direction and handle the movement/deceleration.
+		// As good practice, you should replace UI actions with custom gameplay actions.
+		Vector2 direction = Input.GetVector(\"ui_left\", \"ui_right\", \"ui_up\", \"ui_down\");
+		if (direction != Vector2.Zero)
+		{
+			velocity.X = direction.X * Speed;
+		}
+		else
+		{
+			velocity.X = Mathf.MoveToward(Velocity.X, 0, Speed);
+		}
+
+		Velocity = velocity;
+		MoveAndSlide();
+	}
+}
+"
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_utw1y"]
+
+[node name="Player" type="CharacterBody2D"]
+script = SubResource("CSharpScript_vg1k0")
+
+[node name="Knight" type="Sprite2D" parent="."]
+z_index = 1
+position = Vector2(-3.5, -1.5)
+texture = ExtResource("1_8eta3")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+z_index = 2
+position = Vector2(-3, 0.99999994)
+scale = Vector2(0.455, 0.455)
+shape = SubResource("CircleShape2D_utw1y")

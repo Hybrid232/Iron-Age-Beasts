@@ -1,0 +1,32 @@
+[gd_scene load_steps=4 format=3 uid="uid://b83raa0sufs4v"]
+
+[ext_resource type="Texture2D" uid="uid://djpktvepla7xq" path="res://sprites/background/test background.jpg" id="1_e1p63"]
+[ext_resource type="PackedScene" uid="uid://d38cvt67w5bgb" path="res://scene/Sandbox/steve_player_movement.tscn" id="2_86167"]
+
+[sub_resource type="GDScript" id="GDScript_0d08p"]
+script/source = "extends Node2D
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	pass
+"
+
+[node name="PlayerSteveTest" type="Node2D"]
+script = SubResource("GDScript_0d08p")
+
+[node name="TestBackground" type="Sprite2D" parent="."]
+position = Vector2(-1, -2)
+texture = ExtResource("1_e1p63")
+
+[node name="Player" parent="." instance=ExtResource("2_86167")]
+position = Vector2(6, 24)
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+position = Vector2(-6, -24)
+zoom = Vector2(3, 3)
