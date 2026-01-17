@@ -11,6 +11,7 @@ config_version=5
 [application]
 
 config/name="Iron Age Beasts"
+run/main_scene="uid://ckrfktaf2lgoe"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
 

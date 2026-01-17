@@ -1,27 +1,11 @@
-[gd_scene load_steps=3 format=3 uid="uid://dgloj3rkh8mly"]
+[gd_scene load_steps=2 format=3 uid="uid://dgloj3rkh8mly"]
 
-[ext_resource type="Texture2D" uid="uid://lvddhew6h75r" path="res://icon.svg" id="1_uhqqe"]
-[ext_resource type="Texture2D" uid="uid://b2oicbplvhpbi" path="res://sprites/test/test_knight.jpg" id="2_ia1lp"]
+[ext_resource type="PackedScene" uid="uid://cbdxrqc6rhsnm" path="res://player_test.tscn" id="1_uhqqe"]
 
-[node name="Test Scene" type="Node2D"]
+[node name="test_scene" type="Node2D"]
 
-[node name="Icon" type="Sprite2D" parent="."]
-position = Vector2(141, 85)
-texture = ExtResource("1_uhqqe")
+[node name="Player-test" parent="." instance=ExtResource("1_uhqqe")]
+position = Vector2(10, 11)
 
-[node name="Icon" type="Sprite2D" parent="Icon"]
-position = Vector2(222, 180)
-texture = ExtResource("1_uhqqe")
-
-[node name="TestKnight" type="Sprite2D" parent="Icon"]
-position = Vector2(504.99997, 165)
-scale = Vector2(0.2, 0.2)
-texture = ExtResource("2_ia1lp")
-
-[node name="Icon2" type="Sprite2D" parent="."]
-position = Vector2(360, 87)
-texture = ExtResource("1_uhqqe")
-
-[node name="Icon2" type="Sprite2D" parent="Icon2"]
-position = Vector2(-230, 177)
-texture = ExtResource("1_uhqqe")
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(38, 34)
