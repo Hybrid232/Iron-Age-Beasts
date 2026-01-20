@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://b83raa0sufs4v"]
+[gd_scene load_steps=6 format=3 uid="uid://b83raa0sufs4v"]
 
 [ext_resource type="Texture2D" uid="uid://djpktvepla7xq" path="res://sprites/background/test background.jpg" id="1_e1p63"]
 [ext_resource type="PackedScene" uid="uid://btpla6nfw4h5e" path="res://sprites/test/health&stamina.tscn" id="1_pc0wn"]
 [ext_resource type="PackedScene" uid="uid://d38cvt67w5bgb" path="res://scene/Sandbox/steve_player_movement.tscn" id="2_86167"]
+[ext_resource type="Texture2D" uid="uid://c7kqv4j25x0ms" path="res://sprites/test/dino enemy.png" id="4_61gpa"]
 
 [sub_resource type="GDScript" id="GDScript_0d08p"]
 script/source = "extends Node2D
@@ -25,9 +26,16 @@ script = SubResource("GDScript_0d08p")
 position = Vector2(-1, -2)
 texture = ExtResource("1_e1p63")
 
+[node name="DinoEnemy" type="Sprite2D" parent="."]
+z_index = 1
+position = Vector2(64, 9.000008)
+scale = Vector2(0.1, 0.1)
+texture = ExtResource("4_61gpa")
+
 [node name="Player" parent="." instance=ExtResource("2_86167")]
+z_index = 1
 position = Vector2(12, -21)
-playerSpeed = 150
+playerSpeed = 125
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position = Vector2(-6, -24)
