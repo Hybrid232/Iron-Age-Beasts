@@ -19,35 +19,42 @@ func _process(delta: float) -> void:
 	pass
 "
 
-[node name="PlayerSteveTest" type="Node2D"]
+[node name="TestWorld" type="Node2D"]
 script = SubResource("GDScript_0d08p")
 
 [node name="TestBackground" type="Sprite2D" parent="."]
-position = Vector2(-1, -2)
+position = Vector2(600, 320)
 texture = ExtResource("1_gtqar")
 
 [node name="DinoEnemy" type="Sprite2D" parent="."]
 z_index = 1
-position = Vector2(64, 9.000008)
+position = Vector2(694.00006, 439)
 scale = Vector2(0.1, 0.1)
 texture = ExtResource("2_0vdwb")
 
 [node name="Player" parent="." instance=ExtResource("3_04lnv")]
 z_index = 1
-position = Vector2(12, -21)
+position = Vector2(353, 320)
 playerSpeed = 125
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position = Vector2(-6, -24)
 zoom = Vector2(3, 3)
-limit_left = -586
-limit_top = -296
-limit_right = 554
-limit_bottom = 272
+limit_left = 30
+limit_top = 30
+limit_right = 1175
+limit_bottom = 615
 
-[node name="Health&Stamina" parent="Player/Camera2D" instance=ExtResource("4_qdpo3")]
-offset_left = -192.0
-offset_top = -108.0
-offset_right = -192.0
-offset_bottom = -108.0
-scale = Vector2(0.39893818, 0.69736785)
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = 2
+
+[node name="Health&Stamina" parent="CanvasLayer" instance=ExtResource("4_qdpo3")]
+z_index = 2
+offset_left = -7.0
+offset_top = -1.0
+offset_right = -9.506592
+offset_bottom = -1.0
+scale = Vector2(0.71893716, 1.0173677)
+metadata/_edit_use_anchors_ = true
+
+[node name="Boundaries" type="StaticBody2D" parent="."]
