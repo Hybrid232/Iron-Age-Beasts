@@ -11,4 +11,3 @@ script = ExtResource("2_pa2i8")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(-46, -13)
-limit_enabled = false
