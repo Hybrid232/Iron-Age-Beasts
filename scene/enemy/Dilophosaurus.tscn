@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3 uid="uid://cinx88ivya17o"]
+
+[ext_resource type="Texture2D" uid="uid://c7kqv4j25x0ms" path="res://sprites/test/dino enemy.png" id="1_u0krb"]
+[ext_resource type="Script" uid="uid://ckdcou828iw1a" path="res://sprites/test/Dilophosaurus.cs" id="1_vj81j"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_vj81j"]
+radius = 100.02
+
+[node name="Dilophosaurus" type="Node2D"]
+script = ExtResource("1_vj81j")
+
+[node name="DinoEnemy" type="Sprite2D" parent="."]
+position = Vector2(229, 302)
+texture = ExtResource("1_u0krb")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DinoEnemy"]
+position = Vector2(-32, 88)
+shape = SubResource("CircleShape2D_vj81j")

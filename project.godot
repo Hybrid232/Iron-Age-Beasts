@@ -11,8 +11,9 @@ config_version=5
 [application]
 
 config/name="Iron Age Beasts"
-run/main_scene="uid://b83raa0sufs4v"
+run/main_scene="uid://cinx88ivya17o"
 config/features=PackedStringArray("4.5", "C#", "Forward Plus")
+config/icon="res://icon.svg"
 
 [dotnet]
 
