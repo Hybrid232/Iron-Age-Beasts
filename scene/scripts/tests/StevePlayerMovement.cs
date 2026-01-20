@@ -3,11 +3,17 @@ using System;
 
 public partial class StevePlayerMovement : CharacterBody2D
 {
+	/*
+	*---MOVEMENT SETTINGS---
+	*/
+	[Export] private int playerSpeed = 50; 		 // Player Speed.
+	[Export] private int dodgeSpeed = 200;	 	 // Speed when Dodging.
+	[Export] private float dodgeTime = 0.20f;	 // Duration of dodge.
+	[Export] private float dodgeCooldown = 0.7f; // Dodge Cooldown.
 	
-	[Export] private int speed = 50;
-	[Export] private int dodgeSpeed = 200;
-	[Export] private float dodgeTime = 0.20f;
-	[Export] private float dodgeCooldown = 0.7f;
+	/*
+	*---STAMINA SETTINGS---
+	*/
 	
 	private float dodgeTimer = 0f;
 	private float cooldownTimer = 0f;
@@ -23,19 +29,22 @@ public partial class StevePlayerMovement : CharacterBody2D
 		
 		float dt = (float)delta;
 		
+		// Cooldown ticking down.
 		if (cooldownTimer > 0)
 			cooldownTimer -= dt;
 		
 		if (isDodging)
 		{
+			// Move in dodged direction.
 			currentVelocity = dodgeDirection * dodgeSpeed;
 			
+			// Reduce dodge timer.
 			dodgeTimer -= dt;
 			
 			if (dodgeTimer <= 0)
 			{
 				isDodging = false;
-				currentVelocity = Vector2.Zero;
+				currentVelocity = Vector2.Zero; // Reset Velocity.
 			}
 		}
 		else
@@ -43,9 +52,11 @@ public partial class StevePlayerMovement : CharacterBody2D
 			// Normal Movement
 			handelInput();
 			
+			// Update last non-zero movement direction.
 			if (currentVelocity != Vector2.Zero)
 				lastMoveDirection = currentVelocity.Normalized();
-				
+			
+			// Check dodge input if cooldown is finished.
 			if (Input.IsActionJustPressed("dodge") && cooldownTimer <= 0 && lastMoveDirection != Vector2.Zero)
 			{
 				isDodging = true;
@@ -55,6 +66,7 @@ public partial class StevePlayerMovement : CharacterBody2D
 			}
 		}
 		
+		// Apply Movement.
 		Velocity = currentVelocity;
 		MoveAndSlide();
 	}
@@ -62,6 +74,6 @@ public partial class StevePlayerMovement : CharacterBody2D
 	private void handelInput()
 	{
 		currentVelocity = Input.GetVector("ui_left","ui_right","ui_up","ui_down");
-		currentVelocity *= speed;
+		currentVelocity *= playerSpeed;
 	}
 }
