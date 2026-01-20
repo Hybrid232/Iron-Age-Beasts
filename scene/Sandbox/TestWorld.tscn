@@ -1,9 +1,9 @@
 [gd_scene load_steps=6 format=3 uid="uid://b83raa0sufs4v"]
 
-[ext_resource type="Texture2D" uid="uid://djpktvepla7xq" path="res://sprites/background/test background.jpg" id="1_e1p63"]
-[ext_resource type="PackedScene" uid="uid://btpla6nfw4h5e" path="res://sprites/test/health&stamina.tscn" id="1_pc0wn"]
-[ext_resource type="PackedScene" uid="uid://d38cvt67w5bgb" path="res://scene/Sandbox/steve_player_movement.tscn" id="2_86167"]
-[ext_resource type="Texture2D" uid="uid://c7kqv4j25x0ms" path="res://sprites/test/dino enemy.png" id="4_61gpa"]
+[ext_resource type="Texture2D" uid="uid://djpktvepla7xq" path="res://sprites/background/test background.jpg" id="1_gtqar"]
+[ext_resource type="Texture2D" uid="uid://c7kqv4j25x0ms" path="res://sprites/test/dino enemy.png" id="2_0vdwb"]
+[ext_resource type="PackedScene" uid="uid://d38cvt67w5bgb" path="res://scene/Player/Player.tscn" id="3_04lnv"]
+[ext_resource type="PackedScene" uid="uid://btpla6nfw4h5e" path="res://sprites/test/health&stamina.tscn" id="4_qdpo3"]
 
 [sub_resource type="GDScript" id="GDScript_0d08p"]
 script/source = "extends Node2D
@@ -24,15 +24,15 @@ script = SubResource("GDScript_0d08p")
 
 [node name="TestBackground" type="Sprite2D" parent="."]
 position = Vector2(-1, -2)
-texture = ExtResource("1_e1p63")
+texture = ExtResource("1_gtqar")
 
 [node name="DinoEnemy" type="Sprite2D" parent="."]
 z_index = 1
 position = Vector2(64, 9.000008)
 scale = Vector2(0.1, 0.1)
-texture = ExtResource("4_61gpa")
+texture = ExtResource("2_0vdwb")
 
-[node name="Player" parent="." instance=ExtResource("2_86167")]
+[node name="Player" parent="." instance=ExtResource("3_04lnv")]
 z_index = 1
 position = Vector2(12, -21)
 playerSpeed = 125
@@ -40,12 +40,12 @@ playerSpeed = 125
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position = Vector2(-6, -24)
 zoom = Vector2(3, 3)
-limit_left = -570
-limit_top = -288
-limit_right = 570
-limit_bottom = 280
+limit_left = -586
+limit_top = -296
+limit_right = 554
+limit_bottom = 272
 
-[node name="Health&Stamina" parent="Player/Camera2D" instance=ExtResource("1_pc0wn")]
+[node name="Health&Stamina" parent="Player/Camera2D" instance=ExtResource("4_qdpo3")]
 offset_left = -192.0
 offset_top = -108.0
 offset_right = -192.0
