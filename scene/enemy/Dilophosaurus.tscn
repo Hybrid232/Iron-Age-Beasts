@@ -1,18 +1,30 @@
-[gd_scene load_steps=4 format=3 uid="uid://cinx88ivya17o"]
+[gd_scene load_steps=5 format=3 uid="uid://djokcwtj4qkek"]
 
-[ext_resource type="Texture2D" uid="uid://c7kqv4j25x0ms" path="res://sprites/test/dino enemy.png" id="1_u0krb"]
-[ext_resource type="Script" uid="uid://ckdcou828iw1a" path="res://sprites/test/Dilophosaurus.cs" id="1_vj81j"]
+[ext_resource type="Script" uid="uid://chho2u5fus5wb" path="res://scene/enemy/Dilophosaurus.cs" id="1_ok0wq"]
+[ext_resource type="Texture2D" uid="uid://c7kqv4j25x0ms" path="res://sprites/test/dino enemy.png" id="2_qdkvu"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_vj81j"]
-radius = 100.02
+[sub_resource type="CircleShape2D" id="CircleShape2D_itp1y"]
+radius = 295.23718
 
-[node name="Dilophosaurus" type="Node2D"]
-script = ExtResource("1_vj81j")
+[sub_resource type="CircleShape2D" id="CircleShape2D_jyd3w"]
+
+[node name="Dilophosaurus" type="CharacterBody2D"]
+script = ExtResource("1_ok0wq")
 
 [node name="DinoEnemy" type="Sprite2D" parent="."]
-position = Vector2(229, 302)
-texture = ExtResource("1_u0krb")
+position = Vector2(416, -342)
+texture = ExtResource("2_qdkvu")
+offset = Vector2(-8, 0)
+
+[node name="detection_area" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="detection_area"]
+position = Vector2(411, -269)
+shape = SubResource("CircleShape2D_itp1y")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(197, 390)
-shape = SubResource("CircleShape2D_vj81j")
+position = Vector2(401.99997, -251.99997)
+scale = Vector2(10, 10)
+shape = SubResource("CircleShape2D_jyd3w")
