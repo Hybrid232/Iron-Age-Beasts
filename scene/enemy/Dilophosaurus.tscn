@@ -13,6 +13,6 @@ script = ExtResource("1_vj81j")
 position = Vector2(229, 302)
 texture = ExtResource("1_u0krb")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="DinoEnemy"]
-position = Vector2(-32, 88)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(197, 390)
 shape = SubResource("CircleShape2D_vj81j")
