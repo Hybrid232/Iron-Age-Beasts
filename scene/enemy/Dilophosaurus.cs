@@ -1,40 +1,48 @@
 using Godot;
 using System;
 
-public partial class Dilophosaurus : CharacterBody2D
+int speed = 25;
+bool playerChase = false;
+bool player = null;
+
+
+
+
+privade void OnDetectionAreaBodyEntered(body)
 {
-	public const float Speed = 300.0f;
-	public const float JumpVelocity = -400.0f;
+	player = body;
+	playerChase = true;
+}
 
-	public override void _PhysicsProcess(double delta)
+private void OnDetectionAreaBodyExited(body)
+{
+	player = null;
+	playerChase = false
+}
+
+public partial class dilophosaurus : CharactherBody2D
+{
+	private bool playerDetected = false;
 	{
-		Vector2 velocity = Velocity;
-
-		// Add the gravity.
-		if (!IsOnFloor())
+		private void _on_detection_area_body_entered(Node2D body)
 		{
-			velocity += GetGravity() * (float)delta;
+			GD.Print("$Entered: {body,Name}");
+			
+			if (body.IsInGroup("Player"))
+			{
+				playerDetected = true;
+				GD.Print("Player detected");
+			}
 		}
-
-		// Handle Jump.
-		if (Input.IsActionJustPressed("ui_accept") && IsOnFloor())
+		private void _on_detection_area_body_exited(Node2D body)
 		{
-			velocity.Y = JumpVelocity;
+			GD.Print($"Exited: {body.Name}");
+			
+			if (body.IsInGroup("Player"))
+			{
+				playerDetected = false;
+				GD.Print("plater left detection area")
+			}
 		}
-
-		// Get the input direction and handle the movement/deceleration.
-		// As good practice, you should replace UI actions with custom gameplay actions.
-		Vector2 direction = Input.GetVector("ui_left", "ui_right", "ui_up", "ui_down");
-		if (direction != Vector2.Zero)
-		{
-			velocity.X = direction.X * Speed;
-		}
-		else
-		{
-			velocity.X = Mathf.MoveToward(Velocity.X, 0, Speed);
-		}
-
-		Velocity = velocity;
-		MoveAndSlide();
 	}
 }

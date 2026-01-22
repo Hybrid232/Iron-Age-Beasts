@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://djokcwtj4qkek"]
 
-[ext_resource type="Script" uid="uid://chho2u5fus5wb" path="res://scene/enemy/Dilophosaurus.cs" id="1_ok0wq"]
+[ext_resource type="Script" uid="uid://jjo4fptopbh2" path="res://scene/enemy/dilophosaurus.cs" id="1_ok0wq"]
 [ext_resource type="Texture2D" uid="uid://c7kqv4j25x0ms" path="res://sprites/test/dino enemy.png" id="2_qdkvu"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_itp1y"]
@@ -8,7 +8,7 @@ radius = 295.23718
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_jyd3w"]
 
-[node name="Dilophosaurus" type="CharacterBody2D"]
+[node name="dilophosaurus" type="CharacterBody2D"]
 script = ExtResource("1_ok0wq")
 
 [node name="DinoEnemy" type="Sprite2D" parent="."]
@@ -28,3 +28,6 @@ shape = SubResource("CircleShape2D_itp1y")
 position = Vector2(401.99997, -251.99997)
 scale = Vector2(10, 10)
 shape = SubResource("CircleShape2D_jyd3w")
+
+[connection signal="body_entered" from="detection_area" to="." method="_on_detection_area_body_entered"]
+[connection signal="body_exited" from="detection_area" to="." method="_on_detection_area_body_exited"]
