@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public partial class StevePlayerMovement : CharacterBody2D
+public partial class Player : CharacterBody2D
 {
 	/*
 	*---MOVEMENT SETTINGS---
@@ -76,4 +76,9 @@ public partial class StevePlayerMovement : CharacterBody2D
 		currentVelocity = Input.GetVector("ui_left","ui_right","ui_up","ui_down");
 		currentVelocity *= playerSpeed;
 	}
+	
+	//private void attack()
+	//{
+		//
+	//}
 }

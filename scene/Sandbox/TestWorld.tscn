@@ -34,7 +34,7 @@ texture = ExtResource("2_0vdwb")
 
 [node name="Player" parent="." instance=ExtResource("3_04lnv")]
 z_index = 1
-position = Vector2(353, 320)
+position = Vector2(555, 383)
 playerSpeed = 125
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
