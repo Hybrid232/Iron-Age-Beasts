@@ -35,7 +35,6 @@ texture = ExtResource("2_0vdwb")
 [node name="Player" parent="." instance=ExtResource("3_04lnv")]
 z_index = 1
 position = Vector2(555, 383)
-playerSpeed = 125
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position = Vector2(-6, -24)
@@ -49,12 +48,5 @@ limit_bottom = 615
 layer = 2
 
 [node name="Health&Stamina" parent="CanvasLayer" instance=ExtResource("4_qdpo3")]
-z_index = 2
-offset_left = -7.0
-offset_top = -1.0
-offset_right = -9.506592
-offset_bottom = -1.0
-scale = Vector2(0.71893716, 1.0173677)
-metadata/_edit_use_anchors_ = true
 
 [node name="Boundaries" type="StaticBody2D" parent="."]

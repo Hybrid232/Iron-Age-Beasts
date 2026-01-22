@@ -17,17 +17,17 @@ grow_vertical = 2
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
-scale = Vector2(0.2387251, 0.015903527)
+scale = Vector2(0.27894855, 0.03525639)
 value = 100.0
 texture_under = ExtResource("1_jqx77")
 texture_progress = ExtResource("2_yuvu1")
 
 [node name="StaminaBar" type="TextureProgressBar" parent="."]
 layout_mode = 0
-offset_top = 10.0
+offset_top = 21.0
 offset_right = 1152.0
-offset_bottom = 658.0
-scale = Vector2(0.118587665, 0.01087399)
+offset_bottom = 669.0
+scale = Vector2(0.13882846, 0.024106454)
 value = 75.0
 texture_under = ExtResource("3_06sby")
 texture_progress = ExtResource("4_5ltuf")
