@@ -1,9 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://b83raa0sufs4v"]
+[gd_scene load_steps=8 format=3 uid="uid://b83raa0sufs4v"]
 
 [ext_resource type="Texture2D" uid="uid://djpktvepla7xq" path="res://sprites/background/test background.jpg" id="1_gtqar"]
 [ext_resource type="Texture2D" uid="uid://c7kqv4j25x0ms" path="res://sprites/test/dino enemy.png" id="2_0vdwb"]
 [ext_resource type="PackedScene" uid="uid://d38cvt67w5bgb" path="res://scene/Player/Player.tscn" id="3_04lnv"]
 [ext_resource type="PackedScene" uid="uid://btpla6nfw4h5e" path="res://sprites/test/health&stamina.tscn" id="4_qdpo3"]
+[ext_resource type="Texture2D" uid="uid://brhqgehvt7ib0" path="res://sprites/test/dino-miniboss.png" id="5_0vdwb"]
+[ext_resource type="PackedScene" uid="uid://bbg6o4s7g1g0m" path="res://scene/enemy/Boss Healthbar.tscn" id="5_04lnv"]
 
 [sub_resource type="GDScript" id="GDScript_0d08p"]
 script/source = "extends Node2D
@@ -35,6 +37,8 @@ texture = ExtResource("2_0vdwb")
 [node name="Player" parent="." instance=ExtResource("3_04lnv")]
 z_index = 1
 position = Vector2(555, 383)
+disable_mode = 1
+attackDuration = 0.25
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position = Vector2(-6, -24)
@@ -49,4 +53,13 @@ layer = 2
 
 [node name="Health&Stamina" parent="CanvasLayer" instance=ExtResource("4_qdpo3")]
 
-[node name="Boundaries" type="StaticBody2D" parent="."]
+[node name="BossHealthbar" parent="CanvasLayer" instance=ExtResource("5_04lnv")]
+offset_left = 13.0
+offset_top = -9.0
+offset_right = 13.0
+offset_bottom = -9.0
+
+[node name="DinoMiniboss" type="Sprite2D" parent="."]
+position = Vector2(525, 192)
+scale = Vector2(-0.51688313, 0.40375453)
+texture = ExtResource("5_0vdwb")

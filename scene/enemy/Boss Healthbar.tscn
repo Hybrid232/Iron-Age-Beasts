@@ -1,0 +1,35 @@
+[gd_scene load_steps=3 format=3 uid="uid://bbg6o4s7g1g0m"]
+
+[ext_resource type="Texture2D" uid="uid://cvcqwiun3qwbx" path="res://sprites/test/HealthBG.png" id="1_xvuhq"]
+[ext_resource type="Texture2D" uid="uid://d08o5yyd2hgd0" path="res://sprites/test/HealthBar.png" id="2_85pvq"]
+
+[node name="BossHealthbar" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureProgressBar" type="TextureProgressBar" parent="."]
+z_index = 3
+layout_mode = 0
+offset_left = 158.99998
+offset_top = 566.0
+offset_right = 1311.0
+offset_bottom = 1214.0
+scale = Vector2(0.7199997, 0.08000033)
+value = 90.0
+texture_under = ExtResource("1_xvuhq")
+texture_progress = ExtResource("2_85pvq")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 118.0
+offset_top = 505.0
+offset_right = 1049.0
+offset_bottom = 556.0
+theme_type_variation = &"HeaderLarge"
+text = "Spinosaurus the Great"
+horizontal_alignment = 1
+vertical_alignment = 1
