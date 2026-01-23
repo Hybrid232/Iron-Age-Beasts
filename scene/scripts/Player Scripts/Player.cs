@@ -4,6 +4,18 @@ using System;
 public partial class Player : CharacterBody2D
 {
 	/*
+	*---HEALTH SETTINGS---
+	*/
+	[Export] public int MaxHealth = 10;
+	private int _currentHealth;
+	/*
+    *---STAMINA SETTINGS---
+    */
+    [Export] public int MaxStamina = 5;
+    private int _currentStamina;
+	[Export] public UI UiReference;
+
+	/*
 	*---MOVEMENT SETTINGS---
 	*/
 	
@@ -48,7 +60,7 @@ public partial class Player : CharacterBody2D
 	private float cooldownTimer = 0f;
 	private float attackTimer = 0f;
 
-	// State flags. 
+	// State flags. 
 	private bool isDodging = false;
 	private bool isAttacking = false;
 
@@ -64,6 +76,24 @@ public partial class Player : CharacterBody2D
 	{
 		// Ensures that the attack hitbox is disabled when the game starts.
 		EnableAttackHitbox(false);
+
+		// Initialize Health
+		_currentHealth = MaxHealth;
+		// Initialize Stamina
+        _currentStamina = MaxStamina;
+	}
+
+	// This handles single key presses (J for Damage, K for Heal)
+	public override void _UnhandledInput(InputEvent @event)
+	{
+		if (@event is InputEventKey eventKey && eventKey.Pressed && !eventKey.Echo)
+		{
+			if (eventKey.Keycode == Key.J) ChangeHealth(-1);
+			if (eventKey.Keycode == Key.K) ChangeHealth(1);
+
+            if (eventKey.Keycode == Key.U) ChangeStamina(-1);
+            if (eventKey.Keycode == Key.I) ChangeStamina(1);
+		}
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -101,7 +131,7 @@ public partial class Player : CharacterBody2D
 		MoveAndSlide();
 	}
 
-	/* 
+	/* 
 	 *---MOVEMENT---
 	 */
 	private void HandleMovement()
@@ -206,4 +236,37 @@ public partial class Player : CharacterBody2D
 	{
 		// animationPlayer.Play($"attack_{facing.ToString().ToLower()}");
 	}
+
+	/*
+	*---HEALTH METHODS---
+	*/
+	public void ChangeHealth(int amount)
+	{
+		_currentHealth += amount;
+		
+		// Keep health between 0 and 10
+		_currentHealth = Mathf.Clamp(_currentHealth, 0, MaxHealth);
+		
+		// Update the UI if we attached it
+		if (UiReference != null)
+		{
+			UiReference.UpdateHealthDisplay(_currentHealth);
+		}
+		else
+		{
+			GD.PrintErr("UI Reference is missing! Drag the UI node into the Player script in the Inspector.");
+		}
+	}
+	public void ChangeStamina(int amount)
+    {
+        _currentStamina += amount;
+
+        // Clamp between 0 and MaxStamina (5)
+        _currentStamina = Mathf.Clamp(_currentStamina, 0, MaxStamina);
+
+        if (UiReference != null)
+        {
+            UiReference.UpdateStaminaDisplay(_currentStamina);
+        }
+    }
 }

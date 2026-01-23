@@ -1,4 +1,127 @@
-[gd_scene format=3 uid="uid://ckrfktaf2lgoe"]
+[gd_scene load_steps=7 format=3 uid="uid://ckrfktaf2lgoe"]
+
+[ext_resource type="Script" uid="uid://ds0gpdaxyuvpe" path="res://scene/scripts/Player Scripts/UI.cs" id="1_80nbo"]
+[ext_resource type="Texture2D" uid="uid://d08o5yyd2hgd0" path="res://sprites/test/HealthBar.png" id="2_fc0e3"]
+[ext_resource type="Texture2D" uid="uid://cvcqwiun3qwbx" path="res://sprites/test/HealthBG.png" id="3_7jktm"]
+[ext_resource type="PackedScene" uid="uid://d38cvt67w5bgb" path="res://scene/Player/Player.tscn" id="4_ryrav"]
+[ext_resource type="Texture2D" uid="uid://cl1vuiem2nq58" path="res://sprites/test/StaminaBar.png" id="5_ryrav"]
+[ext_resource type="Texture2D" uid="uid://d2x8288fejlu" path="res://sprites/test/staminaBG.png" id="6_eow3j"]
 
 [node name="Game" type="Node2D"]
 position = Vector2(-2, 12)
+
+[node name="Player" parent="." node_paths=PackedStringArray("UiReference") instance=ExtResource("4_ryrav")]
+UiReference = NodePath("../CanvasLayer")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." node_paths=PackedStringArray("HealthContainer", "StaminaContainer") groups=["HealthUI"]]
+script = ExtResource("1_80nbo")
+RedHeartTexture = ExtResource("2_fc0e3")
+BlackHeartTexture = ExtResource("3_7jktm")
+HealthContainer = NodePath("HBoxContainer")
+StaminaFullTexture = ExtResource("5_ryrav")
+StaminaEmptyTexture = ExtResource("6_eow3j")
+StaminaContainer = NodePath("StaminaContainer")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer"]
+offset_left = 30.0
+offset_top = 10.0
+offset_right = 386.0
+offset_bottom = 50.0
+theme_override_constants/separation = 0
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/HBoxContainer"]
+custom_minimum_size = Vector2(32, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextureRect2" type="TextureRect" parent="CanvasLayer/HBoxContainer"]
+custom_minimum_size = Vector2(32, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextureRect3" type="TextureRect" parent="CanvasLayer/HBoxContainer"]
+custom_minimum_size = Vector2(32, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextureRect4" type="TextureRect" parent="CanvasLayer/HBoxContainer"]
+custom_minimum_size = Vector2(32, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextureRect5" type="TextureRect" parent="CanvasLayer/HBoxContainer"]
+custom_minimum_size = Vector2(32, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextureRect6" type="TextureRect" parent="CanvasLayer/HBoxContainer"]
+custom_minimum_size = Vector2(32, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextureRect7" type="TextureRect" parent="CanvasLayer/HBoxContainer"]
+custom_minimum_size = Vector2(32, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextureRect8" type="TextureRect" parent="CanvasLayer/HBoxContainer"]
+custom_minimum_size = Vector2(32, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextureRect9" type="TextureRect" parent="CanvasLayer/HBoxContainer"]
+custom_minimum_size = Vector2(32, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextureRect10" type="TextureRect" parent="CanvasLayer/HBoxContainer"]
+custom_minimum_size = Vector2(32, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="StaminaContainer" type="HBoxContainer" parent="CanvasLayer"]
+offset_left = 30.0
+offset_top = 40.0
+offset_right = 386.0
+offset_bottom = 80.0
+theme_override_constants/separation = 0
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/StaminaContainer"]
+custom_minimum_size = Vector2(32, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextureRect2" type="TextureRect" parent="CanvasLayer/StaminaContainer"]
+custom_minimum_size = Vector2(32, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextureRect3" type="TextureRect" parent="CanvasLayer/StaminaContainer"]
+custom_minimum_size = Vector2(32, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextureRect4" type="TextureRect" parent="CanvasLayer/StaminaContainer"]
+custom_minimum_size = Vector2(32, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextureRect5" type="TextureRect" parent="CanvasLayer/StaminaContainer"]
+custom_minimum_size = Vector2(32, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5

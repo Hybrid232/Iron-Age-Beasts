@@ -1,11 +1,15 @@
-[gd_scene load_steps=8 format=3 uid="uid://b83raa0sufs4v"]
+[gd_scene load_steps=12 format=3 uid="uid://b83raa0sufs4v"]
 
 [ext_resource type="Texture2D" uid="uid://djpktvepla7xq" path="res://sprites/background/test background.jpg" id="1_gtqar"]
 [ext_resource type="Texture2D" uid="uid://c7kqv4j25x0ms" path="res://sprites/test/dino enemy.png" id="2_0vdwb"]
 [ext_resource type="PackedScene" uid="uid://d38cvt67w5bgb" path="res://scene/Player/Player.tscn" id="3_04lnv"]
-[ext_resource type="PackedScene" uid="uid://btpla6nfw4h5e" path="res://sprites/test/health&stamina.tscn" id="4_qdpo3"]
 [ext_resource type="Texture2D" uid="uid://brhqgehvt7ib0" path="res://sprites/test/dino-miniboss.png" id="5_0vdwb"]
 [ext_resource type="PackedScene" uid="uid://bbg6o4s7g1g0m" path="res://scene/enemy/Boss Healthbar.tscn" id="5_04lnv"]
+[ext_resource type="Script" uid="uid://ds0gpdaxyuvpe" path="res://scene/scripts/Player Scripts/UI.cs" id="6_go75h"]
+[ext_resource type="Texture2D" uid="uid://d08o5yyd2hgd0" path="res://sprites/test/HealthBar.png" id="7_78shh"]
+[ext_resource type="Texture2D" uid="uid://cvcqwiun3qwbx" path="res://sprites/test/HealthBG.png" id="8_q0frb"]
+[ext_resource type="Texture2D" uid="uid://cl1vuiem2nq58" path="res://sprites/test/StaminaBar.png" id="9_q0frb"]
+[ext_resource type="Texture2D" uid="uid://d2x8288fejlu" path="res://sprites/test/staminaBG.png" id="10_6pjo8"]
 
 [sub_resource type="GDScript" id="GDScript_0d08p"]
 script/source = "extends Node2D
@@ -34,10 +38,11 @@ position = Vector2(694.00006, 439)
 scale = Vector2(0.1, 0.1)
 texture = ExtResource("2_0vdwb")
 
-[node name="Player" parent="." instance=ExtResource("3_04lnv")]
+[node name="Player" parent="." node_paths=PackedStringArray("UiReference") instance=ExtResource("3_04lnv")]
 z_index = 1
 position = Vector2(555, 383)
 disable_mode = 1
+UiReference = NodePath("../CanvasLayer")
 attackDuration = 0.25
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
@@ -48,12 +53,10 @@ limit_top = 30
 limit_right = 1175
 limit_bottom = 615
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="CanvasLayer2" type="CanvasLayer" parent="."]
 layer = 2
 
-[node name="Health&Stamina" parent="CanvasLayer" instance=ExtResource("4_qdpo3")]
-
-[node name="BossHealthbar" parent="CanvasLayer" instance=ExtResource("5_04lnv")]
+[node name="BossHealthbar" parent="CanvasLayer2" instance=ExtResource("5_04lnv")]
 offset_left = 13.0
 offset_top = -9.0
 offset_right = 13.0
@@ -63,3 +66,116 @@ offset_bottom = -9.0
 position = Vector2(525, 192)
 scale = Vector2(-0.51688313, 0.40375453)
 texture = ExtResource("5_0vdwb")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." node_paths=PackedStringArray("HealthContainer", "StaminaContainer") groups=["HealthUI"]]
+script = ExtResource("6_go75h")
+RedHeartTexture = ExtResource("7_78shh")
+BlackHeartTexture = ExtResource("8_q0frb")
+HealthContainer = NodePath("HBoxContainer")
+StaminaFullTexture = ExtResource("9_q0frb")
+StaminaEmptyTexture = ExtResource("10_6pjo8")
+StaminaContainer = NodePath("StaminaContainer")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer"]
+offset_left = 30.0
+offset_top = 10.0
+offset_right = 386.0
+offset_bottom = 50.0
+theme_override_constants/separation = 0
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/HBoxContainer"]
+custom_minimum_size = Vector2(32, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextureRect2" type="TextureRect" parent="CanvasLayer/HBoxContainer"]
+custom_minimum_size = Vector2(32, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextureRect3" type="TextureRect" parent="CanvasLayer/HBoxContainer"]
+custom_minimum_size = Vector2(32, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextureRect4" type="TextureRect" parent="CanvasLayer/HBoxContainer"]
+custom_minimum_size = Vector2(32, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextureRect5" type="TextureRect" parent="CanvasLayer/HBoxContainer"]
+custom_minimum_size = Vector2(32, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextureRect6" type="TextureRect" parent="CanvasLayer/HBoxContainer"]
+custom_minimum_size = Vector2(32, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextureRect7" type="TextureRect" parent="CanvasLayer/HBoxContainer"]
+custom_minimum_size = Vector2(32, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextureRect8" type="TextureRect" parent="CanvasLayer/HBoxContainer"]
+custom_minimum_size = Vector2(32, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextureRect9" type="TextureRect" parent="CanvasLayer/HBoxContainer"]
+custom_minimum_size = Vector2(32, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextureRect10" type="TextureRect" parent="CanvasLayer/HBoxContainer"]
+custom_minimum_size = Vector2(32, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="StaminaContainer" type="HBoxContainer" parent="CanvasLayer"]
+offset_left = 30.0
+offset_top = 40.0
+offset_right = 386.0
+offset_bottom = 80.0
+theme_override_constants/separation = 0
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/StaminaContainer"]
+custom_minimum_size = Vector2(32, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextureRect2" type="TextureRect" parent="CanvasLayer/StaminaContainer"]
+custom_minimum_size = Vector2(32, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextureRect3" type="TextureRect" parent="CanvasLayer/StaminaContainer"]
+custom_minimum_size = Vector2(32, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextureRect4" type="TextureRect" parent="CanvasLayer/StaminaContainer"]
+custom_minimum_size = Vector2(32, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextureRect5" type="TextureRect" parent="CanvasLayer/StaminaContainer"]
+custom_minimum_size = Vector2(32, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
