@@ -1,48 +1,64 @@
-
-// Hey Guys! The game wasn't working because of some mistakes in this Dilophosaurus enemy script.
-// I didn't have time to fix the enemy, but I threw this into claude to help me out. Here's the corrected code:
-// (if you want the original code, it is in Old_Dilophosaurus.cs and it is commented out)
-
 using Godot;
-using System;
 
 public partial class Dilophosaurus : CharacterBody2D
 {
-    // 1. Variables must be inside the class
-    private int speed = 25;
-    private bool playerChase = false;
-    private Node2D player = null; // Changed from 'bool' to 'Node2D' to hold the body
+	[Export] public float Speed = 60f;          // How fast the enemy moves
+	[Export] public float StopDistance = 8f;    // Distance before stopping near player
+	[Export] public string PlayerGroup = "player"; // Player must be in this group
 
-    // 2. Standard Godot signal naming convention
-    private void OnDetectionAreaBodyEntered(Node2D body)
-    {
-        // 3. Check for specific group to avoid chasing walls or floors
-        if (body.IsInGroup("Player"))
-        {
-            player = body;
-            playerChase = true;
-            GD.Print($"Entered: {body.Name}");
-            GD.Print("Player detected");
-        }
-    }
+	private Node2D _player = null;  // Stores player reference
+	private bool _chasing = false;  // Whether enemy should move
 
-    private void OnDetectionAreaBodyExited(Node2D body)
-    {
-        if (body.IsInGroup("Player"))
-        {
-            player = null;
-            playerChase = false;
-            GD.Print($"Exited: {body.Name}");
-            GD.Print("Player left detection area");
-        }
-    }
-    
-    // You will likely need _PhysicsProcess here later to actually move the enemy
-    public override void _PhysicsProcess(double delta)
-    {
-        if (playerChase && player != null)
-        {
-            // Movement logic goes here
-        }
-    }
+	public override void _PhysicsProcess(double delta)
+	{
+		// If not chasing or player reference is gone, stop moving
+		if (!_chasing || _player == null)
+		{
+			Velocity = Vector2.Zero;
+			MoveAndSlide();
+			return;
+		}
+
+		// Distance to player
+		float distance = GlobalPosition.DistanceTo(_player.GlobalPosition);
+
+		// Stop if close enough
+		if (distance <= StopDistance)
+		{
+			Velocity = Vector2.Zero;
+			MoveAndSlide();
+			return;
+		}
+
+		// Move toward player
+		Vector2 direction = (_player.GlobalPosition - GlobalPosition).Normalized();
+		Velocity = direction * Speed;
+
+		MoveAndSlide();
+	}
+
+	// SIGNAL from detection_area when something enters
+	private void _on_detection_area_body_entered(Node2D body)
+	{
+		// Only react if it's the player
+		if (!body.IsInGroup(PlayerGroup))
+			return;
+
+		_player = body;
+		_chasing = true;
+
+		GD.Print("Player detected 👀");
+	}
+
+	// SIGNAL from detection_area when something leaves
+	private void _on_detection_area_body_exited(Node2D body)
+	{
+		if (body != _player)
+			return;
+
+		_player = null;
+		_chasing = false;
+
+		GD.Print("Player left detection ❌");
+	}
 }

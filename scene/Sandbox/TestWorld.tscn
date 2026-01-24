@@ -66,4 +66,4 @@ scale = Vector2(-0.51688313, 0.40375453)
 texture = ExtResource("5_0vdwb")
 
 [node name="Dilophosaurus" parent="." instance=ExtResource("7_qdpo3")]
-position = Vector2(410, 537)
+position = Vector2(412, 532)

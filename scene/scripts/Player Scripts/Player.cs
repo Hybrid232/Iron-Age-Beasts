@@ -9,10 +9,10 @@ public partial class Player : CharacterBody2D
 	[Export] public int MaxHealth = 10;
 	private int _currentHealth;
 	/*
-    *---STAMINA SETTINGS---
-    */
-    [Export] public int MaxStamina = 5;
-    private int _currentStamina;
+	*---STAMINA SETTINGS---
+	*/
+	[Export] public int MaxStamina = 5;
+	private int _currentStamina;
 	[Export] public UI UiReference;
 
 	/*
@@ -80,7 +80,7 @@ public partial class Player : CharacterBody2D
 		// Initialize Health
 		_currentHealth = MaxHealth;
 		// Initialize Stamina
-        _currentStamina = MaxStamina;
+		_currentStamina = MaxStamina;
 	}
 
 	// This handles single key presses (J for Damage, K for Heal)
@@ -91,8 +91,8 @@ public partial class Player : CharacterBody2D
 			if (eventKey.Keycode == Key.J) ChangeHealth(-1);
 			if (eventKey.Keycode == Key.K) ChangeHealth(1);
 
-            if (eventKey.Keycode == Key.U) ChangeStamina(-1);
-            if (eventKey.Keycode == Key.I) ChangeStamina(1);
+			if (eventKey.Keycode == Key.U) ChangeStamina(-1);
+			if (eventKey.Keycode == Key.I) ChangeStamina(1);
 		}
 	}
 
@@ -258,15 +258,15 @@ public partial class Player : CharacterBody2D
 		}
 	}
 	public void ChangeStamina(int amount)
-    {
-        _currentStamina += amount;
+	{
+		_currentStamina += amount;
 
-        // Clamp between 0 and MaxStamina (5)
-        _currentStamina = Mathf.Clamp(_currentStamina, 0, MaxStamina);
+		// Clamp between 0 and MaxStamina (5)
+		_currentStamina = Mathf.Clamp(_currentStamina, 0, MaxStamina);
 
-        if (UiReference != null)
-        {
-            UiReference.UpdateStaminaDisplay(_currentStamina);
-        }
-    }
+		if (UiReference != null)
+		{
+			UiReference.UpdateStaminaDisplay(_currentStamina);
+		}
+	}
 }
