@@ -17,7 +17,7 @@ attackDuration = 0.3
 attackPivot = NodePath("AttackPivot")
 attackHitbox = NodePath("AttackPivot/AttackHitbox")
 
-[node name="Knight" type="Sprite2D" parent="."]
+[node name="Knight" type="Sprite2D" parent="." groups=["player"]]
 z_index = 1
 position = Vector2(0, -1)
 texture = ExtResource("1_8eta3")
