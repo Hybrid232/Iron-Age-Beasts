@@ -3,28 +3,34 @@
 [ext_resource type="Script" uid="uid://jjo4fptopbh2" path="res://scene/enemy/Dilophosaurus.cs" id="1_ok0wq"]
 [ext_resource type="Texture2D" uid="uid://c7kqv4j25x0ms" path="res://sprites/test/dino enemy.png" id="2_qdkvu"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_itp1y"]
-radius = 205.52615
-
 [sub_resource type="CircleShape2D" id="CircleShape2D_jyd3w"]
-radius = 6.5007653
+radius = 1.6999999
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_itp1y"]
+radius = 54.481743
 
 [node name="Dilophosaurus" type="CharacterBody2D"]
 script = ExtResource("1_ok0wq")
+Speed = 100.0
 
 [node name="DinoEnemy" type="Sprite2D" parent="."]
-position = Vector2(420.1778, -259)
-scale = Vector2(0.52222234, 0.48888892)
+position = Vector2(8, -1)
+scale = Vector2(0.17500006, 0.16944447)
 texture = ExtResource("2_qdkvu")
 offset = Vector2(-8, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(4.9999995, 12)
+scale = Vector2(10, 10)
+shape = SubResource("CircleShape2D_jyd3w")
 
 [node name="detection_area" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="detection_area"]
-position = Vector2(401, -233)
+position = Vector2(3, 11.000001)
+rotation = -0.11664813
+scale = Vector2(0.7789615, 0.7722881)
 shape = SubResource("CircleShape2D_itp1y")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(401, -235.00003)
-scale = Vector2(10, 10)
-shape = SubResource("CircleShape2D_jyd3w")
+[connection signal="body_entered" from="detection_area" to="." method="_on_detection_area_body_entered"]
+[connection signal="body_exited" from="detection_area" to="." method="_on_detection_area_body_exited"]
