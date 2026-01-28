@@ -28,7 +28,7 @@ public partial class Player : CharacterBody2D
 	// How long the dodge lasts in seconds.
 	[Export] private float dodgeTime = 0.20f;
 	
-	// How long before teh player can dodge again.
+	// How long before the player can dodge again.
 	[Export] private float dodgeCooldown = 0.7f;
 
 	/*
@@ -40,6 +40,27 @@ public partial class Player : CharacterBody2D
 	
 	// Distance the attack hitbox is pushed away from the player.
 	[Export] private float attackRange = 16f;
+	
+	/*
+	*---BULLET SETTINGS---
+	*/
+	// Max Bullets.
+	[Export] private int maxShots = 3;
+	
+	// Time for each shot to regenerate.
+	[Export] private float bulletCooldown = 30f;
+	
+	// Reference to Bullet scene.
+	[Export] private PackedScene bulletScene;
+	
+	// UI bar to show cooldown.
+	[Export] private ProgressBar[] bulletBars;
+	
+	// Tracks how many shots can currently fire.
+	private int availableShots = 3;
+	
+	// Individual cooldown timers.
+	private float[] shotTimers;
 
 	/*
 	*---NODE REFERENCES---
@@ -48,8 +69,11 @@ public partial class Player : CharacterBody2D
 	// Pivot node that moves and rotates the attack hitbox.
 	[Export] private Node2D attackPivot;
 	
-	//Area2D that detects enemies during an attack.
+	// Area2D that detects enemies during an attack.
 	[Export] private Area2D attackHitbox;
+
+	// Parent Node for bullets.	
+	[Export] private Node2D bulletContainer;
 
 	/*
 	*---STATE VARIABLES---
@@ -63,14 +87,10 @@ public partial class Player : CharacterBody2D
 	// State flags. 
 	private bool isDodging = false;
 	private bool isAttacking = false;
-
 	
 	private Vector2 dodgeDirection;
 	private Vector2 currentVelocity;
 	private Vector2 lastMoveDirection = Vector2.Down;
-
-
-	
 
 	public override void _Ready()
 	{
@@ -81,6 +101,15 @@ public partial class Player : CharacterBody2D
 		_currentHealth = MaxHealth;
 		// Initialize Stamina
 		_currentStamina = MaxStamina;
+		
+		// Initialize Shooting Timers.
+		availableShots = maxShots;
+		shotTimers = new float[maxShots];
+		for (int i = 0; i < maxShots; i++) 
+		{
+			// All shots start ready to fire.
+			shotTimers[i] = 0f;
+		}
 	}
 
 	// This handles single key presses (J for Damage, K for Heal)
@@ -103,7 +132,10 @@ public partial class Player : CharacterBody2D
 		// Reduce dodge cooldown overtime.
 		if (cooldownTimer > 0)
 			cooldownTimer -= dt;
-
+	
+		// Update bullet cooldowns and UI.
+		UpdateBulletCooldowns(dt);
+		
 		// Ensures only one action at a time.
 		if (isAttacking)
 		{
@@ -111,9 +143,11 @@ public partial class Player : CharacterBody2D
 		}
 		else if (isDodging)
 		{
+			// Move player in dodge direciton.
 			currentVelocity = dodgeDirection * dodgeSpeed;
 			dodgeTimer -= dt;
 
+			// End dodge when timer expires.
 			if (dodgeTimer <= 0)
 			{
 				isDodging = false;
@@ -122,11 +156,14 @@ public partial class Player : CharacterBody2D
 		}
 		else
 		{
+			// Handles movement, attacks, dodges, and shooting.
 			HandleMovement();
 			TryAttack();
 			TryDodge();
+			TryShoot();
 		}
-
+	
+		// Apply Movement
 		Velocity = currentVelocity;
 		MoveAndSlide();
 	}
@@ -150,8 +187,6 @@ public partial class Player : CharacterBody2D
 			lastMoveDirection = currentVelocity.Normalized();
 		}
 	}
-
-	
 
 	/* =====================
 	 * DODGE
@@ -231,7 +266,114 @@ public partial class Player : CharacterBody2D
 		attackHitbox.Monitoring = enabled;
 		attackHitbox.Monitorable = enabled;
 	}
+	
+	/*
+	*---SHOOTING---
+	*/
+	private void TryShoot()
+	{
+		if (!Input.IsActionJustPressed("shoot") || availableShots <= 0 || lastMoveDirection == Vector2.Zero)
+		{
+			// Debug messages to know why shooting is blocked.
+			if (!Input.IsActionJustPressed("shoot"))
+				return;
+				
+			if (availableShots <= 0)
+			{
+				GD.Print("Cannot shoot: no available shots");
+				return;
+			}
 
+			if (lastMoveDirection == Vector2.Zero)
+			{
+				GD.Print("Cannot shoot: no movement direction");
+				return;
+			}
+			
+			return;
+		}
+			
+		GD.Print("Shooting bullet! Direction: ", lastMoveDirection);
+		SpawnBullet(lastMoveDirection.Normalized());
+		
+		// Start Cooldown for first available bullet.
+		for (int i = 0; i < maxShots; i++)
+		{
+			if (shotTimers[i] <= 0)
+			{
+				shotTimers[i] = bulletCooldown;
+				availableShots--;
+				break;
+			}
+		}	
+	}
+	
+	// Updates cooldown timers for bullets and updates UI bars.
+	private void UpdateBulletCooldowns(float dt) 
+{
+	for (int i = 0; i < maxShots; i++)
+	{
+		if (shotTimers[i] > 0)
+		{
+			shotTimers[i] -= dt;
+
+			// Update UI: show % of cooldown completed
+			if (bulletBars != null && bulletBars.Length > i && bulletBars[i] != null)
+			{
+				float progress = 100f * (1 - (shotTimers[i] / bulletCooldown));
+				bulletBars[i].Value = progress;
+			}
+			
+			// When cooldown finishes.
+			if (shotTimers[i] <= 0)
+			{
+				availableShots++;
+				shotTimers[i] = 0;
+
+				// Fully filled bar.
+				if (bulletBars != null && bulletBars.Length > i && bulletBars[i] != null)
+				{
+					bulletBars[i].Value = 100f;
+				}
+			}
+		}
+		else
+		{
+			// If no cooldown, ensure bar is full.
+			if (bulletBars != null && bulletBars.Length > i && bulletBars[i] != null)
+			{
+				bulletBars[i].Value = 100f;
+			}
+		}
+	}
+}
+	
+	private void SpawnBullet(Vector2 direction)
+	{
+		// Safety Checks.
+		if (bulletScene == null || bulletContainer == null)
+		{
+			GD.PrintErr("BulletScene or BulletContainer is null!");
+			return;
+		}
+		
+		// Instantiate bullet and set its direciton.
+		Area2D bullet = (Area2D)bulletScene.Instantiate();
+		bullet.SetMeta("direction", direction);
+		
+		// Add bullet to scene.
+		bulletContainer.AddChild(bullet);
+		
+		// Position bullet at player.
+		bullet.GlobalPosition = GlobalPosition;
+		
+		
+		GD.Print("Bullet spawned at ", bullet.Position, " with direction ", direction);
+	}
+
+	/*
+	*---PLAYER ANIMATIONS---
+	*/
 	private void PlayAttackAnimation()
 	{
 		// animationPlayer.Play($"attack_{facing.ToString().ToLower()}");

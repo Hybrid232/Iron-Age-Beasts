@@ -14,21 +14,22 @@ grow_vertical = 2
 [node name="TextureProgressBar" type="TextureProgressBar" parent="."]
 z_index = 3
 layout_mode = 0
-offset_left = 158.99998
-offset_top = 566.0
-offset_right = 1311.0
-offset_bottom = 1214.0
-scale = Vector2(0.7199997, 0.08000033)
+offset_left = 732.0
+offset_top = 607.0
+offset_right = 1884.0
+offset_bottom = 1255.0
+scale = Vector2(0.33017614, 0.036686406)
 value = 90.0
 texture_under = ExtResource("1_xvuhq")
 texture_progress = ExtResource("2_85pvq")
 
 [node name="Label" type="Label" parent="."]
 layout_mode = 0
-offset_left = 118.0
-offset_top = 505.0
-offset_right = 1049.0
-offset_bottom = 556.0
+offset_left = 695.0
+offset_top = 575.0
+offset_right = 1626.0
+offset_bottom = 626.0
+scale = Vector2(0.45857817, 0.45857817)
 theme_type_variation = &"HeaderLarge"
 text = "Spinosaurus the Great"
 horizontal_alignment = 1

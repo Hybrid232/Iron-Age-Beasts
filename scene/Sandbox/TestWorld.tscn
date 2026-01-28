@@ -35,15 +35,16 @@ position = Vector2(694.00006, 439)
 scale = Vector2(0.1, 0.1)
 texture = ExtResource("2_0vdwb")
 
-[node name="Player" parent="." instance=ExtResource("3_04lnv")]
+[node name="Player" parent="." node_paths=PackedStringArray("bulletBars") instance=ExtResource("3_04lnv")]
 z_index = 1
 position = Vector2(555, 383)
 disable_mode = 1
 attackDuration = 0.25
+bulletBars = [NodePath("../CanvasLayer/BulletBar0"), NodePath("../CanvasLayer/BulletBar1"), NodePath("../CanvasLayer/BulletBar2")]
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position = Vector2(-6, -24)
-zoom = Vector2(3, 3)
+zoom = Vector2(4.5, 4.5)
 limit_left = 30
 limit_top = 30
 limit_right = 1175
@@ -59,6 +60,27 @@ offset_left = 13.0
 offset_top = -9.0
 offset_right = 13.0
 offset_bottom = -9.0
+
+[node name="BulletBar0" type="ProgressBar" parent="CanvasLayer"]
+offset_left = 16.0
+offset_top = 40.0
+offset_right = 64.0
+offset_bottom = 67.0
+value = 100.0
+
+[node name="BulletBar1" type="ProgressBar" parent="CanvasLayer"]
+offset_left = 72.0
+offset_top = 40.0
+offset_right = 120.0
+offset_bottom = 67.0
+value = 100.0
+
+[node name="BulletBar2" type="ProgressBar" parent="CanvasLayer"]
+offset_left = 128.0
+offset_top = 40.0
+offset_right = 176.0
+offset_bottom = 67.0
+value = 100.0
 
 [node name="DinoMiniboss" type="Sprite2D" parent="."]
 position = Vector2(525, 192)
