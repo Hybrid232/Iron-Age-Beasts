@@ -43,12 +43,14 @@ attackDuration = 0.25
 bulletBars = [NodePath("../CanvasLayer/BulletBar0"), NodePath("../CanvasLayer/BulletBar1"), NodePath("../CanvasLayer/BulletBar2")]
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
-position = Vector2(-6, -24)
-zoom = Vector2(4.5, 4.5)
+position = Vector2(0, -2)
+zoom = Vector2(3, 3)
 limit_left = 30
 limit_top = 30
 limit_right = 1175
 limit_bottom = 615
+limit_smoothed = true
+position_smoothing_enabled = true
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 layer = 2

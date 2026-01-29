@@ -1,7 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://djokcwtj4qkek"]
+[gd_scene load_steps=7 format=3 uid="uid://djokcwtj4qkek"]
 
 [ext_resource type="Script" uid="uid://jjo4fptopbh2" path="res://scene/scripts/enemy Scripts/Dilophosaurus.cs" id="1_ok0wq"]
 [ext_resource type="Texture2D" uid="uid://c7kqv4j25x0ms" path="res://sprites/test/dino enemy.png" id="2_qdkvu"]
+[ext_resource type="Texture2D" uid="uid://cvcqwiun3qwbx" path="res://sprites/test/HealthBG.png" id="3_5tfgd"]
+[ext_resource type="Texture2D" uid="uid://d08o5yyd2hgd0" path="res://sprites/test/HealthBar.png" id="4_04kl5"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_jyd3w"]
 radius = 1.6999999
@@ -31,6 +33,19 @@ position = Vector2(3, 11.000001)
 rotation = -0.11664813
 scale = Vector2(0.7789615, 0.7722881)
 shape = SubResource("CircleShape2D_itp1y")
+
+[node name="HealthBar" type="TextureProgressBar" parent="."]
+offset_left = -25.999996
+offset_top = -11.0
+offset_right = 1126.0
+offset_bottom = 637.0
+scale = Vector2(0.054997884, 0.015)
+value = 90.0
+rounded = true
+texture_under = ExtResource("3_5tfgd")
+texture_progress = ExtResource("4_04kl5")
+tint_under = Color(0.19668356, 0.0030809157, 0.030877134, 1)
+tint_progress = Color(1, 0, 0.03137255, 1)
 
 [connection signal="body_entered" from="detection_area" to="." method="_on_detection_area_body_entered"]
 [connection signal="body_exited" from="detection_area" to="." method="_on_detection_area_body_exited"]
