@@ -1,25 +1,22 @@
-[gd_scene load_steps=6 format=3 uid="uid://d38cvt67w5bgb"]
+[gd_scene load_steps=5 format=3 uid="uid://d38cvt67w5bgb"]
 
 [ext_resource type="Script" uid="uid://bdxac0jm2jtt2" path="res://scene/scripts/Player Scripts/Player.cs" id="1_4bggy"]
 [ext_resource type="Texture2D" uid="uid://8wovptkau74u" path="res://sprites/test/knight.png" id="1_8eta3"]
-[ext_resource type="PackedScene" uid="uid://77e4i6lmd7ih" path="res://scene/Player/Bullet.tscn" id="2_a1q3d"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_utw1y"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_d75ba"]
 radius = 9.055386
 
-[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("bulletBars", "attackPivot", "attackHitbox", "bulletContainer") groups=["player"]]
+[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("bulletBars", "attackPivot", "attackHitbox") groups=["player"]]
 script = ExtResource("1_4bggy")
 playerSpeed = 125
 dodgeSpeed = 300
 dodgeTime = 0.3
 attackDuration = 0.3
-bulletScene = ExtResource("2_a1q3d")
 bulletBars = []
 attackPivot = NodePath("AttackPivot")
 attackHitbox = NodePath("AttackPivot/Attackbox")
-bulletContainer = NodePath("BulletContainer")
 
 [node name="Knight" type="Sprite2D" parent="." groups=["player"]]
 z_index = 1
