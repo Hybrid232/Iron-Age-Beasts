@@ -1,13 +1,15 @@
 [gd_scene load_steps=6 format=3 uid="uid://d38cvt67w5bgb"]
 
 [ext_resource type="Script" uid="uid://bdxac0jm2jtt2" path="res://scene/scripts/Player Scripts/Player.cs" id="1_4bggy"]
-[ext_resource type="Texture2D" uid="uid://8wovptkau74u" path="res://sprites/test/knight.png" id="1_8eta3"]
 [ext_resource type="PackedScene" uid="uid://77e4i6lmd7ih" path="res://scene/Player/Bullet.tscn" id="2_a1q3d"]
+[ext_resource type="Texture2D" uid="uid://41qneatxble4" path="res://sprites/MC/MC_Final_Sprite.png" id="3_a1q3d"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_utw1y"]
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_0fwxj"]
+radius = 10.98901
+height = 109.89011
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_d75ba"]
-radius = 9.055386
+radius = 12.649111
 
 [node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("bulletBars", "attackPivot", "attackHitbox", "bulletContainer") groups=["player"]]
 script = ExtResource("1_4bggy")
@@ -15,26 +17,31 @@ playerSpeed = 125
 dodgeSpeed = 300
 dodgeTime = 0.3
 attackDuration = 0.3
+attackRange = 40.0
 bulletScene = ExtResource("2_a1q3d")
 bulletBars = [null, null, null]
 attackPivot = NodePath("AttackPivot")
 attackHitbox = NodePath("AttackPivot/Attackbox")
 bulletContainer = NodePath("BulletContainer")
 
-[node name="Knight" type="Sprite2D" parent="." groups=["player"]]
+[node name="PlayerSprite" type="Sprite2D" parent="." groups=["player"]]
 z_index = 1
 position = Vector2(0, -1)
-texture = ExtResource("1_8eta3")
+texture = ExtResource("3_a1q3d")
 
 [node name="HitboxArea" type="CollisionShape2D" parent="."]
 z_index = 2
-position = Vector2(-4.7683716e-07, -0.99999994)
-scale = Vector2(0.455, 0.455)
-shape = SubResource("CircleShape2D_utw1y")
+position = Vector2(6.7762636e-21, -3)
+rotation = -3.1415927
+scale = Vector2(0.655, 0.415)
+shape = SubResource("CapsuleShape2D_0fwxj")
+debug_color = Color(2.4065375e-07, 0.63608485, 0.4131711, 0.41960785)
 
 [node name="AttackPivot" type="Node2D" parent="."]
 
 [node name="Attackbox" type="Area2D" parent="AttackPivot"]
+z_index = 2
+rotation = -1.6309803
 
 [node name="AttackArea" type="CollisionShape2D" parent="AttackPivot/Attackbox"]
 shape = SubResource("CircleShape2D_d75ba")
