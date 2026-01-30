@@ -35,12 +35,11 @@ position = Vector2(694.00006, 439)
 scale = Vector2(0.1, 0.1)
 texture = ExtResource("2_0vdwb")
 
-[node name="Player" parent="." node_paths=PackedStringArray("bulletBars") instance=ExtResource("3_04lnv")]
+[node name="Player" parent="." instance=ExtResource("3_04lnv")]
 z_index = 1
 position = Vector2(555, 383)
 disable_mode = 1
 attackDuration = 0.25
-bulletBars = [NodePath("../CanvasLayer/BulletBar0"), NodePath("../CanvasLayer/BulletBar1"), NodePath("../CanvasLayer/BulletBar2")]
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position = Vector2(0, -2)
