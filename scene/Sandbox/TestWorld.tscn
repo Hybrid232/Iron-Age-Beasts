@@ -56,12 +56,14 @@ limit_bottom = 615
 limit_smoothed = true
 position_smoothing_enabled = true
 
-[node name="HUD" type="CanvasLayer" parent="." node_paths=PackedStringArray("healthBar")]
+[node name="HUD" type="CanvasLayer" parent="." node_paths=PackedStringArray("healthBar", "staminaBar")]
 layer = 2
 script = ExtResource("4_qdpo3")
 healthBar = NodePath("PlayerHealthBar")
+staminaBar = NodePath("PlayerStaminaBar")
 
 [node name="BossHealthbar" parent="HUD" instance=ExtResource("5_04lnv")]
+visible = false
 offset_left = 13.0
 offset_top = -9.0
 offset_right = 13.0
@@ -96,6 +98,15 @@ offset_bottom = 56.0
 value = 100.0
 texture_progress = SubResource("PlaceholderTexture2D_go75h")
 tint_progress = Color(1, 0, 0, 1)
+
+[node name="PlayerStaminaBar" type="TextureProgressBar" parent="HUD"]
+offset_left = 26.0
+offset_top = 73.0
+offset_right = 326.0
+offset_bottom = 113.0
+value = 100.0
+texture_progress = SubResource("PlaceholderTexture2D_go75h")
+tint_progress = Color(0.23137255, 0.5058824, 0.19607843, 1)
 
 [node name="DinoMiniboss" type="Sprite2D" parent="."]
 position = Vector2(525, 192)

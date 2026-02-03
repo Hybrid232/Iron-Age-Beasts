@@ -5,35 +5,34 @@ public partial class Player : CharacterBody2D
 {
 	[Export] private UI uiReference;
     [Export] private int maxHealth = 100;
+	[Export] private int maxStamina = 100;
     private int currentHealth;
-    private int currentStamina = 100; 
+    private int currentStamina; 
 
     private void InitializePlayerHealth()
     {
         currentHealth = maxHealth;
+        currentStamina = maxStamina;
         if (uiReference != null)
         {
             uiReference.InitializeHealth(maxHealth, currentHealth);
+            uiReference.InitializeStamina(maxStamina, currentStamina);
         }
     }
-    // Called by your Input (J/K keys)
     private void ChangeHealth(int amount)
     {
         currentHealth += amount;   
         // Ensure health stays between 0 and Max
         currentHealth = Math.Clamp(currentHealth, 0, maxHealth);
 		GD.Print($"Health Changed: {currentHealth}/{maxHealth}");
-        // Update the visual bar
-        if (uiReference != null)
-        {
-            uiReference.UpdateHealthDisplay(currentHealth);
-        }
-
+        if (uiReference != null) uiReference.UpdateHealthDisplay(currentHealth);
     }
-    // Placeholder to prevent errors from your 'U' and 'I' key inputs
     private void ChangeStamina(int amount)
     {
         currentStamina += amount;
+        // Ensure stamina stays between 0 and Max
+        currentStamina = Math.Clamp(currentStamina, 0, maxStamina);
+		GD.Print($"Stamina Changed: {currentStamina}/{maxStamina}");
         if (uiReference != null) uiReference.UpdateStaminaDisplay(currentStamina);
     }
 	/*
