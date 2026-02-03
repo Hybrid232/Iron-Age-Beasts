@@ -22,6 +22,7 @@ texture = ExtResource("2_qdkvu")
 offset = Vector2(-8, 0)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+z_index = 1
 position = Vector2(4.9999995, 12)
 scale = Vector2(10, 10)
 shape = SubResource("CircleShape2D_jyd3w")
@@ -33,6 +34,7 @@ position = Vector2(3, 11.000001)
 rotation = -0.11664813
 scale = Vector2(0.7789615, 0.7722881)
 shape = SubResource("CircleShape2D_itp1y")
+debug_color = Color(0.6890767, 0, 0.114161395, 0.41960785)
 
 [node name="HealthBar" type="TextureProgressBar" parent="."]
 offset_left = -25.999996

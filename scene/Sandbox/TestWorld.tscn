@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://b83raa0sufs4v"]
+[gd_scene load_steps=11 format=3 uid="uid://b83raa0sufs4v"]
 
 [ext_resource type="Texture2D" uid="uid://djpktvepla7xq" path="res://sprites/background/test background.jpg" id="1_gtqar"]
 [ext_resource type="Texture2D" uid="uid://c7kqv4j25x0ms" path="res://sprites/test/dino enemy.png" id="2_0vdwb"]
@@ -25,6 +25,8 @@ func _process(delta: float) -> void:
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_go75h"]
 size = Vector2(300, 20)
 
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_qdpo3"]
+
 [node name="TestWorld" type="Node2D"]
 script = SubResource("GDScript_0d08p")
 
@@ -38,12 +40,12 @@ position = Vector2(694.00006, 439)
 scale = Vector2(0.1, 0.1)
 texture = ExtResource("2_0vdwb")
 
-[node name="Player" parent="." node_paths=PackedStringArray("uiReference") instance=ExtResource("3_04lnv")]
+[node name="Player" parent="." node_paths=PackedStringArray("bulletBars") instance=ExtResource("3_04lnv")]
 z_index = 1
 position = Vector2(555, 383)
 disable_mode = 1
-uiReference = NodePath("../HUD")
 attackDuration = 0.25
+bulletBars = [NodePath("../HUD/BulletBar0"), NodePath("../HUD/BulletBar1"), NodePath("../HUD/BulletBar2")]
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 visible = false
@@ -56,11 +58,9 @@ limit_bottom = 615
 limit_smoothed = true
 position_smoothing_enabled = true
 
-[node name="HUD" type="CanvasLayer" parent="." node_paths=PackedStringArray("healthBar", "staminaBar")]
+[node name="HUD" type="CanvasLayer" parent="."]
 layer = 2
 script = ExtResource("4_qdpo3")
-healthBar = NodePath("PlayerHealthBar")
-staminaBar = NodePath("PlayerStaminaBar")
 
 [node name="BossHealthbar" parent="HUD" instance=ExtResource("5_04lnv")]
 visible = false
@@ -103,9 +103,11 @@ tint_progress = Color(1, 0, 0, 1)
 offset_left = 26.0
 offset_top = 73.0
 offset_right = 326.0
-offset_bottom = 113.0
+offset_bottom = 94.0
 value = 100.0
+texture_under = SubResource("PlaceholderTexture2D_qdpo3")
 texture_progress = SubResource("PlaceholderTexture2D_go75h")
+tint_under = Color(0.33617434, 0.55851936, 3.85046e-07, 1)
 tint_progress = Color(0.23137255, 0.5058824, 0.19607843, 1)
 
 [node name="DinoMiniboss" type="Sprite2D" parent="."]

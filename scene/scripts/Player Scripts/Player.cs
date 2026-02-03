@@ -4,37 +4,37 @@ using System;
 public partial class Player : CharacterBody2D
 {
 	[Export] private UI uiReference;
-    [Export] private int maxHealth = 100;
+	[Export] private int maxHealth = 100;
 	[Export] private int maxStamina = 100;
-    private int currentHealth;
-    private int currentStamina; 
+	private int currentHealth;
+	private int currentStamina; 
 
-    private void InitializePlayerHealth()
-    {
-        currentHealth = maxHealth;
-        currentStamina = maxStamina;
-        if (uiReference != null)
-        {
-            uiReference.InitializeHealth(maxHealth, currentHealth);
-            uiReference.InitializeStamina(maxStamina, currentStamina);
-        }
-    }
-    private void ChangeHealth(int amount)
-    {
-        currentHealth += amount;   
-        // Ensure health stays between 0 and Max
-        currentHealth = Math.Clamp(currentHealth, 0, maxHealth);
+	private void InitializePlayerHealth()
+	{
+		currentHealth = maxHealth;
+		currentStamina = maxStamina;
+		if (uiReference != null)
+		{
+			uiReference.InitializeHealth(maxHealth, currentHealth);
+			uiReference.InitializeStamina(maxStamina, currentStamina);
+		}
+	}
+	private void ChangeHealth(int amount)
+	{
+		currentHealth += amount;   
+		// Ensure health stays between 0 and Max
+		currentHealth = Math.Clamp(currentHealth, 0, maxHealth);
 		GD.Print($"Health Changed: {currentHealth}/{maxHealth}");
-        if (uiReference != null) uiReference.UpdateHealthDisplay(currentHealth);
-    }
-    private void ChangeStamina(int amount)
-    {
-        currentStamina += amount;
-        // Ensure stamina stays between 0 and Max
-        currentStamina = Math.Clamp(currentStamina, 0, maxStamina);
+		if (uiReference != null) uiReference.UpdateHealthDisplay(currentHealth);
+	}
+	private void ChangeStamina(int amount)
+	{
+		currentStamina += amount;
+		// Ensure stamina stays between 0 and Max
+		currentStamina = Math.Clamp(currentStamina, 0, maxStamina);
 		GD.Print($"Stamina Changed: {currentStamina}/{maxStamina}");
-        if (uiReference != null) uiReference.UpdateStaminaDisplay(currentStamina);
-    }
+		if (uiReference != null) uiReference.UpdateStaminaDisplay(currentStamina);
+	}
 	/*
 	*---MOVEMENT SETTINGS---
 	*/
@@ -151,16 +151,16 @@ public partial class Player : CharacterBody2D
 		attackHitbox.BodyEntered += OnAttackBodyEntered;
 	}
 	public override void _UnhandledInput(InputEvent @event)
-    {
-        if (@event is InputEventKey eventKey && eventKey.Pressed && !eventKey.Echo)
-        {
-            if (eventKey.Keycode == Key.J) ChangeHealth(-5);
-            if (eventKey.Keycode == Key.K) ChangeHealth(5);
+	{
+		if (@event is InputEventKey eventKey && eventKey.Pressed && !eventKey.Echo)
+		{
+			if (eventKey.Keycode == Key.J) ChangeHealth(-5);
+			if (eventKey.Keycode == Key.K) ChangeHealth(5);
 
-            if (eventKey.Keycode == Key.U) ChangeStamina(-5);
-            if (eventKey.Keycode == Key.I) ChangeStamina(5);
-        }
-    }
+			if (eventKey.Keycode == Key.U) ChangeStamina(-5);
+			if (eventKey.Keycode == Key.I) ChangeStamina(5);
+		}
+	}
 	public override void _PhysicsProcess(double delta)
 	{
 		float dt = (float)delta;
