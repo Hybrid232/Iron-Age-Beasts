@@ -1,68 +1,29 @@
 using Godot;
-using System.Collections.Generic;
+using System;
 
 public partial class UI : CanvasLayer
 {
-	[Export] public Texture2D RedHeartTexture;
-	[Export] public Texture2D BlackHeartTexture;
-	[Export] public HBoxContainer HealthContainer;
+    // Assign this in the Inspector by dragging the TextureProgressBar node here
+    [Export] private TextureProgressBar healthBar; // <--- CHANGED THIS FROM ProgressBar
 
-	[Export] public Texture2D StaminaFullTexture;
-	[Export] public Texture2D StaminaEmptyTexture;
-	[Export] public HBoxContainer StaminaContainer;
+    // Called once when the game starts to set the bar size
+    public void InitializeHealth(int maxHealth, int currentHealth)
+    {
+        if (healthBar == null) return;
+        healthBar.MaxValue = maxHealth;
+        healthBar.Value = currentHealth;
+    }
 
-	private List<TextureRect> _hearts = new List<TextureRect>();
-	private List<TextureRect> _staminaIcons = new List<TextureRect>();
+    // Called whenever player takes damage/heals
+    public void UpdateHealthDisplay(int currentHealth)
+    {
+        if (healthBar == null) return;
+        healthBar.Value = currentHealth;
+    }
 
-	public override void _Ready()
-	{
-		// Find all TextureRects inside the container and add them to our list
-		foreach (Node child in HealthContainer.GetChildren())
-		{
-			if (child is TextureRect rect)
-			{
-				_hearts.Add(rect);
-			}
-		}
-		// Initialize display to full health
-		UpdateHealthDisplay(10);
-		
-		foreach (Node child in StaminaContainer.GetChildren())
-		{
-			if (child is TextureRect rect)
-			{
-				_staminaIcons.Add(rect);
-			}
-		}
-		// Initialize Stamina to 5
-		UpdateStaminaDisplay(5);
-	}
-
-	public void UpdateHealthDisplay(int currentHealth)
-	{
-		// Loop through all hearts
-		for (int i = 0; i < _hearts.Count; i++)
-		{
-			// If the index is less than current health, it's Red (Alive)
-			// Otherwise, it's Black (Damaged)
-			if (i < currentHealth)
-			{
-				_hearts[i].Texture = RedHeartTexture;
-			}
-			else
-			{
-				_hearts[i].Texture = BlackHeartTexture;
-			}
-		}
-	}
-	public void UpdateStaminaDisplay(int currentStamina)
-	{
-		for (int i = 0; i < _staminaIcons.Count; i++)
-		{
-			if (i < currentStamina)
-				_staminaIcons[i].Texture = StaminaFullTexture;
-			else
-				_staminaIcons[i].Texture = StaminaEmptyTexture;
-		}
-	}
+    // Placeholder for your stamina method referenced in Player.cs
+    public void UpdateStaminaDisplay(int currentStamina)
+    {
+        // Add a stamina bar later using the same logic as health
+    }
 }

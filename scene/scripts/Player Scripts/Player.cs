@@ -3,18 +3,39 @@ using System;
 
 public partial class Player : CharacterBody2D
 {
-	/*
-	*---HEALTH SETTINGS---
-	*/
-	[Export] public int MaxHealth = 10;
-	private int _currentHealth;
-	/*
-	*---STAMINA SETTINGS---
-	*/
-	[Export] public int MaxStamina = 5;
-	private int _currentStamina;
-	[Export] public UI UiReference;
+	[Export] private UI uiReference;
+    [Export] private int maxHealth = 100;
+    private int currentHealth;
+    private int currentStamina = 100; 
 
+    private void InitializePlayerHealth()
+    {
+        currentHealth = maxHealth;
+        if (uiReference != null)
+        {
+            uiReference.InitializeHealth(maxHealth, currentHealth);
+        }
+    }
+    // Called by your Input (J/K keys)
+    private void ChangeHealth(int amount)
+    {
+        currentHealth += amount;   
+        // Ensure health stays between 0 and Max
+        currentHealth = Math.Clamp(currentHealth, 0, maxHealth);
+		GD.Print($"Health Changed: {currentHealth}/{maxHealth}");
+        // Update the visual bar
+        if (uiReference != null)
+        {
+            uiReference.UpdateHealthDisplay(currentHealth);
+        }
+
+    }
+    // Placeholder to prevent errors from your 'U' and 'I' key inputs
+    private void ChangeStamina(int amount)
+    {
+        currentStamina += amount;
+        if (uiReference != null) uiReference.UpdateStaminaDisplay(currentStamina);
+    }
 	/*
 	*---MOVEMENT SETTINGS---
 	*/
@@ -113,13 +134,10 @@ public partial class Player : CharacterBody2D
 
 	public override void _Ready()
 	{
+		InitializePlayerHealth();
+
 		// Ensures that the attack hitbox is disabled when the game starts.
 		EnableAttackHitbox(false);
-
-		// Initialize Health
-		_currentHealth = MaxHealth;
-		// Initialize Stamina
-		_currentStamina = MaxStamina;
 		
 		// Initialize Shooting Timers.
 		availableShots = maxShots;
@@ -132,22 +150,18 @@ public partial class Player : CharacterBody2D
 				// Listen for things hit by the melee Area2D.
 		attackHitbox.AreaEntered += OnAttackAreaEntered;
 		attackHitbox.BodyEntered += OnAttackBodyEntered;
-
 	}
-
-	// This handles single key presses (J for Damage, K for Heal)
 	public override void _UnhandledInput(InputEvent @event)
-	{
-		if (@event is InputEventKey eventKey && eventKey.Pressed && !eventKey.Echo)
-		{
-			if (eventKey.Keycode == Key.J) ChangeHealth(-1);
-			if (eventKey.Keycode == Key.K) ChangeHealth(1);
+    {
+        if (@event is InputEventKey eventKey && eventKey.Pressed && !eventKey.Echo)
+        {
+            if (eventKey.Keycode == Key.J) ChangeHealth(-5);
+            if (eventKey.Keycode == Key.K) ChangeHealth(5);
 
-			if (eventKey.Keycode == Key.U) ChangeStamina(-1);
-			if (eventKey.Keycode == Key.I) ChangeStamina(1);
-		}
-	}
-
+            if (eventKey.Keycode == Key.U) ChangeStamina(-5);
+            if (eventKey.Keycode == Key.I) ChangeStamina(5);
+        }
+    }
 	public override void _PhysicsProcess(double delta)
 	{
 		float dt = (float)delta;
@@ -542,38 +556,5 @@ private Node2D GetEnemyRootFromHit(Node hit)
 	private void PlayAttackAnimation()
 	{
 		// animationPlayer.Play($"attack_{facing.ToString().ToLower()}");
-	}
-
-	/*
-	*---HEALTH METHODS---
-	*/
-	public void ChangeHealth(int amount)
-	{
-		_currentHealth += amount;
-		
-		// Keep health between 0 and 10
-		_currentHealth = Mathf.Clamp(_currentHealth, 0, MaxHealth);
-		
-		// Update the UI if we attached it
-		if (UiReference != null)
-		{
-			UiReference.UpdateHealthDisplay(_currentHealth);
-		}
-		else
-		{
-			GD.PrintErr("UI Reference is missing! Drag the UI node into the Player script in the Inspector.");
-		}
-	}
-	public void ChangeStamina(int amount)
-	{
-		_currentStamina += amount;
-
-		// Clamp between 0 and MaxStamina (5)
-		_currentStamina = Mathf.Clamp(_currentStamina, 0, MaxStamina);
-
-		if (UiReference != null)
-		{
-			UiReference.UpdateStaminaDisplay(_currentStamina);
-		}
 	}
 }
