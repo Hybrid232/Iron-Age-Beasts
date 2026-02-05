@@ -58,9 +58,11 @@ limit_bottom = 615
 limit_smoothed = true
 position_smoothing_enabled = true
 
-[node name="HUD" type="CanvasLayer" parent="."]
+[node name="HUD" type="CanvasLayer" parent="." node_paths=PackedStringArray("healthBar", "staminaBar")]
 layer = 2
 script = ExtResource("4_qdpo3")
+healthBar = NodePath("PlayerHealthBar")
+staminaBar = NodePath("PlayerStaminaBar")
 
 [node name="BossHealthbar" parent="HUD" instance=ExtResource("5_04lnv")]
 visible = false

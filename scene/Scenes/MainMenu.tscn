@@ -1,0 +1,75 @@
+[gd_scene load_steps=4 format=3 uid="uid://cl43r3q2hw3hh"]
+
+[ext_resource type="Texture2D" uid="uid://bp1ad2kmgkaxj" path="res://sprites/test/MenuBGTest.jpg" id="1_ri2lj"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_aufxo"]
+texture = ExtResource("1_ri2lj")
+modulate_color = Color(0.43134022, 0.43134025, 0.43134025, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ykb33"]
+bg_color = Color(0.61749303, 0.69396776, 0.68665045, 1)
+skew = Vector2(1.205, 0)
+border_width_left = 30
+border_width_top = 30
+border_width_right = 92
+border_width_bottom = 30
+border_color = Color(0, 0.13349015, 0.026747173, 1)
+border_blend = true
+shadow_color = Color(0, 0.2734383, 0.08605542, 0.6)
+shadow_size = 16
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_aufxo")
+
+[node name="StartButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = -202.0
+offset_top = 279.0
+offset_right = 445.0
+offset_bottom = 388.0
+theme_override_font_sizes/font_size = 35
+theme_override_styles/normal = SubResource("StyleBoxFlat_ykb33")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_ykb33")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ykb33")
+text = "Start"
+alignment = 2
+
+[node name="StartButton2" type="Button" parent="."]
+layout_mode = 0
+offset_left = -115.0
+offset_top = 398.0
+offset_right = 312.0
+offset_bottom = 507.0
+theme_override_font_sizes/font_size = 35
+theme_override_styles/normal = SubResource("StyleBoxFlat_ykb33")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_ykb33")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ykb33")
+text = "Options"
+alignment = 2
+
+[node name="StartButton3" type="Button" parent="."]
+layout_mode = 0
+offset_left = -215.0
+offset_top = 516.0
+offset_right = 177.0
+offset_bottom = 625.0
+theme_override_font_sizes/font_size = 35
+theme_override_styles/normal = SubResource("StyleBoxFlat_ykb33")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_ykb33")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ykb33")
+text = "Quit"
+alignment = 2
