@@ -9,7 +9,7 @@
 radius = 1.6999999
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_itp1y"]
-radius = 86.48023
+radius = 146.02174
 
 [node name="Dilophosaurus" type="CharacterBody2D"]
 script = ExtResource("1_ok0wq")
@@ -21,7 +21,7 @@ scale = Vector2(0.17500006, 0.16944447)
 texture = ExtResource("2_qdkvu")
 offset = Vector2(-8, 0)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." groups=["enemy_hurtbox"]]
 z_index = 1
 position = Vector2(4.9999995, 12)
 scale = Vector2(10, 10)
@@ -30,7 +30,7 @@ shape = SubResource("CircleShape2D_jyd3w")
 [node name="detection_area" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="detection_area"]
-position = Vector2(3, 11.000001)
+position = Vector2(5, 11)
 rotation = -0.11664813
 scale = Vector2(0.7789615, 0.7722881)
 shape = SubResource("CircleShape2D_itp1y")
