@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://cl43r3q2hw3hh"]
+[gd_scene load_steps=12 format=3 uid="uid://cl43r3q2hw3hh"]
 
 [ext_resource type="Script" uid="uid://6bn28qiwm8k4" path="res://scene/scripts/MainMenu.cs" id="1_aufxo"]
 [ext_resource type="Texture2D" uid="uid://bp1ad2kmgkaxj" path="res://sprites/test/MenuBGTest.jpg" id="1_ri2lj"]
@@ -52,6 +52,23 @@ corner_radius_bottom_left = 50
 shadow_color = Color(0.48457807, 0, 0.027078047, 0.7137255)
 shadow_size = 20
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vj3e8"]
+bg_color = Color(0, 0, 0, 0.29411766)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1r54x"]
+bg_color = Color(0.49411765, 0.58431375, 0.31764707, 0.89411765)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ycyae"]
+bg_color = Color(0.2666876, 0.30378598, 0.06763185, 0.5921569)
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_aufxo"]
+color = Color(1, 1, 1, 1)
+thickness = 10
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_vj3e8"]
+color = Color(0.58695936, 0.10834391, 0.20244285, 1)
+thickness = 10
+
 [node name="MainMenu" type="Control"]
 layout_mode = 3
 anchors_preset = 15
@@ -70,12 +87,15 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_aufxo")
 
-[node name="StartButton" type="Button" parent="."]
+[node name="MenuContainer" type="VBoxContainer" parent="."]
 layout_mode = 0
-offset_left = -56.0
-offset_top = 288.0
-offset_right = 365.0
-offset_bottom = 358.9258
+offset_left = -66.0
+offset_top = 317.0
+offset_right = 333.0
+offset_bottom = 502.0
+
+[node name="StartButton" type="Button" parent="MenuContainer"]
+layout_mode = 2
 theme_override_colors/font_pressed_color = Color(0.29324415, 0.2453025, 0.15559536, 1)
 theme_override_colors/font_hover_color = Color(0.7058236, 0.303274, 0.2497719, 1)
 theme_override_font_sizes/font_size = 35
@@ -84,12 +104,8 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_aufxo")
 theme_override_styles/hover = SubResource("StyleBoxFlat_ri2lj")
 text = "Start"
 
-[node name="OptionsButton" type="Button" parent="."]
-layout_mode = 0
-offset_left = -80.0
-offset_top = 376.0
-offset_right = 339.0
-offset_bottom = 448.0
+[node name="OptionsButton" type="Button" parent="MenuContainer"]
+layout_mode = 2
 theme_override_colors/font_pressed_color = Color(0.29324415, 0.2453025, 0.15559536, 1)
 theme_override_colors/font_hover_color = Color(0.7058236, 0.303274, 0.2497719, 1)
 theme_override_font_sizes/font_size = 35
@@ -98,12 +114,8 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_aufxo")
 theme_override_styles/hover = SubResource("StyleBoxFlat_ri2lj")
 text = "Options"
 
-[node name="QuitButton" type="Button" parent="."]
-layout_mode = 0
-offset_left = -104.0
-offset_top = 464.0
-offset_right = 296.0
-offset_bottom = 536.0
+[node name="QuitButton" type="Button" parent="MenuContainer"]
+layout_mode = 2
 theme_override_colors/font_pressed_color = Color(0.29324415, 0.2453025, 0.15559536, 1)
 theme_override_colors/font_hover_color = Color(0.7058236, 0.303274, 0.2497719, 1)
 theme_override_font_sizes/font_size = 35
@@ -114,10 +126,10 @@ text = "Quit"
 
 [node name="Label" type="Label" parent="."]
 layout_mode = 0
-offset_left = 264.0
-offset_top = 8.0
-offset_right = 792.0
-offset_bottom = 112.0
+offset_left = 623.0
+offset_top = -5.0
+offset_right = 1151.0
+offset_bottom = 99.0
 theme_override_colors/font_color = Color(0.552044, 0.26993445, 0.075655065, 1)
 theme_override_colors/font_shadow_color = Color(0.5678142, 0, 0.121097215, 1)
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
@@ -125,3 +137,77 @@ theme_override_font_sizes/font_size = 50
 text = "Iron Age Beasts"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="OptionsBG" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -495.0
+offset_top = -233.0
+offset_right = 495.0
+offset_bottom = 233.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BackButton" type="Button" parent="OptionsBG"]
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 44.0
+grow_vertical = 2
+theme_override_colors/font_pressed_color = Color(0.29324415, 0.2453025, 0.15559536, 1)
+theme_override_colors/font_hover_color = Color(0.7058236, 0.303274, 0.2497719, 1)
+theme_override_font_sizes/font_size = 19
+theme_override_styles/normal = SubResource("StyleBoxFlat_vj3e8")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_1r54x")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ycyae")
+text = "Back"
+
+[node name="OptionsTitle" type="Label" parent="OptionsBG"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 71.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 30
+text = "Options"
+horizontal_alignment = 1
+
+[node name="Volume Slider" type="HSlider" parent="OptionsBG"]
+layout_mode = 0
+offset_left = 584.0
+offset_top = 40.0
+offset_right = 949.0
+offset_bottom = 122.0
+theme_override_styles/slider = SubResource("StyleBoxLine_aufxo")
+theme_override_styles/grabber_area = SubResource("StyleBoxLine_vj3e8")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxLine_vj3e8")
+value = 50.0
+
+[node name="Label" type="Label" parent="OptionsBG/Volume Slider"]
+layout_mode = 1
+offset_right = 85.0
+offset_bottom = 42.0
+theme_override_font_sizes/font_size = 30
+text = "Music"
+
+[node name="SFX Slider" type="HSlider" parent="OptionsBG"]
+layout_mode = 0
+offset_left = 587.0
+offset_top = 146.0
+offset_right = 952.0
+offset_bottom = 228.0
+theme_override_styles/slider = SubResource("StyleBoxLine_aufxo")
+theme_override_styles/grabber_area = SubResource("StyleBoxLine_vj3e8")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxLine_vj3e8")
+value = 50.0
+
+[node name="Label" type="Label" parent="OptionsBG/SFX Slider"]
+layout_mode = 1
+offset_right = 85.0
+offset_bottom = 42.0
+theme_override_font_sizes/font_size = 30
+text = "SFX"

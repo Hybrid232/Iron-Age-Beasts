@@ -15,6 +15,11 @@ run/main_scene="uid://b83raa0sufs4v"
 config/features=PackedStringArray("4.5", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
+[display]
+
+window/size/mode=3
+window/stretch/mode="canvas_items"
+
 [dotnet]
 
 project/assembly_name="Iron Age Beasts"
