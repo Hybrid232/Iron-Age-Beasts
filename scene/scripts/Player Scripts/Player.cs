@@ -8,7 +8,7 @@ public partial class Player : CharacterBody2D
 	[Export] private int maxStamina = 100;
 	private int currentHealth;
 	private int currentStamina; 
-
+	
 	private void InitializePlayerHealth()
 	{
 		currentHealth = maxHealth;
@@ -50,6 +50,18 @@ public partial class Player : CharacterBody2D
 	
 	// How long before the player can dodge again.
 	[Export] private float dodgeCooldown = 0.7f;
+
+		/*
+	*---HIT RECOIL (PLAYER) SETTINGS---
+	*/
+	[Export] private float hitRecoilDistance = 12f;  // push player a little on HIT
+	[Export] private float hitRecoilTime = 0.06f;    // duration of the push
+
+	private float hitRecoilTimer = 0f;
+	private Vector2 hitRecoilVelocity = Vector2.Zero;
+
+	// Only recoil once per attack swing
+	private bool usedHitRecoilThisAttack = false;
 
 	/*
 	*---ATTACK SETTINGS---
@@ -101,7 +113,7 @@ public partial class Player : CharacterBody2D
 	// Area2D that detects enemies during an attack.
 	[Export] private Area2D attackHitbox;
 
-	// Parent Node for bullets.	
+	// Parent Node for bullets.	p
 	[Export] private Node2D bulletContainer;
 
 	/*
@@ -164,6 +176,18 @@ public partial class Player : CharacterBody2D
 	public override void _PhysicsProcess(double delta)
 	{
 		float dt = (float)delta;
+				// Apply player recoil ONLY when a hit happens.
+		if (hitRecoilTimer > 0f)
+		{
+			hitRecoilTimer -= dt;
+			currentVelocity = hitRecoilVelocity;
+
+			if (hitRecoilTimer <= 0f)
+			{
+				hitRecoilVelocity = Vector2.Zero;
+			}
+		}
+
 				// Apply short recoil velocity (player gets pushed slightly back).
 		if (recoilTimer > 0f)
 		{
@@ -277,6 +301,8 @@ public partial class Player : CharacterBody2D
 		StartAttack();
 				// Start a new swing hit-list so enemies only count once per attack.
 		enemiesHitThisAttack.Clear();
+		usedHitRecoilThisAttack = false;
+
 
 		// Small recoil on the player opposite the attack direction.
 		StartPlayerRecoil(lastMoveDirection);
@@ -312,7 +338,20 @@ public partial class Player : CharacterBody2D
 		}
 	}
 
-	
+		private void StartHitRecoil(Vector2 pushDirFromPlayerToEnemy)
+	{
+		// pushDirFromPlayerToEnemy points from player -> enemy
+		if (pushDirFromPlayerToEnemy == Vector2.Zero)
+			return;
+
+		Vector2 awayFromEnemy = -pushDirFromPlayerToEnemy.Normalized();
+
+		float speed = (hitRecoilTime > 0f) ? (hitRecoilDistance / hitRecoilTime) : 0f;
+
+		hitRecoilVelocity = awayFromEnemy * speed;
+		hitRecoilTimer = hitRecoilTime;
+	}
+
 
 	private void EnableAttackHitbox(bool enabled)
 	{
@@ -348,6 +387,7 @@ public partial class Player : CharacterBody2D
 		HandleMeleeHit(body);
 	}
 
+	
 	private void HandleMeleeHit(Node node)
 	{
 		// Only count hits while the attack is active and hitbox is enabled
@@ -365,6 +405,9 @@ public partial class Player : CharacterBody2D
 
 		// From here on, treat the ROOT as the enemy.
 		node = enemyRoot;
+		id = node.GetInstanceId();
+		
+		
 
 		// Prevent multiple hits on the same enemy during one swing
 		if (enemiesHitThisAttack.Contains(id))
@@ -376,6 +419,14 @@ public partial class Player : CharacterBody2D
 		Vector2 pushDir = (node is Node2D n2d)
 			? (n2d.GlobalPosition - GlobalPosition).Normalized()
 			: lastMoveDirection.Normalized();
+		
+		// Player recoil ONLY when we actually hit an enemy (once per swing)
+		if (!usedHitRecoilThisAttack)
+		{
+			StartHitRecoil(pushDir);
+			usedHitRecoilThisAttack = true;
+		}
+
 
 		// --- Push enemy back a greater distance ---
 		ApplyEnemyKnockback(node, pushDir);
@@ -418,6 +469,15 @@ public partial class Player : CharacterBody2D
 			return;
 		}
 	}
+	
+private void ApplyEnemyKnockbackPosition(Node enemyNode, Vector2 pushDir)
+{
+	if (pushDir == Vector2.Zero) return;
+
+	if (enemyNode is Node2D enemy2D)
+		enemy2D.GlobalPosition += pushDir * enemyKnockbackDistance;
+}
+
 //HELPER METHOT TO PUSH ENEMY BACK
 
 private Node2D GetEnemyRootFromHit(Node hit)
