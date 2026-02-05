@@ -1,6 +1,8 @@
 // BaseEnemy.cs
 using Godot;
 
+
+
 public partial class BaseEnemy : CharacterBody2D
 {
 	[Export] public float Speed = 60f;
@@ -15,6 +17,11 @@ public partial class BaseEnemy : CharacterBody2D
 	protected float _attackCooldownTimer = 0f;
 	protected bool _isAttacking = false;
 	
+	// Knockback state
+	private float _knockbackTimer = 0f;
+	private Vector2 _knockbackVelocity = Vector2.Zero;
+
+	
 	public override void _Process(double delta)
 	{
 		// Update attack cooldown
@@ -25,54 +32,86 @@ public partial class BaseEnemy : CharacterBody2D
 	}
 	
 	public override void _PhysicsProcess(double delta)
+{
+	float dt = (float)delta;
+
+	// --- KNOCKBACK OVERRIDES AI ---
+	if (_knockbackTimer > 0f)
 	{
-		// If not chasing or player reference is gone, stop moving
-		if (!_chasing || _player == null)
+		_knockbackTimer -= dt;
+		Velocity = _knockbackVelocity;
+		MoveAndSlide();
+
+		if (_knockbackTimer <= 0f)
 		{
+			_knockbackVelocity = Vector2.Zero;
 			Velocity = Vector2.Zero;
-			MoveAndSlide();
-			return;
 		}
-		
-		// Check if player still exists (in case it was freed)
-		if (!IsInstanceValid(_player))
-		{
-			_player = null;
-			_chasing = false;
-			Velocity = Vector2.Zero;
-			MoveAndSlide();
-			return;
-		}
-		
-		// Distance to player
-		float distance = GlobalPosition.DistanceTo(_player.GlobalPosition);
-		
-		// Try to attack if in range and cooldown is ready
-		if (CanAttack() && distance <= AttackRange)
-		{
-			Attack(_player);
-			Velocity = Vector2.Zero;
-			MoveAndSlide();
-			return;
-		}
-		
-		// Stop if close enough but can't attack yet
-		if (distance <= StopDistance)
-		{
-			Velocity = Vector2.Zero;
-			MoveAndSlide();
-			return;
-		}
-		
-		// Move toward player
-		MoveTowardsTarget(_player, delta);
+		return;
 	}
+
+	// If not chasing or player reference is gone, stop moving
+	if (!_chasing || _player == null)
+	{
+		Velocity = Vector2.Zero;
+		MoveAndSlide();
+		return;
+	}
+
+	// Check if player still exists
+	if (!IsInstanceValid(_player))
+	{
+		_player = null;
+		_chasing = false;
+		Velocity = Vector2.Zero;
+		MoveAndSlide();
+		return;
+	}
+
+	float distance = GlobalPosition.DistanceTo(_player.GlobalPosition);
+
+	// Try to attack if in range
+	if (CanAttack() && distance <= AttackRange)
+	{
+		Attack(_player);
+		Velocity = Vector2.Zero;
+		MoveAndSlide();
+		return;
+	}
+
+	// Stop if close but can't attack
+	if (distance <= StopDistance)
+	{
+		Velocity = Vector2.Zero;
+		MoveAndSlide();
+		return;
+	}
+
+	// Otherwise chase
+	MoveTowardsTarget(_player, delta);
+}
+
+	
+		public void ApplyKnockback(Vector2 pushDir, float distance, float time)
+	{
+		if (pushDir == Vector2.Zero) return;
+
+		float speed = (time > 0f) ? (distance / time) : 0f;
+		_knockbackVelocity = pushDir.Normalized() * speed;
+		_knockbackTimer = time;
+
+		// Optional: cancel attack/chase “locking” if you want knockback to interrupt
+		_isAttacking = false;
+	}
+
 	
 	// Check if enemy can attack
 	protected virtual bool CanAttack()
 	{
 		return !_isAttacking && _attackCooldownTimer <= 0f;
 	}
+	
+	
 	
 	// Main attack method
 	protected virtual void Attack(Node2D target)

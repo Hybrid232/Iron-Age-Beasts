@@ -50,6 +50,8 @@ public partial class Player : CharacterBody2D
 	
 	// How long before the player can dodge again.
 	[Export] private float dodgeCooldown = 0.7f;
+	
+	[Export] private float enemyKnockbackTime = 0.10f; // add this
 
 		/*
 	*---HIT RECOIL (PLAYER) SETTINGS---
@@ -183,9 +185,8 @@ public partial class Player : CharacterBody2D
 			currentVelocity = hitRecoilVelocity;
 
 			if (hitRecoilTimer <= 0f)
-			{
 				hitRecoilVelocity = Vector2.Zero;
-			}
+			return;
 		}
 
 				// Apply short recoil velocity (player gets pushed slightly back).
@@ -195,9 +196,8 @@ public partial class Player : CharacterBody2D
 			currentVelocity = recoilVelocity;
 
 			if (recoilTimer <= 0f)
-			{
 				recoilVelocity = Vector2.Zero;
-			}
+			return;
 		}
 
 
@@ -375,7 +375,61 @@ public partial class Player : CharacterBody2D
 		recoilTimer = recoilTime;
 	}
 	
-//	
+private void HandleMeleeHit(Node hitNode)
+{
+	// Only count hits while the attack is active
+	if (!isAttacking)
+		return;
+
+	if (hitNode == null || hitNode == this)
+		return;
+	// Resolve to the enemy ROOT (CharacterBody2D / BaseEnemy)
+	Node2D enemyRoot = GetEnemyRootFromHit(hitNode);
+	if (enemyRoot == null)
+		return;
+
+	ulong id = enemyRoot.GetInstanceId();
+
+	// Prevent multiple hits on same enemy during one swing
+	if (enemiesHitThisAttack.Contains(id))
+		return;
+
+	enemiesHitThisAttack.Add(id);
+
+	// Direction from player -> enemy
+	Vector2 pushDir = (enemyRoot.GlobalPosition - GlobalPosition).Normalized();
+
+	// Player recoil once per swing when we successfully hit something
+	if (!usedHitRecoilThisAttack)
+	{
+		StartHitRecoil(pushDir);
+		usedHitRecoilThisAttack = true;
+	}
+
+	// Push enemy
+	ApplyEnemyKnockback(enemyRoot, pushDir);
+
+	// Count hits
+	if (!enemyHitCounts.ContainsKey(id))
+		enemyHitCounts[id] = 0;
+
+	enemyHitCounts[id]++;
+
+	GD.Print($"Hit enemy {enemyRoot.Name} ({id}) = {enemyHitCounts[id]}/{hitsToKillEnemy}");
+
+	// Kill after N hits
+	if (enemyHitCounts[id] >= hitsToKillEnemy)
+	{
+		enemyHitCounts.Remove(id);
+		enemiesHitThisAttack.Remove(id);
+
+		GD.Print($"KILLING enemy {enemyRoot.Name} ({id})");
+
+		if (enemyRoot.IsInsideTree())
+			enemyRoot.QueueFree();
+	}
+}
+
 
 	private void OnAttackAreaEntered(Area2D area)
 	{
@@ -388,87 +442,33 @@ public partial class Player : CharacterBody2D
 	}
 
 	
-	private void HandleMeleeHit(Node node)
+
+	
+private void ApplyEnemyKnockback(Node enemyNode, Vector2 pushDir)
+{
+	if (pushDir == Vector2.Zero)
+		return;
+
+	// Prefer BaseEnemy knockback (best)
+	if (enemyNode is BaseEnemy baseEnemy)
 	{
-		// Only count hits while the attack is active and hitbox is enabled
-		if (!isAttacking)
-			return;
-
-		if (node == null || node == this)
-			return;
-
-		ulong id = node.GetInstanceId();
-		// We usually hit the enemy's hurtbox Area2D, not the enemy root.
-		Node2D enemyRoot = GetEnemyRootFromHit(node);
-		if (enemyRoot == null)
-			return;
-
-		// From here on, treat the ROOT as the enemy.
-		node = enemyRoot;
-		id = node.GetInstanceId();
-		
-		
-
-		// Prevent multiple hits on the same enemy during one swing
-		if (enemiesHitThisAttack.Contains(id))
-			return;
-
-		enemiesHitThisAttack.Add(id);
-
-		// Compute knockback direction from player -> enemy
-		Vector2 pushDir = (node is Node2D n2d)
-			? (n2d.GlobalPosition - GlobalPosition).Normalized()
-			: lastMoveDirection.Normalized();
-		
-		// Player recoil ONLY when we actually hit an enemy (once per swing)
-		if (!usedHitRecoilThisAttack)
-		{
-			StartHitRecoil(pushDir);
-			usedHitRecoilThisAttack = true;
-		}
-
-
-		// --- Push enemy back a greater distance ---
-		ApplyEnemyKnockback(node, pushDir);
-
-		// --- Count hits and remove after 3 hits ---
-		if (!enemyHitCounts.ContainsKey(id))
-			enemyHitCounts[id] = 0;
-
-		enemyHitCounts[id]++;
-
-		if (enemyHitCounts[id] >= hitsToKillEnemy)
-		{
-			// Clean up tracking and remove enemy
-			enemyHitCounts.Remove(id);
-			enemiesHitThisAttack.Remove(id);
-
-			if (node.IsInsideTree())
-				node.QueueFree();
-		}
+		baseEnemy.ApplyKnockback(pushDir, enemyKnockbackDistance, enemyKnockbackTime);
+		return;
 	}
 
-	private void ApplyEnemyKnockback(Node enemyNode, Vector2 pushDir)
+	// Fallbacks (if you hit something else)
+	if (enemyNode is CharacterBody2D enemyBody)
 	{
-		if (pushDir == Vector2.Zero)
-			return;
-
-		// If enemy is a CharacterBody2D, we can add velocity.
-		if (enemyNode is CharacterBody2D enemyBody)
-		{
-			// "Distance" knockback approximated as an impulse-like velocity bump.
-			// (Enemy movement script may override it, but this works in many setups.)
-			enemyBody.Velocity += pushDir * enemyKnockbackDistance * 10f;
-			return;
-		}
-
-		// Otherwise, if it's Node2D, push its position.
-		if (enemyNode is Node2D enemy2D)
-		{
-			enemy2D.GlobalPosition += pushDir * enemyKnockbackDistance;
-			return;
-		}
+		enemyBody.Velocity += pushDir * (enemyKnockbackDistance * 10f);
+		return;
 	}
+
+	if (enemyNode is Node2D enemy2D)
+	{
+		enemy2D.GlobalPosition += pushDir * enemyKnockbackDistance;
+	}
+}
+
 	
 private void ApplyEnemyKnockbackPosition(Node enemyNode, Vector2 pushDir)
 {
