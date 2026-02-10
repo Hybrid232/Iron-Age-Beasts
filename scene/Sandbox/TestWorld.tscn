@@ -74,40 +74,42 @@ offset_right = 13.0
 offset_bottom = -9.0
 
 [node name="BulletBar0" type="ProgressBar" parent="HUD"]
-offset_left = 16.0
-offset_top = 40.0
-offset_right = 64.0
-offset_bottom = 67.0
+offset_left = 25.0
+offset_top = 55.0
+offset_right = 73.0
+offset_bottom = 82.0
 value = 100.0
 
 [node name="BulletBar1" type="ProgressBar" parent="HUD"]
-offset_left = 72.0
-offset_top = 40.0
-offset_right = 120.0
-offset_bottom = 67.0
+offset_left = 81.0
+offset_top = 55.0
+offset_right = 129.0
+offset_bottom = 82.0
 value = 100.0
 
 [node name="BulletBar2" type="ProgressBar" parent="HUD"]
-offset_left = 128.0
-offset_top = 40.0
-offset_right = 176.0
-offset_bottom = 67.0
+offset_left = 137.0
+offset_top = 55.0
+offset_right = 185.0
+offset_bottom = 82.0
 value = 100.0
 
 [node name="PlayerHealthBar" type="TextureProgressBar" parent="HUD"]
 offset_left = 24.0
 offset_top = 16.0
 offset_right = 324.0
-offset_bottom = 56.0
+offset_bottom = 36.0
+scale = Vector2(1.568967, 0.81957626)
 value = 100.0
 texture_progress = SubResource("PlaceholderTexture2D_go75h")
 tint_progress = Color(1, 0, 0, 1)
 
 [node name="PlayerStaminaBar" type="TextureProgressBar" parent="HUD"]
-offset_left = 26.0
-offset_top = 73.0
-offset_right = 326.0
-offset_bottom = 94.0
+offset_left = 24.0
+offset_top = 30.0
+offset_right = 324.0
+offset_bottom = 51.0
+scale = Vector2(0.9952094, 1.0568422)
 value = 100.0
 texture_under = SubResource("PlaceholderTexture2D_qdpo3")
 texture_progress = SubResource("PlaceholderTexture2D_go75h")

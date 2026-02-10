@@ -50,17 +50,16 @@ shape = SubResource("CircleShape2D_itp1y")
 debug_color = Color(0.6890767, 0, 0.114161395, 0.41960785)
 
 [node name="HealthBar" type="TextureProgressBar" parent="."]
-offset_left = -25.999996
-offset_top = -11.0
-offset_right = 1126.0
-offset_bottom = 637.0
-scale = Vector2(0.054997884, 0.015)
+offset_left = -7.0
+offset_top = -10.0
+offset_right = 1145.0
+offset_bottom = 638.0
+scale = Vector2(0.01952623, 0.0015463252)
 value = 90.0
 rounded = true
 texture_under = ExtResource("3_5tfgd")
 texture_progress = ExtResource("4_04kl5")
-tint_under = Color(0.19668356, 0.0030809157, 0.030877134, 1)
-tint_progress = Color(1, 0, 0.03137255, 1)
+tint_under = Color(0.82090443, 0.2227655, 0.13294452, 1)
 
 [connection signal="body_entered" from="detection_area" to="." method="_on_detection_area_body_entered"]
 [connection signal="body_exited" from="detection_area" to="." method="_on_detection_area_body_exited"]
