@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bdxac0jm2jtt2" path="res://scene/scripts/Player Scripts/Player.cs" id="1_4bggy"]
 [ext_resource type="PackedScene" uid="uid://77e4i6lmd7ih" path="res://scene/Player/Bullet.tscn" id="2_a1q3d"]
-[ext_resource type="Texture2D" uid="uid://41qneatxble4" path="res://sprites/mc/MC_Final_Sprite.png" id="3_a1q3d"]
+[ext_resource type="Texture2D" uid="uid://41qneatxble4" path="res://sprites/MC/MC_Final_Sprite.png" id="3_a1q3d"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_0fwxj"]
 radius = 10.98901
@@ -11,19 +11,13 @@ height = 109.89011
 [sub_resource type="CircleShape2D" id="CircleShape2D_d75ba"]
 radius = 12.649111
 
-[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("bulletBars", "attackPivot", "attackHitbox", "bulletContainer") groups=["player"]]
+[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("attackPivot", "attackHitbox", "bulletContainer", "bulletBars") groups=["player"]]
 script = ExtResource("1_4bggy")
-playerSpeed = 125
-dodgeSpeed = 300
-dodgeTime = 0.3
-playerRecoilDistance = 0.0
-attackDuration = 0.3
-attackRange = 40.0
-bulletScene = ExtResource("2_a1q3d")
-bulletBars = [null, null, null]
 attackPivot = NodePath("AttackPivot")
 attackHitbox = NodePath("AttackPivot/Attackbox")
+bulletScene = ExtResource("2_a1q3d")
 bulletContainer = NodePath("BulletContainer")
+bulletBars = [null, null, null]
 
 [node name="PlayerSprite" type="Sprite2D" parent="." groups=["player"]]
 z_index = 1
