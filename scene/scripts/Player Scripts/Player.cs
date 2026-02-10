@@ -34,7 +34,7 @@ public partial class Player : CharacterBody2D
 	[Export] private float attackRange = 16f;
 	[Export] private float enemyKnockbackDistance = 80f;
 	[Export] private float enemyKnockbackTime = 0.10f;
-	[Export] private int hitsToKillEnemy = 3;
+	[Export] private int meleeDamage = 15; 
 
 	// ===== SHOOTING EXPORTS =====
 	[ExportGroup("Shooting System")]
@@ -59,6 +59,8 @@ public partial class Player : CharacterBody2D
 		movementSystem = new MovementSystem(playerSpeed);
 		dodgeSystem = new DodgeSystem(dodgeSpeed, dodgeTime, dodgeCooldown, dodgeStaminaCost);
 		recoilSystem = new RecoilSystem(hitRecoilDistance, hitRecoilTime, playerRecoilDistance, recoilTime);
+		
+		
 		meleeSystem = new MeleeSystem(
 			attackPivot, 
 			attackHitbox, 
@@ -66,9 +68,10 @@ public partial class Player : CharacterBody2D
 			attackRange, 
 			enemyKnockbackDistance, 
 			enemyKnockbackTime, 
-			hitsToKillEnemy, 
+			meleeDamage,
 			this
 		);
+		
 		shootingSystem = new ShootingSystem(maxShots, bulletCooldown, bulletScene, bulletContainer, bulletBars);
 
 		meleeSystem.Initialize();

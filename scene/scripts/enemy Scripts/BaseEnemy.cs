@@ -12,7 +12,7 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 	
 	// Add health system
 	[Export] public int MaxHealth = 50;
-	protected int _currentHealth;
+	[Export] protected int _currentHealth;
 	
 	protected Node2D _player = null;
 	protected bool _chasing = false;

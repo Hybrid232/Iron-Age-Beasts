@@ -9,17 +9,17 @@ public class MeleeSystem
 	private float attackRange;
 	private float enemyKnockbackDistance;
 	private float enemyKnockbackTime;
-	private int hitsToKillEnemy;
+	private int meleeDamage; 
 	private Player player;
 
 	private float attackTimer;
 	private bool isAttacking;
 	private bool usedHitRecoilThisAttack;
 
-	private readonly Dictionary<ulong, int> enemyHitCounts = new();
+	// Only track which enemies were hit this attack to prevent multi-hits
 	private readonly HashSet<ulong> enemiesHitThisAttack = new();
 
-	//  Tunable offsets
+	// Tunable offsets
 	private float horizontalAttackOffset = 24f;
 	private float verticalAttackOffset = 40f;
 	private float verticalBias = 1.25f; // makes diagonals sit higher/lower
@@ -33,7 +33,7 @@ public class MeleeSystem
 		float range,
 		float knockbackDist,
 		float knockbackTime,
-		int hitsToKill,
+		int damage, // Changed parameter name
 		Player playerRef)
 	{
 		attackPivot = pivot;
@@ -42,7 +42,7 @@ public class MeleeSystem
 		attackRange = range;
 		enemyKnockbackDistance = knockbackDist;
 		enemyKnockbackTime = knockbackTime;
-		hitsToKillEnemy = hitsToKill;
+		meleeDamage = damage; 
 		player = playerRef;
 	}
 
@@ -64,7 +64,6 @@ public class MeleeSystem
 		usedHitRecoilThisAttack = false;
 
 		StartAttack(direction);
-		
 	}
 
 	// Diagonal-aware, tall-sprite-safe attack positioning
@@ -111,6 +110,8 @@ public class MeleeSystem
 			return;
 
 		ulong id = enemyRoot.GetInstanceId();
+		
+		// Prevent hitting the same enemy multiple times in one attack
 		if (enemiesHitThisAttack.Contains(id))
 			return;
 
@@ -125,21 +126,18 @@ public class MeleeSystem
 			usedHitRecoilThisAttack = true;
 		}
 
+		// Apply knockback before damage (so enemy flies back even if it dies)
 		ApplyEnemyKnockback(enemyRoot, pushDir);
 
-		if (!enemyHitCounts.ContainsKey(id))
-			enemyHitCounts[id] = 0;
-
-		enemyHitCounts[id]++;
-		GD.Print($"Hit enemy {enemyRoot.Name} ({id}) = {enemyHitCounts[id]}/{hitsToKillEnemy}");
-
-		if (enemyHitCounts[id] >= hitsToKillEnemy)
+		// Deal damage using IDamageable interface
+		if (enemyRoot is IDamageable damageable)
 		{
-			enemyHitCounts.Remove(id);
-			enemiesHitThisAttack.Remove(id);
-
-			if (enemyRoot.IsInsideTree())
-				enemyRoot.QueueFree();
+			damageable.TakeDamage(meleeDamage);
+			GD.Print($"Melee attack dealt {meleeDamage} damage to {enemyRoot.Name}");
+		}
+		else
+		{
+			GD.PrintErr($"Enemy {enemyRoot.Name} does not implement IDamageable!");
 		}
 	}
 
