@@ -16,13 +16,25 @@ public class MeleeSystem
 	private bool isAttacking;
 	private bool usedHitRecoilThisAttack;
 
-	private readonly Dictionary<ulong, int> enemyHitCounts = new Dictionary<ulong, int>();
-	private readonly HashSet<ulong> enemiesHitThisAttack = new HashSet<ulong>();
+	private readonly Dictionary<ulong, int> enemyHitCounts = new();
+	private readonly HashSet<ulong> enemiesHitThisAttack = new();
+
+	//  Tunable offsets
+	private float horizontalAttackOffset = 24f;
+	private float verticalAttackOffset = 40f;
+	private float verticalBias = 1.25f; // makes diagonals sit higher/lower
 
 	public bool IsAttacking => isAttacking;
 
-	public MeleeSystem(Node2D pivot, Area2D hitbox, float duration, float range, 
-					   float knockbackDist, float knockbackTime, int hitsToKill, Player playerRef)
+	public MeleeSystem(
+		Node2D pivot,
+		Area2D hitbox,
+		float duration,
+		float range,
+		float knockbackDist,
+		float knockbackTime,
+		int hitsToKill,
+		Player playerRef)
 	{
 		attackPivot = pivot;
 		attackHitbox = hitbox;
@@ -52,21 +64,28 @@ public class MeleeSystem
 		usedHitRecoilThisAttack = false;
 
 		StartAttack(direction);
-		recoilSystem.StartPlayerRecoil(direction);
+		
 	}
 
+	// Diagonal-aware, tall-sprite-safe attack positioning
 	private void StartAttack(Vector2 direction)
 	{
-		Vector2 attackDir = direction.Normalized();
-		attackPivot.Position = attackDir * attackRange;
-		attackPivot.Rotation = attackDir.Angle();
+		Vector2 dir = direction.Normalized();
+
+		Vector2 offset = new Vector2(
+			dir.X * horizontalAttackOffset,
+			dir.Y * verticalAttackOffset * verticalBias
+		);
+
+		attackPivot.Position = offset;
+		attackPivot.Rotation = dir.Angle();
 		EnableAttackHitbox(true);
 	}
 
 	public void UpdateAttack(float dt)
 	{
 		attackTimer -= dt;
-		if (attackTimer <= 0)
+		if (attackTimer <= 0f)
 		{
 			isAttacking = false;
 			EnableAttackHitbox(false);
@@ -84,19 +103,23 @@ public class MeleeSystem
 
 	private void HandleMeleeHit(Node hitNode)
 	{
-		if (!isAttacking || hitNode == null || hitNode == player) return;
+		if (!isAttacking || hitNode == null || hitNode == player)
+			return;
 
 		Node2D enemyRoot = GetEnemyRootFromHit(hitNode);
-		if (enemyRoot == null) return;
+		if (enemyRoot == null)
+			return;
 
 		ulong id = enemyRoot.GetInstanceId();
-		if (enemiesHitThisAttack.Contains(id)) return;
+		if (enemiesHitThisAttack.Contains(id))
+			return;
 
 		enemiesHitThisAttack.Add(id);
 
-		Vector2 pushDir = (enemyRoot.GlobalPosition - player.GetGlobalPosition()).Normalized();
+		Vector2 pushDir = (enemyRoot.GlobalPosition - player.GlobalPosition).Normalized();
 
-		if (!usedHitRecoilThisAttack)
+		// ONLY apply player recoil if we hit ENEMY DAMAGE collider
+		if (!usedHitRecoilThisAttack && IsEnemyDamageCollider(hitNode))
 		{
 			player.TriggerHitRecoil(pushDir);
 			usedHitRecoilThisAttack = true;
@@ -114,15 +137,22 @@ public class MeleeSystem
 		{
 			enemyHitCounts.Remove(id);
 			enemiesHitThisAttack.Remove(id);
-			GD.Print($"KILLING enemy {enemyRoot.Name} ({id})");
+
 			if (enemyRoot.IsInsideTree())
 				enemyRoot.QueueFree();
 		}
 	}
 
+	// 🔹 Group-based filtering (clean + scalable)
+	private bool IsEnemyDamageCollider(Node node)
+	{
+		return node is Area2D area && area.IsInGroup("enemy_damage");
+	}
+
 	private void ApplyEnemyKnockback(Node enemyNode, Vector2 pushDir)
 	{
-		if (pushDir == Vector2.Zero) return;
+		if (pushDir == Vector2.Zero)
+			return;
 
 		if (enemyNode is BaseEnemy baseEnemy)
 		{
@@ -140,7 +170,6 @@ public class MeleeSystem
 
 	private Node2D GetEnemyRootFromHit(Node hit)
 	{
-		if (hit == null) return null;
 		if (hit is CharacterBody2D cb) return cb;
 		if (hit is Node2D n2d && n2d.IsInGroup("enemy")) return n2d;
 
