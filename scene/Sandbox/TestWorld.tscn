@@ -99,17 +99,17 @@ offset_left = 24.0
 offset_top = 16.0
 offset_right = 324.0
 offset_bottom = 36.0
-scale = Vector2(1.568967, 0.81957626)
+scale = Vector2(1.3583134, 0.6549496)
 value = 100.0
 texture_progress = SubResource("PlaceholderTexture2D_go75h")
 tint_progress = Color(1, 0, 0, 1)
 
 [node name="PlayerStaminaBar" type="TextureProgressBar" parent="HUD"]
-offset_left = 24.0
-offset_top = 30.0
+offset_left = 24.000002
+offset_top = 29.000002
 offset_right = 324.0
-offset_bottom = 51.0
-scale = Vector2(0.9952094, 1.0568422)
+offset_bottom = 50.0
+scale = Vector2(1.0028015, 0.75226456)
 value = 100.0
 texture_under = SubResource("PlaceholderTexture2D_qdpo3")
 texture_progress = SubResource("PlaceholderTexture2D_go75h")

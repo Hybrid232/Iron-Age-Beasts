@@ -17,6 +17,7 @@ radius = 146.02174
 [node name="Dilophosaurus" type="CharacterBody2D"]
 script = ExtResource("1_ok0wq")
 Speed = 100.0
+MaxHealth = 100
 
 [node name="DinoEnemy" type="Sprite2D" parent="."]
 position = Vector2(8, -1)
@@ -55,7 +56,7 @@ offset_top = -10.0
 offset_right = 1145.0
 offset_bottom = 638.0
 scale = Vector2(0.01952623, 0.0015463252)
-value = 90.0
+value = 100.0
 rounded = true
 texture_under = ExtResource("3_5tfgd")
 texture_progress = ExtResource("4_04kl5")

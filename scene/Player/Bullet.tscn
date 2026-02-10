@@ -7,6 +7,8 @@
 radius = 8.062258
 
 [node name="Area2D" type="Area2D"]
+position = Vector2(-2, -2)
+scale = Vector2(5.4926763, 5.4926763)
 script = ExtResource("1_xlmoy")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]

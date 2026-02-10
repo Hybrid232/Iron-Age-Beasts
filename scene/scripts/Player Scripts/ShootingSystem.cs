@@ -55,7 +55,7 @@ public class ShootingSystem
 			{
 				shotTimers[i] -= dt;
 
-				// ✅ Added null checks here
+				//  Added null checks here
 				if (bulletBars != null && i < bulletBars.Length && bulletBars[i] != null)
 				{
 					float progress = 100f * (1 - (shotTimers[i] / bulletCooldown));
@@ -67,7 +67,7 @@ public class ShootingSystem
 					availableShots++;
 					shotTimers[i] = 0;
 
-					// ✅ Added null checks here
+					//  Added null checks here
 					if (bulletBars != null && i < bulletBars.Length && bulletBars[i] != null)
 					{
 						bulletBars[i].Value = 100f;
@@ -76,7 +76,7 @@ public class ShootingSystem
 			}
 			else
 			{
-				// ✅ Added null checks here
+				// Added null checks here
 				if (bulletBars != null && i < bulletBars.Length && bulletBars[i] != null)
 				{
 					bulletBars[i].Value = 100f;
@@ -95,7 +95,8 @@ public class ShootingSystem
 
 		Area2D bullet = (Area2D)bulletScene.Instantiate();
 		bullet.SetMeta("direction", direction);
-		bulletContainer.AddChild(bullet);
+		Node root =  bulletContainer.GetTree().Root;
+		root.AddChild(bullet);
 		bullet.GlobalPosition = spawnPosition;
 
 		GD.Print("Bullet spawned at ", bullet.Position, " with direction ", direction);
