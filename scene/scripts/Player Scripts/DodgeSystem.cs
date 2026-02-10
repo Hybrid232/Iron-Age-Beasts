@@ -5,7 +5,7 @@ public class DodgeSystem
 	private int dodgeSpeed;
 	private float dodgeTime;
 	private float dodgeCooldown;
-	
+	private int staminaCost;
 	private bool isDodging;
 	private float dodgeTimer;
 	private float cooldownTimer;
@@ -13,11 +13,12 @@ public class DodgeSystem
 
 	public bool IsDodging => isDodging;
 
-	public DodgeSystem(int speed, float time, float cooldown)
+	public DodgeSystem(int speed, float time, float cooldown, int staminaCost)
 	{
 		dodgeSpeed = speed;
 		dodgeTime = time;
 		dodgeCooldown = cooldown;
+		this.staminaCost = staminaCost;
 	}
 
 	public void UpdateCooldown(float dt)
@@ -26,12 +27,15 @@ public class DodgeSystem
 			cooldownTimer -= dt;
 	}
 
-	public bool TryDodge(Vector2 direction)
+	public bool TryDodge(Vector2 direction, HealthSystem health)
 	{
 		if (Input.IsActionJustPressed("dodge") && 
 			cooldownTimer <= 0 && 
-			direction != Vector2.Zero)
+			direction != Vector2.Zero &&
+			health.CurrentStamina >= staminaCost)
 		{
+			health.ChangeStamina(-staminaCost); //Consume stamina
+
 			isDodging = true;
 			dodgeDirection = direction;
 			dodgeTimer = dodgeTime;

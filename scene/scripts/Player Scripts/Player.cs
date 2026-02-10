@@ -17,6 +17,7 @@ public partial class Player : CharacterBody2D
 	[Export] private int dodgeSpeed = 200;
 	[Export] private float dodgeTime = 0.20f;
 	[Export] private float dodgeCooldown = 0.7f;
+	[Export] private int dodgeStaminaCost = 20;
 
 	// ===== RECOIL EXPORTS =====
 	[ExportGroup("Recoil System")]
@@ -56,7 +57,7 @@ public partial class Player : CharacterBody2D
 		// Initialize all systems with exported values
 		healthSystem = new HealthSystem(maxHealth, maxStamina, uiReference);
 		movementSystem = new MovementSystem(playerSpeed);
-		dodgeSystem = new DodgeSystem(dodgeSpeed, dodgeTime, dodgeCooldown);
+		dodgeSystem = new DodgeSystem(dodgeSpeed, dodgeTime, dodgeCooldown, dodgeStaminaCost);
 		recoilSystem = new RecoilSystem(hitRecoilDistance, hitRecoilTime, playerRecoilDistance, recoilTime);
 		meleeSystem = new MeleeSystem(
 			attackPivot, 
@@ -84,6 +85,7 @@ public partial class Player : CharacterBody2D
 
 		// Update all systems
 		recoilSystem.Update(dt);
+		healthSystem.Update(dt);
 		dodgeSystem.UpdateCooldown(dt);
 		shootingSystem.UpdateCooldowns(dt);
 
@@ -111,7 +113,7 @@ public partial class Player : CharacterBody2D
 			Velocity = movementSystem.GetVelocity();
 
 			// Try actions
-			if (dodgeSystem.TryDodge(moveDirection))
+			if (dodgeSystem.TryDodge(moveDirection, healthSystem))
 			{
 				Velocity = dodgeSystem.GetDodgeVelocity();
 			}
