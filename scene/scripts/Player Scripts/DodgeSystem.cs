@@ -32,7 +32,7 @@ public class DodgeSystem
 		if (Input.IsActionJustPressed("dodge") && 
 			cooldownTimer <= 0 && 
 			direction != Vector2.Zero &&
-			health.CurrentStamina >= staminaCost)
+			health.CanAct())
 		{
 			health.ChangeStamina(-staminaCost); //Consume stamina
 

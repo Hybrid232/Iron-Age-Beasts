@@ -7,10 +7,16 @@ public partial class Player : CharacterBody2D
 	[Export] private UI uiReference;
 	[Export] private int maxHealth = 100;
 	[Export] private int maxStamina = 100;
+	
+	
 
 	// ===== MOVEMENT EXPORTS =====
 	[ExportGroup("Movement System")]
 	[Export] private int playerSpeed = 130;
+	[Export] private float exhaustedSpeedMultiplier = 0.4f;
+	[Export] private int softExhaustThreshold = 20;
+	[Export] private int hardExhaustThreshold = 20;
+	[Export] private float lowStaminaSpeedMultiplier = 0.6f;
 
 	// ===== DODGE EXPORTS =====
 	[ExportGroup("Dodge System")]
@@ -35,6 +41,8 @@ public partial class Player : CharacterBody2D
 	[Export] private float enemyKnockbackDistance = 80f;
 	[Export] private float enemyKnockbackTime = 0.10f;
 	[Export] private int meleeDamage = 15; 
+	[Export] private int staminaCost = 20;
+	[Export] private int staminaBuffer = 5;
 
 	// ===== SHOOTING EXPORTS =====
 	[ExportGroup("Shooting System")]
@@ -55,7 +63,13 @@ public partial class Player : CharacterBody2D
 	public override void _Ready()
 	{
 		// Initialize all systems with exported values
-		healthSystem = new HealthSystem(maxHealth, maxStamina, uiReference);
+		healthSystem = new HealthSystem(
+		maxHealth,
+		maxStamina,
+		uiReference,
+		softExhaustThreshold,
+		hardExhaustThreshold
+		);		
 		movementSystem = new MovementSystem(playerSpeed);
 		dodgeSystem = new DodgeSystem(dodgeSpeed, dodgeTime, dodgeCooldown, dodgeStaminaCost);
 		recoilSystem = new RecoilSystem(hitRecoilDistance, hitRecoilTime, playerRecoilDistance, recoilTime);
@@ -69,7 +83,10 @@ public partial class Player : CharacterBody2D
 			enemyKnockbackDistance, 
 			enemyKnockbackTime, 
 			meleeDamage,
-			this
+			staminaCost,
+			staminaBuffer,
+			this,
+			healthSystem
 		);
 		
 		shootingSystem = new ShootingSystem(maxShots, bulletCooldown, bulletScene, bulletContainer, bulletBars);
@@ -113,7 +130,15 @@ public partial class Player : CharacterBody2D
 		{
 			// Normal gameplay
 			Vector2 moveDirection = movementSystem.HandleInput();
-			Velocity = movementSystem.GetVelocity();
+			
+			float speedMultiplier = 1f;
+			
+			if (healthSystem.IsBelowSoftThreshold())
+			{
+				speedMultiplier = lowStaminaSpeedMultiplier;
+			}
+			
+			Velocity = movementSystem.GetVelocity(moveDirection, speedMultiplier);
 
 			// Try actions
 			if (dodgeSystem.TryDodge(moveDirection, healthSystem))

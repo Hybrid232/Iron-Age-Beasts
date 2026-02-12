@@ -10,6 +10,10 @@ public class MeleeSystem
 	private float enemyKnockbackDistance;
 	private float enemyKnockbackTime;
 	private int meleeDamage; 
+	private int staminaCost;
+	private int staminaBuffer;
+	
+	private HealthSystem healthSystem;
 	private Player player;
 
 	private float attackTimer;
@@ -33,8 +37,11 @@ public class MeleeSystem
 		float range,
 		float knockbackDist,
 		float knockbackTime,
-		int damage, // Changed parameter name
-		Player playerRef)
+		int damage, 
+		int staminaCost,
+		int staminaBuffer,
+		Player playerRef,
+		HealthSystem healthSys)
 	{
 		attackPivot = pivot;
 		attackHitbox = hitbox;
@@ -43,7 +50,12 @@ public class MeleeSystem
 		enemyKnockbackDistance = knockbackDist;
 		enemyKnockbackTime = knockbackTime;
 		meleeDamage = damage; 
+		
+		this.staminaCost = staminaCost;
+		this.staminaBuffer = staminaBuffer;
+		
 		player = playerRef;
+		healthSystem = healthSys;
 	}
 
 	public void Initialize()
@@ -57,7 +69,16 @@ public class MeleeSystem
 	{
 		if (!Input.IsActionJustPressed("attack") || direction == Vector2.Zero)
 			return;
-
+		
+		// Not enough stamina, cannot attack
+		if (!healthSystem.CanAct())
+		{
+			GD.Print("Not enough Stamina!");
+			return;
+		}
+		
+		healthSystem.ChangeStamina(-staminaCost);
+		
 		isAttacking = true;
 		attackTimer = attackDuration;
 		enemiesHitThisAttack.Clear();

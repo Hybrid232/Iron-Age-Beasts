@@ -2,28 +2,20 @@ using Godot;
 
 public class MovementSystem
 {
-	private int playerSpeed;
-	private Vector2 currentVelocity;
-	private Vector2 lastMoveDirection = Vector2.Down;
-
-	public Vector2 LastMoveDirection => lastMoveDirection;
+	private int baseSpeed;
 
 	public MovementSystem(int speed)
 	{
-		playerSpeed = speed;
+		baseSpeed = speed;
 	}
 
 	public Vector2 HandleInput()
 	{
-		currentVelocity = Input.GetVector("ui_left", "ui_right", "ui_up", "ui_down") * playerSpeed;
-
-		if (currentVelocity != Vector2.Zero)
-		{
-			lastMoveDirection = currentVelocity.Normalized();
-		}
-
-		return lastMoveDirection;
+		return Input.GetVector("ui_left", "ui_right", "ui_up", "ui_down").Normalized();
 	}
 
-	public Vector2 GetVelocity() => currentVelocity;
+	public Vector2 GetVelocity(Vector2 direction, float speedMultiplier)
+	{
+		return direction * baseSpeed * speedMultiplier;
+	}
 }
