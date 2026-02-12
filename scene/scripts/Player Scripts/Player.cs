@@ -259,7 +259,6 @@ public partial class Player : CharacterBody2D
 			lastMoveDirection = currentVelocity.Normalized();
 		}
 	}
-
 	/* =====================
 	 * DODGE
 	 * ===================== */

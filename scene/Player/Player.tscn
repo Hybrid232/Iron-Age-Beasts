@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://d38cvt67w5bgb"]
+[gd_scene format=3 uid="uid://d38cvt67w5bgb"]
 
 [ext_resource type="Script" uid="uid://bdxac0jm2jtt2" path="res://scene/scripts/Player Scripts/Player.cs" id="1_4bggy"]
 [ext_resource type="PackedScene" uid="uid://77e4i6lmd7ih" path="res://scene/Player/Bullet.tscn" id="2_a1q3d"]
-[ext_resource type="Texture2D" uid="uid://41qneatxble4" path="res://sprites/mc/MC_Final_Sprite.png" id="3_a1q3d"]
+[ext_resource type="Texture2D" uid="uid://41qneatxble4" path="res://sprites/MC/MC_Final_Sprite.png" id="3_a1q3d"]
+[ext_resource type="AudioStream" uid="uid://crgwircq3knc3" path="res://Audio/SFX/Player/Footsteps - Grass.wav" id="4_0fwxj"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_0fwxj"]
 radius = 10.98901
@@ -11,7 +12,7 @@ height = 109.89011
 [sub_resource type="CircleShape2D" id="CircleShape2D_d75ba"]
 radius = 12.649111
 
-[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("bulletBars", "attackPivot", "attackHitbox", "bulletContainer") groups=["player"]]
+[node name="Player" type="CharacterBody2D" unique_id=1967716387 node_paths=PackedStringArray("bulletBars", "attackPivot", "attackHitbox", "bulletContainer") groups=["player"]]
 script = ExtResource("1_4bggy")
 playerSpeed = 125
 dodgeSpeed = 300
@@ -25,12 +26,12 @@ attackPivot = NodePath("AttackPivot")
 attackHitbox = NodePath("AttackPivot/Attackbox")
 bulletContainer = NodePath("BulletContainer")
 
-[node name="PlayerSprite" type="Sprite2D" parent="." groups=["player"]]
+[node name="PlayerSprite" type="Sprite2D" parent="." unique_id=141375170 groups=["player"]]
 z_index = 1
 position = Vector2(0, -1)
 texture = ExtResource("3_a1q3d")
 
-[node name="HitboxArea" type="CollisionShape2D" parent="."]
+[node name="HitboxArea" type="CollisionShape2D" parent="." unique_id=1619022940]
 z_index = 2
 position = Vector2(6.7762636e-21, -3)
 rotation = -3.1415927
@@ -38,14 +39,18 @@ scale = Vector2(0.655, 0.415)
 shape = SubResource("CapsuleShape2D_0fwxj")
 debug_color = Color(2.4065375e-07, 0.63608485, 0.4131711, 0.41960785)
 
-[node name="AttackPivot" type="Node2D" parent="."]
+[node name="AttackPivot" type="Node2D" parent="." unique_id=1287474325]
 
-[node name="Attackbox" type="Area2D" parent="AttackPivot"]
+[node name="Attackbox" type="Area2D" parent="AttackPivot" unique_id=1637823675]
 z_index = 2
 rotation = -1.6309803
 
-[node name="AttackArea" type="CollisionShape2D" parent="AttackPivot/Attackbox"]
+[node name="AttackArea" type="CollisionShape2D" parent="AttackPivot/Attackbox" unique_id=140118734]
 shape = SubResource("CircleShape2D_d75ba")
 debug_color = Color(0.9917659, 0, 0.2673412, 0.41960785)
 
-[node name="BulletContainer" type="Node2D" parent="."]
+[node name="BulletContainer" type="Node2D" parent="." unique_id=864665283]
+
+[node name="Walking" type="AudioStreamPlayer2D" parent="." unique_id=78566094]
+unique_name_in_owner = true
+stream = ExtResource("4_0fwxj")

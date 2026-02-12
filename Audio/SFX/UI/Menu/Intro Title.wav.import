@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://cnn22hkkmaboh"
+path="res://.godot/imported/Intro Title.wav-04a8bd81e1835f77eccf1c0f3c9993b6.sample"
+
+[deps]
+
+source_file="res://Audio/SFX/UI/Menu/Intro Title.wav"
+dest_files=["res://.godot/imported/Intro Title.wav-04a8bd81e1835f77eccf1c0f3c9993b6.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2
