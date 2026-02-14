@@ -41,7 +41,6 @@ position = Vector2(694.00006, 439)
 scale = Vector2(0.1, 0.1)
 texture = ExtResource("2_0vdwb")
 
-<<<<<<< HEAD
 [node name="Player" parent="." unique_id=1781026889 node_paths=PackedStringArray("bulletBars") instance=ExtResource("3_04lnv")]
 z_index = 1
 position = Vector2(555, 383)
@@ -50,16 +49,6 @@ playerRecoilDistance = 12.0
 attackDuration = 0.25
 bulletScene = null
 bulletBars = []
-=======
-[node name="Player" parent="." node_paths=PackedStringArray("uiReference", "bulletBars") instance=ExtResource("3_04lnv")]
-z_index = 1
-position = Vector2(555, 383)
-disable_mode = 1
-uiReference = NodePath("../HUD")
-dodgeSpeed = 300
-attackRange = 30.0
-bulletBars = [NodePath("../HUD/BulletBar0"), NodePath("../HUD/BulletBar1"), NodePath("../HUD/BulletBar2")]
->>>>>>> 170743f696e2d400bf6b36690254207e8d364899
 
 [node name="Camera2D" type="Camera2D" parent="Player" unique_id=2066364823]
 visible = false
@@ -83,7 +72,6 @@ offset_top = -9.0
 offset_right = 13.0
 offset_bottom = -9.0
 
-<<<<<<< HEAD
 [node name="BulletBar0" type="ProgressBar" parent="HUD" unique_id=761901583]
 offset_left = 16.0
 offset_top = 40.0
@@ -103,53 +91,22 @@ offset_left = 128.0
 offset_top = 40.0
 offset_right = 176.0
 offset_bottom = 67.0
-=======
-[node name="BulletBar0" type="ProgressBar" parent="HUD"]
-offset_left = 25.0
-offset_top = 55.0
-offset_right = 73.0
-offset_bottom = 82.0
-value = 100.0
-
-[node name="BulletBar1" type="ProgressBar" parent="HUD"]
-offset_left = 81.0
-offset_top = 55.0
-offset_right = 129.0
-offset_bottom = 82.0
-value = 100.0
-
-[node name="BulletBar2" type="ProgressBar" parent="HUD"]
-offset_left = 137.0
-offset_top = 55.0
-offset_right = 185.0
-offset_bottom = 82.0
->>>>>>> 170743f696e2d400bf6b36690254207e8d364899
 value = 100.0
 
 [node name="PlayerHealthBar" type="TextureProgressBar" parent="HUD" unique_id=1228740184]
 offset_left = 24.0
 offset_top = 16.0
 offset_right = 324.0
-offset_bottom = 36.0
-scale = Vector2(1.3583134, 0.6549496)
+offset_bottom = 56.0
 value = 100.0
 texture_progress = SubResource("PlaceholderTexture2D_go75h")
 tint_progress = Color(1, 0, 0, 1)
 
-<<<<<<< HEAD
 [node name="PlayerStaminaBar" type="TextureProgressBar" parent="HUD" unique_id=1360392173]
 offset_left = 26.0
 offset_top = 73.0
 offset_right = 326.0
 offset_bottom = 94.0
-=======
-[node name="PlayerStaminaBar" type="TextureProgressBar" parent="HUD"]
-offset_left = 24.000002
-offset_top = 29.000002
-offset_right = 324.0
-offset_bottom = 50.0
-scale = Vector2(1.0028015, 0.75226456)
->>>>>>> 170743f696e2d400bf6b36690254207e8d364899
 value = 100.0
 texture_under = SubResource("PlaceholderTexture2D_qdpo3")
 texture_progress = SubResource("PlaceholderTexture2D_go75h")
@@ -164,14 +121,6 @@ texture = ExtResource("5_0vdwb")
 [node name="Dilophosaurus" parent="." unique_id=1900946002 instance=ExtResource("7_qdpo3")]
 position = Vector2(417, 408)
 
-<<<<<<< HEAD
 [node name="AmbientForest" type="AudioStreamPlayer2D" parent="." unique_id=1223345891]
 stream = ExtResource("8_go75h")
 autoplay = true
-=======
-[node name="Dilophosaurus2" parent="." instance=ExtResource("7_qdpo3")]
-position = Vector2(877, 206)
-
-[node name="Dilophosaurus3" parent="." instance=ExtResource("7_qdpo3")]
-position = Vector2(389, 74)
->>>>>>> 170743f696e2d400bf6b36690254207e8d364899

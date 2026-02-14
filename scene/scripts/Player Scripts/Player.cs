@@ -1,159 +1,245 @@
 using Godot;
+using System;
 
 public partial class Player : CharacterBody2D
 {
-	// ===== HEALTH/STAMINA EXPORTS =====
-	[ExportGroup("Health System")]
 	[Export] private UI uiReference;
 	[Export] private int maxHealth = 100;
 	[Export] private int maxStamina = 100;
+	private int currentHealth;
+	private int currentStamina; 
 	
+	private void InitializePlayerHealth()
+	{
+		currentHealth = maxHealth;
+		currentStamina = maxStamina;
+		if (uiReference != null)
+		{
+			uiReference.InitializeHealth(maxHealth, currentHealth);
+			uiReference.InitializeStamina(maxStamina, currentStamina);
+		}
+	}
+	private void ChangeHealth(int amount)
+	{
+		currentHealth += amount;   
+		// Ensure health stays between 0 and Max
+		currentHealth = Math.Clamp(currentHealth, 0, maxHealth);
+		GD.Print($"Health Changed: {currentHealth}/{maxHealth}");
+		if (uiReference != null) uiReference.UpdateHealthDisplay(currentHealth);
+	}
+	private void ChangeStamina(int amount)
+	{
+		currentStamina += amount;
+		// Ensure stamina stays between 0 and Max
+		currentStamina = Math.Clamp(currentStamina, 0, maxStamina);
+		GD.Print($"Stamina Changed: {currentStamina}/{maxStamina}");
+		if (uiReference != null) uiReference.UpdateStaminaDisplay(currentStamina);
+	}
+	/*
+	*---MOVEMENT SETTINGS---
+	*/
 	
-
-	// ===== MOVEMENT EXPORTS =====
-	[ExportGroup("Movement System")]
+	// Walking Speed of Player.
 	[Export] private int playerSpeed = 130;
-	[Export] private float exhaustedSpeedMultiplier = 0.4f;
-	[Export] private int softExhaustThreshold = 20;
-	[Export] private int hardExhaustThreshold = 20;
-	[Export] private float lowStaminaSpeedMultiplier = 0.6f;
-
-	// ===== DODGE EXPORTS =====
-	[ExportGroup("Dodge System")]
+	
+	// Speed applied to dodge.
 	[Export] private int dodgeSpeed = 200;
+	
+	// How long the dodge lasts in seconds.
 	[Export] private float dodgeTime = 0.20f;
+	
+	// How long before the player can dodge again.
 	[Export] private float dodgeCooldown = 0.7f;
-	[Export] private int dodgeStaminaCost = 20;
+	
+	[Export] private float enemyKnockbackTime = 0.10f; // add this
 
-	// ===== RECOIL EXPORTS =====
-	[ExportGroup("Recoil System")]
-	[Export] private float hitRecoilDistance = 12f;
-	[Export] private float hitRecoilTime = 0.06f;
-	[Export] private float playerRecoilDistance = 12f;
-	[Export] private float recoilTime = 0.06f;
+		/*
+	*---HIT RECOIL (PLAYER) SETTINGS---
+	*/
+	[Export] private float hitRecoilDistance = 12f;  // push player a little on HIT
+	[Export] private float hitRecoilTime = 0.06f;    // duration of the push
 
-	// ===== MELEE EXPORTS =====
-	[ExportGroup("Melee System")]
-	[Export] private Node2D attackPivot;
-	[Export] private Area2D attackHitbox;
+	private float hitRecoilTimer = 0f;
+	private Vector2 hitRecoilVelocity = Vector2.Zero;
+
+	// Only recoil once per attack swing
+	private bool usedHitRecoilThisAttack = false;
+
+	/*
+	*---ATTACK SETTINGS---
+	*/
+	
+		/*
+	*---ATTACK KNOCKBACK SETTINGS---
+	*/
+	[Export] private float enemyKnockbackDistance = 80f;   // bigger push
+	[Export] private float playerRecoilDistance = 12f;     // small push
+	[Export] private float recoilTime = 0.06f;             // how long recoil lasts (seconds)
+	[Export] private int hitsToKillEnemy = 3;
+
+	
+	// Total time an attack is active.
 	[Export] private float attackDuration = 0.25f;
+	
+	// Distance the attack hitbox is pushed away from the player.
 	[Export] private float attackRange = 16f;
-	[Export] private float enemyKnockbackDistance = 80f;
-	[Export] private float enemyKnockbackTime = 0.10f;
-	[Export] private int meleeDamage = 15; 
-	[Export] private int staminaCost = 20;
-	[Export] private int staminaBuffer = 5;
-
-	// ===== SHOOTING EXPORTS =====
-	[ExportGroup("Shooting System")]
+	
+	/*
+	*---BULLET SETTINGS---
+	*/
+	// Max Bullets.
 	[Export] private int maxShots = 3;
+	
+	// Time for each shot to regenerate.
 	[Export] private float bulletCooldown = 30f;
+	
+	// Reference to Bullet scene.
 	[Export] private PackedScene bulletScene;
-	[Export] private Node2D bulletContainer;
+	
+	// UI bar to show cooldown.
 	[Export] private ProgressBar[] bulletBars;
+	
+	// Tracks how many shots can currently fire.
+	private int availableShots = 3;
+	
+	// Individual cooldown timers.
+	private float[] shotTimers;
 
-	// System Components (not exported)
-	private HealthSystem healthSystem;
-	private MovementSystem movementSystem;
-	private DodgeSystem dodgeSystem;
-	private MeleeSystem meleeSystem;
-	private ShootingSystem shootingSystem;
-	private RecoilSystem recoilSystem;
+	/*
+	*---NODE REFERENCES---
+	*/
+	
+	// Pivot node that moves and rotates the attack hitbox.
+	[Export] private Node2D attackPivot;
+	
+	// Area2D that detects enemies during an attack.
+	[Export] private Area2D attackHitbox;
+
+	// Parent Node for bullets.	p
+	[Export] private Node2D bulletContainer;
+
+	/*
+	*---STATE VARIABLES---
+	*/
+		// Recoil
+	private float recoilTimer = 0f;
+	private Vector2 recoilVelocity = Vector2.Zero;
+
+	// Track hits per enemy and prevent multi-hits in same swing
+	private readonly System.Collections.Generic.Dictionary<ulong, int> enemyHitCounts
+		= new System.Collections.Generic.Dictionary<ulong, int>();
+
+	private readonly System.Collections.Generic.HashSet<ulong> enemiesHitThisAttack
+		= new System.Collections.Generic.HashSet<ulong>();
+
+	// Timer for actions.
+	private float dodgeTimer = 0f;
+	private float cooldownTimer = 0f;
+	private float attackTimer = 0f;
+
+	// State flags. 
+	private bool isDodging = false;
+	private bool isAttacking = false;
+	
+	private Vector2 dodgeDirection;
+	private Vector2 currentVelocity;
+	private Vector2 lastMoveDirection = Vector2.Down;
 
 	public override void _Ready()
 	{
-		// Initialize all systems with exported values
-		healthSystem = new HealthSystem(
-		maxHealth,
-		maxStamina,
-		uiReference,
-		softExhaustThreshold,
-		hardExhaustThreshold
-		);		
-		movementSystem = new MovementSystem(playerSpeed);
-		dodgeSystem = new DodgeSystem(dodgeSpeed, dodgeTime, dodgeCooldown, dodgeStaminaCost);
-		recoilSystem = new RecoilSystem(hitRecoilDistance, hitRecoilTime, playerRecoilDistance, recoilTime);
-		
-		
-		meleeSystem = new MeleeSystem(
-			attackPivot, 
-			attackHitbox, 
-			attackDuration, 
-			attackRange, 
-			enemyKnockbackDistance, 
-			enemyKnockbackTime, 
-			meleeDamage,
-			staminaCost,
-			staminaBuffer,
-			this,
-			healthSystem
-		);
-		
-		shootingSystem = new ShootingSystem(maxShots, bulletCooldown, bulletScene, bulletContainer, bulletBars);
+		InitializePlayerHealth();
 
-		meleeSystem.Initialize();
+		// Ensures that the attack hitbox is disabled when the game starts.
+		EnableAttackHitbox(false);
+		
+		// Initialize Shooting Timers.
+		availableShots = maxShots;
+		shotTimers = new float[maxShots];
+		for (int i = 0; i < maxShots; i++) 
+		{
+			// All shots start ready to fire.
+			shotTimers[i] = 0f;
+		}
+				// Listen for things hit by the melee Area2D.
+		attackHitbox.AreaEntered += OnAttackAreaEntered;
+		attackHitbox.BodyEntered += OnAttackBodyEntered;
 	}
-
 	public override void _UnhandledInput(InputEvent @event)
 	{
-		healthSystem.HandleDebugInput(@event);
-	}
+		if (@event is InputEventKey eventKey && eventKey.Pressed && !eventKey.Echo)
+		{
+			if (eventKey.Keycode == Key.J) ChangeHealth(-5);
+			if (eventKey.Keycode == Key.K) ChangeHealth(5);
 
+			if (eventKey.Keycode == Key.U) ChangeStamina(-5);
+			if (eventKey.Keycode == Key.I) ChangeStamina(5);
+		}
+	}
 	public override void _PhysicsProcess(double delta)
 	{
 		float dt = (float)delta;
-
-		// Update all systems
-		recoilSystem.Update(dt);
-		healthSystem.Update(dt);
-		dodgeSystem.UpdateCooldown(dt);
-		shootingSystem.UpdateCooldowns(dt);
-
-		// Priority: Recoil > Attacking > Dodging > Normal Movement
-		if (recoilSystem.IsInRecoil())
+				// Apply player recoil ONLY when a hit happens.
+		if (hitRecoilTimer > 0f)
 		{
-			Velocity = recoilSystem.GetRecoilVelocity();
-			MoveAndSlide();
+			hitRecoilTimer -= dt;
+			currentVelocity = hitRecoilVelocity;
+
+			if (hitRecoilTimer <= 0f)
+				hitRecoilVelocity = Vector2.Zero;
 			return;
 		}
 
-		if (meleeSystem.IsAttacking)
+				// Apply short recoil velocity (player gets pushed slightly back).
+		if (recoilTimer > 0f)
 		{
-			meleeSystem.UpdateAttack(dt);
-			Velocity = Vector2.Zero;
+			recoilTimer -= dt;
+			currentVelocity = recoilVelocity;
+
+			if (recoilTimer <= 0f)
+				recoilVelocity = Vector2.Zero;
+			return;
 		}
-		else if (dodgeSystem.IsDodging)
+
+
+		// Reduce dodge cooldown overtime.
+		if (cooldownTimer > 0)
+			cooldownTimer -= dt;
+	
+		// Update bullet cooldowns and UI.
+		UpdateBulletCooldowns(dt);
+		
+		// Ensures only one action at a time.
+		if (isAttacking)
 		{
-			Velocity = dodgeSystem.UpdateDodge(dt);
+			UpdateAttack(dt);
+		}
+		else if (isDodging)
+		{
+			// Move player in dodge direciton.
+			currentVelocity = dodgeDirection * dodgeSpeed;
+			dodgeTimer -= dt;
+
+			// End dodge when timer expires.
+			if (dodgeTimer <= 0)
+			{
+				isDodging = false;
+				currentVelocity = Vector2.Zero;
+			}
 		}
 		else
 		{
-			// Normal gameplay
-			Vector2 moveDirection = movementSystem.HandleInput();
-			
-			float speedMultiplier = 1f;
-			
-			if (healthSystem.IsBelowSoftThreshold())
-			{
-				speedMultiplier = lowStaminaSpeedMultiplier;
-			}
-			
-			Velocity = movementSystem.GetVelocity(moveDirection, speedMultiplier);
-
-			// Try actions
-			if (dodgeSystem.TryDodge(moveDirection, healthSystem))
-			{
-				Velocity = dodgeSystem.GetDodgeVelocity();
-			}
-
-			meleeSystem.TryAttack(moveDirection, recoilSystem);
-			shootingSystem.TryShoot(moveDirection, GlobalPosition);
+			// Handles movement, attacks, dodges, and shooting.
+			HandleMovement();
+			TryAttack();
+			TryDodge();
+			TryShoot();
 		}
-
+	
+		// Apply Movement
+		Velocity = currentVelocity;
 		MoveAndSlide();
 	}
 
-<<<<<<< HEAD
 	/* 
 	 *---MOVEMENT---
 	 */
@@ -529,9 +615,4 @@ private Node2D GetEnemyRootFromHit(Node hit)
 	{
 		// animationPlayer.Play($"attack_{facing.ToString().ToLower()}");
 	}
-=======
-	// Public API for systems to interact with player
-	public Vector2 GetGlobalPosition() => GlobalPosition;
-	public void TriggerHitRecoil(Vector2 pushDirection) => recoilSystem.StartHitRecoil(pushDirection);
->>>>>>> 170743f696e2d400bf6b36690254207e8d364899
 }

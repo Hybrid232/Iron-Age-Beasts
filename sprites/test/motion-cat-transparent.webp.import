@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dtxrji7wquk24"
-path="res://.godot/imported/icon.jpg-4a7f64b346e42b67f360ae423f9eb5cc.ctex"
+uid="uid://dtimcad3gj3hl"
+path="res://.godot/imported/motion-cat-transparent.webp-c9a3f05b04e0248196289874e8b88808.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://icon.jpg"
-dest_files=["res://.godot/imported/icon.jpg-4a7f64b346e42b67f360ae423f9eb5cc.ctex"]
+source_file="res://sprites/test/motion-cat-transparent.webp"
+dest_files=["res://.godot/imported/motion-cat-transparent.webp-c9a3f05b04e0248196289874e8b88808.ctex"]
 
 [params]
 
