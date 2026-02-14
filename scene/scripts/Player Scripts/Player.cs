@@ -7,8 +7,6 @@ public partial class Player : CharacterBody2D
 	[Export] private UI uiReference;
 	[Export] private int maxHealth = 100;
 	[Export] private int maxStamina = 100;
-	
-	
 
 	// ===== MOVEMENT EXPORTS =====
 	[ExportGroup("Movement System")]
