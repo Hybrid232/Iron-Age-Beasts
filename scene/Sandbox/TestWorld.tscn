@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://b83raa0sufs4v"]
+[gd_scene load_steps=11 format=3 uid="uid://b83raa0sufs4v"]
 
 [ext_resource type="Texture2D" uid="uid://djpktvepla7xq" path="res://sprites/background/test background.jpg" id="1_gtqar"]
 [ext_resource type="Texture2D" uid="uid://c7kqv4j25x0ms" path="res://sprites/test/dino enemy.png" id="2_0vdwb"]
@@ -7,7 +7,6 @@
 [ext_resource type="Texture2D" uid="uid://brhqgehvt7ib0" path="res://sprites/test/dino-miniboss.png" id="5_0vdwb"]
 [ext_resource type="PackedScene" uid="uid://bbg6o4s7g1g0m" path="res://scene/enemy/Boss Healthbar.tscn" id="5_04lnv"]
 [ext_resource type="PackedScene" uid="uid://djokcwtj4qkek" path="res://scene/enemy/Dilophosaurus.tscn" id="7_qdpo3"]
-[ext_resource type="AudioStream" uid="uid://cy5no6ph383uy" path="res://Audio/SFX/Ambient/Forest sounds - Wind, Birds.wav" id="8_go75h"]
 
 [sub_resource type="GDScript" id="GDScript_0d08p"]
 script/source = "extends Node2D
@@ -28,29 +27,27 @@ size = Vector2(300, 20)
 
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_qdpo3"]
 
-[node name="TestWorld" type="Node2D" unique_id=1285189669]
+[node name="TestWorld" type="Node2D"]
 script = SubResource("GDScript_0d08p")
 
-[node name="TestBackground" type="Sprite2D" parent="." unique_id=56831808]
+[node name="TestBackground" type="Sprite2D" parent="."]
 position = Vector2(600, 320)
 texture = ExtResource("1_gtqar")
 
-[node name="DinoEnemy" type="Sprite2D" parent="." unique_id=321774940]
+[node name="DinoEnemy" type="Sprite2D" parent="."]
 z_index = 1
 position = Vector2(694.00006, 439)
 scale = Vector2(0.1, 0.1)
 texture = ExtResource("2_0vdwb")
 
-[node name="Player" parent="." unique_id=1781026889 node_paths=PackedStringArray("bulletBars") instance=ExtResource("3_04lnv")]
+[node name="Player" parent="." node_paths=PackedStringArray("bulletBars") instance=ExtResource("3_04lnv")]
 z_index = 1
 position = Vector2(555, 383)
 disable_mode = 1
-playerRecoilDistance = 12.0
 attackDuration = 0.25
-bulletScene = null
-bulletBars = []
+bulletBars = [NodePath("../HUD/BulletBar0"), NodePath("../HUD/BulletBar1"), NodePath("../HUD/BulletBar2")]
 
-[node name="Camera2D" type="Camera2D" parent="Player" unique_id=2066364823]
+[node name="Camera2D" type="Camera2D" parent="Player"]
 visible = false
 position = Vector2(0, -2)
 zoom = Vector2(2, 2)
@@ -61,39 +58,41 @@ limit_bottom = 615
 limit_smoothed = true
 position_smoothing_enabled = true
 
-[node name="HUD" type="CanvasLayer" parent="." unique_id=1257711520]
+[node name="HUD" type="CanvasLayer" parent="." node_paths=PackedStringArray("healthBar", "staminaBar")]
 layer = 2
 script = ExtResource("4_qdpo3")
+healthBar = NodePath("PlayerHealthBar")
+staminaBar = NodePath("PlayerStaminaBar")
 
-[node name="BossHealthbar" parent="HUD" unique_id=1232852273 instance=ExtResource("5_04lnv")]
+[node name="BossHealthbar" parent="HUD" instance=ExtResource("5_04lnv")]
 visible = false
 offset_left = 13.0
 offset_top = -9.0
 offset_right = 13.0
 offset_bottom = -9.0
 
-[node name="BulletBar0" type="ProgressBar" parent="HUD" unique_id=761901583]
+[node name="BulletBar0" type="ProgressBar" parent="HUD"]
 offset_left = 16.0
 offset_top = 40.0
 offset_right = 64.0
 offset_bottom = 67.0
 value = 100.0
 
-[node name="BulletBar1" type="ProgressBar" parent="HUD" unique_id=926440246]
+[node name="BulletBar1" type="ProgressBar" parent="HUD"]
 offset_left = 72.0
 offset_top = 40.0
 offset_right = 120.0
 offset_bottom = 67.0
 value = 100.0
 
-[node name="BulletBar2" type="ProgressBar" parent="HUD" unique_id=695562933]
+[node name="BulletBar2" type="ProgressBar" parent="HUD"]
 offset_left = 128.0
 offset_top = 40.0
 offset_right = 176.0
 offset_bottom = 67.0
 value = 100.0
 
-[node name="PlayerHealthBar" type="TextureProgressBar" parent="HUD" unique_id=1228740184]
+[node name="PlayerHealthBar" type="TextureProgressBar" parent="HUD"]
 offset_left = 24.0
 offset_top = 16.0
 offset_right = 324.0
@@ -102,7 +101,7 @@ value = 100.0
 texture_progress = SubResource("PlaceholderTexture2D_go75h")
 tint_progress = Color(1, 0, 0, 1)
 
-[node name="PlayerStaminaBar" type="TextureProgressBar" parent="HUD" unique_id=1360392173]
+[node name="PlayerStaminaBar" type="TextureProgressBar" parent="HUD"]
 offset_left = 26.0
 offset_top = 73.0
 offset_right = 326.0
@@ -113,14 +112,10 @@ texture_progress = SubResource("PlaceholderTexture2D_go75h")
 tint_under = Color(0.33617434, 0.55851936, 3.85046e-07, 1)
 tint_progress = Color(0.23137255, 0.5058824, 0.19607843, 1)
 
-[node name="DinoMiniboss" type="Sprite2D" parent="." unique_id=177937264]
+[node name="DinoMiniboss" type="Sprite2D" parent="."]
 position = Vector2(525, 192)
 scale = Vector2(-0.51688313, 0.40375453)
 texture = ExtResource("5_0vdwb")
 
-[node name="Dilophosaurus" parent="." unique_id=1900946002 instance=ExtResource("7_qdpo3")]
+[node name="Dilophosaurus" parent="." instance=ExtResource("7_qdpo3")]
 position = Vector2(417, 408)
-
-[node name="AmbientForest" type="AudioStreamPlayer2D" parent="." unique_id=1223345891]
-stream = ExtResource("8_go75h")
-autoplay = true
