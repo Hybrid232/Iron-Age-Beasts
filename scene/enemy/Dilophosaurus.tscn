@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://djokcwtj4qkek"]
+[gd_scene load_steps=8 format=3 uid="uid://djokcwtj4qkek"]
 
 [ext_resource type="Script" uid="uid://jjo4fptopbh2" path="res://scene/scripts/enemy Scripts/Dilophosaurus.cs" id="1_ok0wq"]
 [ext_resource type="Texture2D" uid="uid://c7kqv4j25x0ms" path="res://sprites/test/dino enemy.png" id="2_qdkvu"]
@@ -8,12 +8,16 @@
 [sub_resource type="CircleShape2D" id="CircleShape2D_jyd3w"]
 radius = 1.6999999
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_5tfgd"]
+radius = 1.9416487
+
 [sub_resource type="CircleShape2D" id="CircleShape2D_itp1y"]
 radius = 146.02174
 
 [node name="Dilophosaurus" type="CharacterBody2D"]
 script = ExtResource("1_ok0wq")
 Speed = 100.0
+_currentHealth = 50
 
 [node name="DinoEnemy" type="Sprite2D" parent="."]
 position = Vector2(8, -1)
@@ -21,13 +25,23 @@ scale = Vector2(0.17500006, 0.16944447)
 texture = ExtResource("2_qdkvu")
 offset = Vector2(-8, 0)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." groups=["enemy_hurtbox"]]
+[node name="CollisionBox" type="CollisionShape2D" parent="." groups=["enemy_hurtbox"]]
 z_index = 1
 position = Vector2(4.9999995, 12)
-scale = Vector2(10, 10)
+scale = Vector2(9.999999, 9.999999)
 shape = SubResource("CircleShape2D_jyd3w")
 
+[node name="HurtBox" type="Area2D" parent="." groups=["enemy_hurtbox"]]
+position = Vector2(4.9999995, 12)
+scale = Vector2(10, 10)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox"]
+z_index = 7
+shape = SubResource("CircleShape2D_5tfgd")
+debug_color = Color(0.68824255, 0.28912774, 0.39706942, 0.41960785)
+
 [node name="detection_area" type="Area2D" parent="."]
+collision_layer = 64
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="detection_area"]
 position = Vector2(5, 11)
@@ -37,17 +51,16 @@ shape = SubResource("CircleShape2D_itp1y")
 debug_color = Color(0.6890767, 0, 0.114161395, 0.41960785)
 
 [node name="HealthBar" type="TextureProgressBar" parent="."]
-offset_left = -25.999996
-offset_top = -11.0
-offset_right = 1126.0
-offset_bottom = 637.0
-scale = Vector2(0.054997884, 0.015)
-value = 90.0
+offset_left = -7.0
+offset_top = -10.0
+offset_right = 1145.0
+offset_bottom = 638.0
+scale = Vector2(0.01952623, 0.0015463252)
+value = 100.0
 rounded = true
 texture_under = ExtResource("3_5tfgd")
 texture_progress = ExtResource("4_04kl5")
-tint_under = Color(0.19668356, 0.0030809157, 0.030877134, 1)
-tint_progress = Color(1, 0, 0.03137255, 1)
+tint_under = Color(0.82090443, 0.2227655, 0.13294452, 1)
 
 [connection signal="body_entered" from="detection_area" to="." method="_on_detection_area_body_entered"]
 [connection signal="body_exited" from="detection_area" to="." method="_on_detection_area_body_exited"]

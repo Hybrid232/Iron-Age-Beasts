@@ -1,9 +1,7 @@
 // BaseEnemy.cs
 using Godot;
 
-
-
-public partial class BaseEnemy : CharacterBody2D
+public partial class BaseEnemy : CharacterBody2D, IDamageable
 {
 	[Export] public float Speed = 60f;
 	[Export] public float StopDistance = 8f;
@@ -11,6 +9,10 @@ public partial class BaseEnemy : CharacterBody2D
 	[Export] public int AttackDamage = 10;
 	[Export] public float AttackCooldown = 1.5f;
 	[Export] public string PlayerGroup = "player";
+	
+	// Add health system
+	[Export] public int MaxHealth = 50;
+	[Export] protected int _currentHealth;
 	
 	protected Node2D _player = null;
 	protected bool _chasing = false;
@@ -21,7 +23,44 @@ public partial class BaseEnemy : CharacterBody2D
 	private float _knockbackTimer = 0f;
 	private Vector2 _knockbackVelocity = Vector2.Zero;
 
+	public override void _Ready()
+	{
+		// Initialize health
+		_currentHealth = MaxHealth;
+	}
 	
+	// Implement IDamageable interface
+	public void TakeDamage(int damage)
+	{
+		_currentHealth -= damage;
+		GD.Print($"{Name} took {damage} damage! Health: {_currentHealth}/{MaxHealth}");
+		
+		// Check if enemy died
+		if (_currentHealth <= 0)
+		{
+			Die();
+		}
+		else
+		{
+			OnDamageTaken(damage);
+		}
+	}
+	
+	// Called when damage is taken but enemy survives
+	protected virtual void OnDamageTaken(int damage)
+	{
+		// Override in derived classes for hit effects, sounds, etc.
+		GD.Print($"{Name} was hit!");
+	}
+	
+	// Called when enemy dies
+	protected virtual void Die()
+	{
+		GD.Print($"{Name} has died!");
+		// Play death animation, spawn drops, etc.
+		QueueFree(); // Remove enemy from scene
+	}
+
 	public override void _Process(double delta)
 	{
 		// Update attack cooldown
@@ -32,67 +71,66 @@ public partial class BaseEnemy : CharacterBody2D
 	}
 	
 	public override void _PhysicsProcess(double delta)
-{
-	float dt = (float)delta;
-
-	// --- KNOCKBACK OVERRIDES AI ---
-	if (_knockbackTimer > 0f)
 	{
-		_knockbackTimer -= dt;
-		Velocity = _knockbackVelocity;
-		MoveAndSlide();
+		float dt = (float)delta;
 
-		if (_knockbackTimer <= 0f)
+		// --- KNOCKBACK OVERRIDES AI ---
+		if (_knockbackTimer > 0f)
 		{
-			_knockbackVelocity = Vector2.Zero;
-			Velocity = Vector2.Zero;
+			_knockbackTimer -= dt;
+			Velocity = _knockbackVelocity;
+			MoveAndSlide();
+
+			if (_knockbackTimer <= 0f)
+			{
+				_knockbackVelocity = Vector2.Zero;
+				Velocity = Vector2.Zero;
+			}
+			return;
 		}
-		return;
+
+		// If not chasing or player reference is gone, stop moving
+		if (!_chasing || _player == null)
+		{
+			Velocity = Vector2.Zero;
+			MoveAndSlide();
+			return;
+		}
+
+		// Check if player still exists
+		if (!IsInstanceValid(_player))
+		{
+			_player = null;
+			_chasing = false;
+			Velocity = Vector2.Zero;
+			MoveAndSlide();
+			return;
+		}
+
+		float distance = GlobalPosition.DistanceTo(_player.GlobalPosition);
+
+		// Try to attack if in range
+		if (CanAttack() && distance <= AttackRange)
+		{
+			Attack(_player);
+			Velocity = Vector2.Zero;
+			MoveAndSlide();
+			return;
+		}
+
+		// Stop if close but can't attack
+		if (distance <= StopDistance)
+		{
+			Velocity = Vector2.Zero;
+			MoveAndSlide();
+			return;
+		}
+
+		// Otherwise chase
+		MoveTowardsTarget(_player, delta);
 	}
 
-	// If not chasing or player reference is gone, stop moving
-	if (!_chasing || _player == null)
-	{
-		Velocity = Vector2.Zero;
-		MoveAndSlide();
-		return;
-	}
-
-	// Check if player still exists
-	if (!IsInstanceValid(_player))
-	{
-		_player = null;
-		_chasing = false;
-		Velocity = Vector2.Zero;
-		MoveAndSlide();
-		return;
-	}
-
-	float distance = GlobalPosition.DistanceTo(_player.GlobalPosition);
-
-	// Try to attack if in range
-	if (CanAttack() && distance <= AttackRange)
-	{
-		Attack(_player);
-		Velocity = Vector2.Zero;
-		MoveAndSlide();
-		return;
-	}
-
-	// Stop if close but can't attack
-	if (distance <= StopDistance)
-	{
-		Velocity = Vector2.Zero;
-		MoveAndSlide();
-		return;
-	}
-
-	// Otherwise chase
-	MoveTowardsTarget(_player, delta);
-}
-
-	
-		public void ApplyKnockback(Vector2 pushDir, float distance, float time)
+	public void ApplyKnockback(Vector2 pushDir, float distance, float time)
 	{
 		if (pushDir == Vector2.Zero) return;
 
@@ -100,18 +138,15 @@ public partial class BaseEnemy : CharacterBody2D
 		_knockbackVelocity = pushDir.Normalized() * speed;
 		_knockbackTimer = time;
 
-		// Optional: cancel attack/chase “locking” if you want knockback to interrupt
+		// Optional: cancel attack/chase "locking" if you want knockback to interrupt
 		_isAttacking = false;
 	}
 
-	
 	// Check if enemy can attack
 	protected virtual bool CanAttack()
 	{
 		return !_isAttacking && _attackCooldownTimer <= 0f;
 	}
-	
-	
 	
 	// Main attack method
 	protected virtual void Attack(Node2D target)
