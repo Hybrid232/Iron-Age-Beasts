@@ -158,13 +158,12 @@ scale = Vector2(70, 70)
 shape = SubResource("CircleShape2D_6pjo8")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="NPC"]
-visible = false
 
 [node name="Panel" type="Panel" parent="NPC/CanvasLayer"]
-offset_left = 53.0
-offset_top = 37.0
-offset_right = 1137.0
-offset_bottom = 395.0
+offset_left = 41.0
+offset_top = 101.0
+offset_right = 1125.0
+offset_bottom = 459.0
 
 [node name="DialogueLabel" type="Label" parent="NPC/CanvasLayer/Panel"]
 layout_mode = 0
