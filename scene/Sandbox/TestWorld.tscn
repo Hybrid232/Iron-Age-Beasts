@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://b83raa0sufs4v"]
+[gd_scene load_steps=14 format=3 uid="uid://b83raa0sufs4v"]
 
 [ext_resource type="Texture2D" uid="uid://djpktvepla7xq" path="res://sprites/background/test background.jpg" id="1_gtqar"]
 [ext_resource type="Texture2D" uid="uid://c7kqv4j25x0ms" path="res://sprites/test/dino enemy.png" id="2_0vdwb"]
@@ -7,6 +7,8 @@
 [ext_resource type="Texture2D" uid="uid://brhqgehvt7ib0" path="res://sprites/test/dino-miniboss.png" id="5_0vdwb"]
 [ext_resource type="PackedScene" uid="uid://bbg6o4s7g1g0m" path="res://scene/enemy/Boss Healthbar.tscn" id="5_04lnv"]
 [ext_resource type="PackedScene" uid="uid://djokcwtj4qkek" path="res://scene/enemy/Dilophosaurus.tscn" id="7_qdpo3"]
+[ext_resource type="Script" uid="uid://dt62qwb6ahakj" path="res://scene/scripts/NPC Scripts/NPC.cs" id="8_78shh"]
+[ext_resource type="Texture2D" uid="uid://bsunr61kjpenk" path="res://sprites/test/NPC_boogins.jpg" id="9_q0frb"]
 
 [sub_resource type="GDScript" id="GDScript_0d08p"]
 script/source = "extends Node2D
@@ -27,6 +29,8 @@ size = Vector2(300, 20)
 
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_qdpo3"]
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_6pjo8"]
+
 [node name="TestWorld" type="Node2D"]
 script = SubResource("GDScript_0d08p")
 
@@ -45,8 +49,11 @@ z_index = 1
 position = Vector2(555, 383)
 disable_mode = 1
 uiReference = NodePath("../HUD")
+exhaustedSpeedMultiplier = 0.4
 dodgeSpeed = 300
 attackRange = 30.0
+staminaCost = 20
+staminaBuffer = 5
 bulletBars = [NodePath("../HUD/BulletBar0"), NodePath("../HUD/BulletBar1"), NodePath("../HUD/BulletBar2")]
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
@@ -123,9 +130,65 @@ texture = ExtResource("5_0vdwb")
 
 [node name="Dilophosaurus" parent="." instance=ExtResource("7_qdpo3")]
 position = Vector2(417, 408)
+_currentHealth = 0
 
 [node name="Dilophosaurus2" parent="." instance=ExtResource("7_qdpo3")]
 position = Vector2(877, 206)
+_currentHealth = 0
 
 [node name="Dilophosaurus3" parent="." instance=ExtResource("7_qdpo3")]
 position = Vector2(389, 74)
+_currentHealth = 0
+
+[node name="NPC" type="Node2D" parent="." node_paths=PackedStringArray("_menu", "_dialogueLabel", "_speakButton")]
+position = Vector2(1000, 450)
+scale = Vector2(0.1, 0.1)
+script = ExtResource("8_78shh")
+_menu = NodePath("CanvasLayer/Panel")
+_dialogueLabel = NodePath("CanvasLayer/Panel/DialogueLabel")
+_speakButton = NodePath("CanvasLayer/Panel/SpeakButton")
+
+[node name="Sprite2D" type="Sprite2D" parent="NPC"]
+texture = ExtResource("9_q0frb")
+
+[node name="Area2D" type="Area2D" parent="NPC"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="NPC/Area2D"]
+scale = Vector2(70, 70)
+shape = SubResource("CircleShape2D_6pjo8")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="NPC"]
+
+[node name="Panel" type="Panel" parent="NPC/CanvasLayer"]
+offset_left = 41.0
+offset_top = 101.0
+offset_right = 1125.0
+offset_bottom = 459.0
+
+[node name="DialogueLabel" type="Label" parent="NPC/CanvasLayer/Panel"]
+layout_mode = 0
+offset_left = 25.0
+offset_top = 25.0
+offset_right = 65.0
+offset_bottom = 48.0
+
+[node name="SpeakButton" type="Button" parent="NPC/CanvasLayer/Panel"]
+layout_mode = 0
+offset_left = 22.0
+offset_top = 285.0
+offset_right = 96.0
+offset_bottom = 328.0
+text = "Talk"
+
+[node name="PurchaseButton" type="Button" parent="NPC/CanvasLayer/Panel"]
+layout_mode = 0
+offset_left = 109.0
+offset_top = 285.0
+offset_right = 208.0
+offset_bottom = 329.0
+text = "Purchase"
+
+[connection signal="body_entered" from="NPC/Area2D" to="NPC" method="OnAreaBodyEntered"]
+[connection signal="body_exited" from="NPC/Area2D" to="NPC" method="OnAreaBodyExited"]
+[connection signal="pressed" from="NPC/CanvasLayer/Panel/SpeakButton" to="NPC" method="OnSpeakPressed"]
+[connection signal="pressed" from="NPC/CanvasLayer/Panel/PurchaseButton" to="NPC" method="OnPurchasePressed"]
