@@ -1,4 +1,6 @@
+using System.Numerics;
 using Godot;
+using Vector2 = Godot.Vector2;
 
 public partial class Player : CharacterBody2D
 {
@@ -57,6 +59,7 @@ public partial class Player : CharacterBody2D
 	private MeleeSystem meleeSystem;
 	private ShootingSystem shootingSystem;
 	private RecoilSystem recoilSystem;
+	public bool CanMove { get; set; } = true;
 
 	public override void _Ready()
 	{
@@ -99,6 +102,13 @@ public partial class Player : CharacterBody2D
 
 	public override void _PhysicsProcess(double delta)
 	{
+		if (!CanMove) //checks bool to see if the player is in a state where
+		//they should not be able to move (e.g. during dialogue, cutscene, etc.)
+		{
+			Velocity = Vector2.Zero;
+			return;
+		}
+		
 		float dt = (float)delta;
 
 		// Update all systems

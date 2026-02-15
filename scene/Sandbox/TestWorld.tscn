@@ -39,7 +39,6 @@ position = Vector2(600, 320)
 texture = ExtResource("1_gtqar")
 
 [node name="DinoEnemy" type="Sprite2D" parent="."]
-visible = false
 z_index = 1
 position = Vector2(694.00006, 439)
 scale = Vector2(0.1, 0.1)
@@ -70,7 +69,6 @@ position_smoothing_enabled = true
 
 [node name="HUD" type="CanvasLayer" parent="." node_paths=PackedStringArray("healthBar", "staminaBar")]
 layer = 2
-visible = false
 script = ExtResource("4_qdpo3")
 healthBar = NodePath("PlayerHealthBar")
 staminaBar = NodePath("PlayerStaminaBar")
@@ -126,32 +124,29 @@ tint_under = Color(0.33617434, 0.55851936, 3.85046e-07, 1)
 tint_progress = Color(0.23137255, 0.5058824, 0.19607843, 1)
 
 [node name="DinoMiniboss" type="Sprite2D" parent="."]
-visible = false
 position = Vector2(525, 192)
 scale = Vector2(-0.51688313, 0.40375453)
 texture = ExtResource("5_0vdwb")
 
 [node name="Dilophosaurus" parent="." instance=ExtResource("7_qdpo3")]
-visible = false
 position = Vector2(417, 408)
 _currentHealth = 0
 
 [node name="Dilophosaurus2" parent="." instance=ExtResource("7_qdpo3")]
-visible = false
 position = Vector2(877, 206)
 _currentHealth = 0
 
 [node name="Dilophosaurus3" parent="." instance=ExtResource("7_qdpo3")]
-visible = false
 position = Vector2(389, 74)
 _currentHealth = 0
 
-[node name="NPC" type="Node2D" parent="." node_paths=PackedStringArray("_menu", "_dialogueLabel")]
+[node name="NPC" type="Node2D" parent="." node_paths=PackedStringArray("_menu", "_dialogueLabel", "_speakButton")]
 position = Vector2(1000, 450)
 scale = Vector2(0.1, 0.1)
 script = ExtResource("8_78shh")
 _menu = NodePath("CanvasLayer/Panel")
 _dialogueLabel = NodePath("CanvasLayer/Panel/DialogueLabel")
+_speakButton = NodePath("CanvasLayer/Panel/SpeakButton")
 
 [node name="Sprite2D" type="Sprite2D" parent="NPC"]
 texture = ExtResource("9_q0frb")
@@ -163,6 +158,7 @@ scale = Vector2(70, 70)
 shape = SubResource("CircleShape2D_6pjo8")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="NPC"]
+visible = false
 
 [node name="Panel" type="Panel" parent="NPC/CanvasLayer"]
 offset_left = 53.0
