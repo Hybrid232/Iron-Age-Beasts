@@ -130,15 +130,12 @@ texture = ExtResource("5_0vdwb")
 
 [node name="Dilophosaurus" parent="." instance=ExtResource("7_qdpo3")]
 position = Vector2(417, 408)
-_currentHealth = 0
 
 [node name="Dilophosaurus2" parent="." instance=ExtResource("7_qdpo3")]
 position = Vector2(877, 206)
-_currentHealth = 0
 
 [node name="Dilophosaurus3" parent="." instance=ExtResource("7_qdpo3")]
 position = Vector2(389, 74)
-_currentHealth = 0
 
 [node name="NPC" type="Node2D" parent="." node_paths=PackedStringArray("_menu", "_dialogueLabel", "_speakButton")]
 position = Vector2(1000, 450)
