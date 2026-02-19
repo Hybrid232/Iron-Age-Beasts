@@ -1,8 +1,14 @@
-[gd_scene load_steps=2 format=3 uid="uid://ckrfktaf2lgoe"]
+[gd_scene load_steps=3 format=3 uid="uid://ckrfktaf2lgoe"]
 
+[ext_resource type="TileSet" uid="uid://4au683hel220" path="res://Tilesets/game_tile_set.tres" id="2_e2o6t"]
 [ext_resource type="PackedScene" uid="uid://d38cvt67w5bgb" path="res://scene/Player/Player.tscn" id="4_ryrav"]
 
 [node name="Game" type="Node2D"]
 position = Vector2(-2, 12)
 
 [node name="Player" parent="." instance=ExtResource("4_ryrav")]
+
+[node name="GameTileMap" type="Node2D" parent="."]
+
+[node name="Grass" type="TileMapLayer" parent="GameTileMap"]
+tile_set = ExtResource("2_e2o6t")
