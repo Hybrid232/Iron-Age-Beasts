@@ -1,8 +1,11 @@
-[gd_scene load_steps=2 format=3 uid="uid://ckrfktaf2lgoe"]
+[gd_scene format=3 uid="uid://ckrfktaf2lgoe"]
 
 [ext_resource type="PackedScene" uid="uid://d38cvt67w5bgb" path="res://scene/Player/Player.tscn" id="4_ryrav"]
 
-[node name="Game" type="Node2D"]
+[node name="Game" type="Node2D" unique_id=1130626262]
 position = Vector2(-2, 12)
 
-[node name="Player" parent="." instance=ExtResource("4_ryrav")]
+[node name="Player" parent="." unique_id=2090887353 instance=ExtResource("4_ryrav")]
+exhaustedSpeedMultiplier = 0.4
+staminaCost = 20
+staminaBuffer = 5
