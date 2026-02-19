@@ -49,7 +49,7 @@ public partial class NPC : Node2D
 
 	private void OnSpeakPressed()
 	{
-		_dialogueLabel.Text = "Hello! I am CHUNKY boogins! I am so FAT";
+		_dialogueLabel.Text = "Hello! I am CHUNKY boogins! I am so FAT, but I love you buddy!";
 	}
 
 	private void OnPurchasePressed()
