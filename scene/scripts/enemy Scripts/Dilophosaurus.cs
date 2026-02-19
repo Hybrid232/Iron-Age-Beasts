@@ -4,11 +4,13 @@ using Godot;
 public partial class Dilophosaurus : BaseEnemy
 {
 	public override void _Ready()
-	{
-		// Set Dilophosaurus-specific values
+	{	
+		base._Ready();
+		
+		// Set Dilophosaurus-specific values. This variables are in BaseEnemy and here we change the value.
 		Speed = 60f;
 		StopDistance = 8f;
-		AttackRange = 15f;
+		AttackRange = 10;
 		AttackDamage = 15;
 		AttackCooldown = 1.5f;
 	}

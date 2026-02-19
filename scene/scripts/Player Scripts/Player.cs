@@ -95,10 +95,7 @@ public partial class Player : CharacterBody2D
 		meleeSystem.Initialize();
 	}
 
-	public override void _UnhandledInput(InputEvent @event)
-	{
-		healthSystem.HandleDebugInput(@event);
-	}
+	
 
 	public override void _PhysicsProcess(double delta)
 	{
@@ -162,6 +159,6 @@ public partial class Player : CharacterBody2D
 	}
 
 	// Public API for systems to interact with player
-	public Vector2 GetGlobalPosition() => GlobalPosition;
+	//public Vector2 GetGlobalPosition() => GlobalPosition;
 	public void TriggerHitRecoil(Vector2 pushDirection) => recoilSystem.StartHitRecoil(pushDirection);
 }
