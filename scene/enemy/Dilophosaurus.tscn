@@ -14,10 +14,11 @@ radius = 1.9416487
 [sub_resource type="CircleShape2D" id="CircleShape2D_itp1y"]
 radius = 146.02174
 
-[node name="Dilophosaurus" type="CharacterBody2D"]
+[node name="Dilophosaurus" type="CharacterBody2D" groups=["enemy_hurtbox"]]
 script = ExtResource("1_ok0wq")
 Speed = 100.0
-_currentHealth = 50
+MaxHealth = 100
+_currentHealth = 100
 
 [node name="DinoEnemy" type="Sprite2D" parent="."]
 position = Vector2(8, -1)

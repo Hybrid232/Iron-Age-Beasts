@@ -189,14 +189,14 @@ public class MeleeSystem
 
 	private Node2D GetEnemyRootFromHit(Node hit)
 	{
-		if (hit is CharacterBody2D cb) return cb;
-		if (hit is Node2D n2d && n2d.IsInGroup("enemy")) return n2d;
-
 		Node current = hit;
 		while (current != null)
 		{
-			if (current is CharacterBody2D body) return body;
-			if (current is Node2D node2D && node2D.IsInGroup("enemy")) return node2D;
+			// This checks if the node itself OR any parent has the BaseEnemy script
+			if (current is BaseEnemy enemy) 
+			{
+				return enemy;
+			}
 			current = current.GetParent();
 		}
 		return null;
