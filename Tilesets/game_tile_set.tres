@@ -1,4 +1,4 @@
-[gd_resource type="TileSet" format=3 uid="uid://4au683hel220"]
+[gd_resource type="TileSet" load_steps=3 format=3 uid="uid://4au683hel220"]
 
 [ext_resource type="Texture2D" uid="uid://c57fhptgarv70" path="res://sprites/background/tilemap/full grass sheet.png" id="1_m70i2"]
 
