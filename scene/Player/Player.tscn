@@ -14,6 +14,7 @@ radius = 12.649111
 [node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("attackPivot", "attackHitbox", "bulletContainer", "bulletBars") groups=["player"]]
 script = ExtResource("1_4bggy")
 exhaustedSpeedMultiplier = 0.1
+dodgeSpeed = 400
 attackPivot = NodePath("AttackPivot")
 attackHitbox = NodePath("AttackPivot/Attackbox")
 staminaCost = 10
