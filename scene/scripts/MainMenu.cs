@@ -28,7 +28,7 @@ public partial class MainMenu : Control
 
 	private void OnStartPressed()
 	{
-		GetTree().ChangeSceneToFile("res://scene/Sandbox/TestWorld.tscn");
+		GetTree().ChangeSceneToFile("res://scene/Scenes/Tutorial.tscn");
 	}
 
 	private void OnSettingsPressed()
