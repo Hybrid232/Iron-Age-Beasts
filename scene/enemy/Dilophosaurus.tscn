@@ -15,8 +15,6 @@ radius = 1.9416487
 radius = 146.02174
 
 [node name="Dilophosaurus" type="CharacterBody2D" groups=["enemy_hurtbox"]]
-collision_layer = 3
-collision_mask = 3
 script = ExtResource("1_ok0wq")
 Speed = 100.0
 MaxHealth = 100
