@@ -20,7 +20,6 @@ collision_mask = 3
 script = ExtResource("1_ok0wq")
 Speed = 100.0
 MaxHealth = 100
-_currentHealth = 100
 
 [node name="DinoEnemy" type="Sprite2D" parent="."]
 position = Vector2(8, -1)
@@ -65,5 +64,6 @@ texture_under = ExtResource("3_5tfgd")
 texture_progress = ExtResource("4_04kl5")
 tint_under = Color(0.82090443, 0.2227655, 0.13294452, 1)
 
+[connection signal="body_entered" from="HurtBox" to="." method="_on_hurt_box_body_entered"]
 [connection signal="body_entered" from="detection_area" to="." method="_on_detection_area_body_entered"]
 [connection signal="body_exited" from="detection_area" to="." method="_on_detection_area_body_exited"]
