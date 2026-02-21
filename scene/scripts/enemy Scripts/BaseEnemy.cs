@@ -3,29 +3,30 @@ using Godot;
 
 public partial class BaseEnemy : CharacterBody2D, IDamageable
 {
+	[ExportGroup("Movement")]
 	[Export] public float Speed = 60f;
 	[Export] public float StopDistance = 8f;
+
+	[ExportGroup("Combat")]
+	[Export] public int MaxHealth = 50;
+	[Export] public int AttackDamage = 20;
 	[Export] public float AttackRange = 15f;
-	[Export] public int AttackDamage = 10;
 	[Export] public float AttackCooldown = 1.5f;
 	[Export] public string PlayerGroup = "player";
-	
-	// Add health system
-	[Export] public int MaxHealth = 50;
-	[Export] protected int _currentHealth;
-	
-	protected Node2D _player = null;
-	protected bool _chasing = false;
+
+	// State Variables
+	protected int _currentHealth;
 	protected float _attackCooldownTimer = 0f;
 	protected bool _isAttacking = false;
-	
-	// Knockback state
+	protected bool _chasing = false;
+	protected Node2D _player = null;
+
+	// Knockback State
 	private float _knockbackTimer = 0f;
 	private Vector2 _knockbackVelocity = Vector2.Zero;
 
 	public override void _Ready()
 	{
-		// Initialize health
 		_currentHealth = MaxHealth;
 	}
 	
@@ -170,10 +171,16 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 	// Deal damage to target
 	protected virtual void DealDamage(Node2D target)
 	{
+		GD.Print($"Checking target: {target.Name}"); // Is the enemy even touching the player?
+
 		if (target is IDamageable damageable)
 		{
 			damageable.TakeDamage(AttackDamage);
-			GD.Print($"Dealt {AttackDamage} damage to {target.Name}");
+			GD.Print($"SUCCESS: Dealt {AttackDamage} damage to {target.Name}");
+		}
+		else
+		{
+			GD.Print($"FAILURE: {target.Name} does not implement IDamageable!");
 		}
 	}
 	
@@ -204,5 +211,32 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 		_player = null;
 		_chasing = false;
 		GD.Print("Player left detection ❌");
+	}
+	
+	// Link this to your Area2D (Hitbox) 'body_entered' signal in the editor
+
+	// Inside BaseEnemy.cs
+
+	public void _on_hurt_box_body_entered(Node2D body)
+	{
+		//GD.Print($"HurtBox touched something: {body.Name}"); // DEBUG 1
+		// Ensure the body hit is the player and can be damaged
+		if (body is IDamageable damageable && body.IsInGroup(PlayerGroup))
+		{
+			GD.Print($"{body.Name} is Damageable!"); // DEBUG 2
+			// 1. Calculate direction for knockback (from Enemy to Player)
+			Vector2 knockbackDirection = (body.GlobalPosition - GlobalPosition).Normalized();
+			
+			// 2. Deal damage using the managed variable
+			damageable.TakeDamage(AttackDamage);
+			
+			// 3. Apply knockback to the player if they support it
+			if (body is Player player)
+			{
+				player.TriggerHitRecoil(knockbackDirection);
+			}
+			
+			GD.Print($"Hit Player for {AttackDamage} damage!");
+		}
 	}
 }

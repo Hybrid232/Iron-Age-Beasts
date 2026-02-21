@@ -2,7 +2,7 @@ using System.Numerics;
 using Godot;
 using Vector2 = Godot.Vector2;
 
-public partial class Player : CharacterBody2D
+public partial class Player : CharacterBody2D, IDamageable
 {
 	// ===== HEALTH/STAMINA EXPORTS =====
 	[ExportGroup("Health System")]
@@ -95,10 +95,7 @@ public partial class Player : CharacterBody2D
 		meleeSystem.Initialize();
 	}
 
-	public override void _UnhandledInput(InputEvent @event)
-	{
-		healthSystem.HandleDebugInput(@event);
-	}
+	
 
 	public override void _PhysicsProcess(double delta)
 	{
@@ -162,6 +159,27 @@ public partial class Player : CharacterBody2D
 	}
 
 	// Public API for systems to interact with player
-	public Vector2 GetGlobalPosition() => GlobalPosition;
-	public void TriggerHitRecoil(Vector2 pushDirection) => recoilSystem.StartHitRecoil(pushDirection);
+	//public Vector2 GetGlobalPosition() => GlobalPosition;
+	
+	// Inside Player.cs
+
+	public void TriggerHitRecoil(Vector2 pushDirection) 
+	{
+		// This uses your existing recoilSystem from the Player class
+		recoilSystem.StartHitRecoil(pushDirection);
+	}
+	
+	public void TakeDamage(int damage)
+	{
+		// This is where the enemy "touches" your health
+		healthSystem.ChangeHealth(-damage);
+		
+		// You can also trigger your existing recoil here!
+		TriggerHitRecoil(Vector2.Zero);
+		
+		GD.Print($"Ouch! Player health: {healthSystem.CurrentHealth}");
+	}
+	
+
+	
 }
