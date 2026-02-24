@@ -1,19 +1,16 @@
-[gd_scene load_steps=11 format=4 uid="uid://6v4cj26pkfbu"]
+[gd_scene load_steps=9 format=4 uid="uid://6v4cj26pkfbu"]
 
 [ext_resource type="PackedScene" uid="uid://d38cvt67w5bgb" path="res://scene/Player/Player.tscn" id="1_00eeo"]
 [ext_resource type="TileSet" uid="uid://4au683hel220" path="res://Tilesets/game_tile_set.tres" id="2_w8gwm"]
 [ext_resource type="Script" uid="uid://ds0gpdaxyuvpe" path="res://scene/scripts/Player Scripts/UI.cs" id="3_fkj6s"]
 [ext_resource type="PackedScene" uid="uid://bbg6o4s7g1g0m" path="res://scene/enemy/Boss Healthbar.tscn" id="4_ujhhv"]
-[ext_resource type="Script" uid="uid://dt62qwb6ahakj" path="res://scene/scripts/NPC Scripts/NPC.cs" id="5_s3mw7"]
-[ext_resource type="Texture2D" uid="uid://bsunr61kjpenk" path="res://sprites/test/NPC_boogins.jpg" id="6_113gb"]
+[ext_resource type="PackedScene" uid="uid://b6m3oycxmqq7g" path="res://scene/NPC/NPC.tscn" id="5_qjufs"]
 [ext_resource type="PackedScene" uid="uid://djokcwtj4qkek" path="res://scene/enemy/Dilophosaurus.tscn" id="7_pbiin"]
 
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_hlpnd"]
 size = Vector2(300, 20)
 
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_73or5"]
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_jldhp"]
 
 [node name="Tutorial" type="Node2D"]
 
@@ -91,60 +88,8 @@ texture_progress = SubResource("PlaceholderTexture2D_hlpnd")
 tint_under = Color(0.33617434, 0.55851936, 3.85046e-07, 1)
 tint_progress = Color(0.23137255, 0.5058824, 0.19607843, 1)
 
-[node name="Boogins" type="Node2D" parent="." node_paths=PackedStringArray("_menu", "_dialogueLabel", "_speakButton")]
-position = Vector2(1000, 450)
-scale = Vector2(0.1, 0.1)
-script = ExtResource("5_s3mw7")
-_menu = NodePath("CanvasLayer/Panel")
-_dialogueLabel = NodePath("CanvasLayer/Panel/DialogueLabel")
-_speakButton = NodePath("CanvasLayer/Panel/SpeakButton")
-
-[node name="Sprite2D" type="Sprite2D" parent="Boogins"]
-position = Vector2(47567, -4369.5)
-texture = ExtResource("6_113gb")
-
-[node name="Area2D" type="Area2D" parent="Boogins"]
-position = Vector2(47567, -4369.5)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Boogins/Area2D"]
-scale = Vector2(70, 70)
-shape = SubResource("CircleShape2D_jldhp")
-
-[node name="CanvasLayer" type="CanvasLayer" parent="Boogins"]
-
-[node name="Panel" type="Panel" parent="Boogins/CanvasLayer"]
-offset_left = 41.0
-offset_top = 101.0
-offset_right = 1125.0
-offset_bottom = 459.0
-
-[node name="DialogueLabel" type="Label" parent="Boogins/CanvasLayer/Panel"]
-layout_mode = 0
-offset_left = 25.0
-offset_top = 25.0
-offset_right = 65.0
-offset_bottom = 48.0
-
-[node name="SpeakButton" type="Button" parent="Boogins/CanvasLayer/Panel"]
-layout_mode = 0
-offset_left = 22.0
-offset_top = 285.0
-offset_right = 96.0
-offset_bottom = 328.0
-text = "Talk"
-
-[node name="PurchaseButton" type="Button" parent="Boogins/CanvasLayer/Panel"]
-layout_mode = 0
-offset_left = 109.0
-offset_top = 285.0
-offset_right = 208.0
-offset_bottom = 329.0
-text = "Purchase"
+[node name="Boogins" parent="." instance=ExtResource("5_qjufs")]
+position = Vector2(5576, -8)
 
 [node name="Dilophosaurus" parent="." instance=ExtResource("7_pbiin")]
 position = Vector2(1555, 62)
-
-[connection signal="body_entered" from="Boogins/Area2D" to="Boogins" method="OnAreaBodyEntered"]
-[connection signal="body_exited" from="Boogins/Area2D" to="Boogins" method="OnAreaBodyExited"]
-[connection signal="pressed" from="Boogins/CanvasLayer/Panel/SpeakButton" to="Boogins" method="OnSpeakPressed"]
-[connection signal="pressed" from="Boogins/CanvasLayer/Panel/PurchaseButton" to="Boogins" method="OnPurchasePressed"]
