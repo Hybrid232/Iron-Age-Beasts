@@ -1,10 +1,15 @@
-[gd_scene load_steps=3 format=3 uid="uid://b6m3oycxmqq7g"]
+[gd_scene load_steps=4 format=3 uid="uid://b6m3oycxmqq7g"]
 
+[ext_resource type="Script" uid="uid://dt62qwb6ahakj" path="res://scene/scripts/NPC Scripts/NPC.cs" id="1_hqct7"]
 [ext_resource type="Texture2D" uid="uid://bsunr61kjpenk" path="res://sprites/test/NPC_boogins.jpg" id="1_v5spc"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_hqct7"]
 
-[node name="Boogins" type="Node2D"]
+[node name="Boogins" type="Node2D" node_paths=PackedStringArray("_menu", "_dialogueLabel", "_speakButton")]
+script = ExtResource("1_hqct7")
+_menu = NodePath("CanvasLayer/Panel")
+_dialogueLabel = NodePath("CanvasLayer/Panel/DialogueLabel")
+_speakButton = NodePath("CanvasLayer/Panel/SpeakButton")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 scale = Vector2(0.15, 0.15)
@@ -51,3 +56,6 @@ offset_right = 208.0
 offset_bottom = 329.0
 text = "Purchase"
 metadata/_edit_use_anchors_ = true
+
+[connection signal="body_entered" from="Area2D" to="." method="OnAreadBodyEntered"]
+[connection signal="body_exited" from="Area2D" to="." method="OnAreaBodyExited"]
