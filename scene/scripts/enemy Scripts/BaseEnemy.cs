@@ -14,6 +14,7 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 	[Export] public float AttackCooldown = 1.5f;
 	[Export] public string PlayerGroup = "player";
 
+
 	// State Variables
 	protected int _currentHealth;
 	protected float _attackCooldownTimer = 0f;
@@ -171,16 +172,12 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 	// Deal damage to target
 	protected virtual void DealDamage(Node2D target)
 	{
-		GD.Print($"Checking target: {target.Name}"); // Is the enemy even touching the player?
-
 		if (target is IDamageable damageable)
 		{
 			damageable.TakeDamage(AttackDamage);
-			GD.Print($"SUCCESS: Dealt {AttackDamage} damage to {target.Name}");
 		}
 		else
 		{
-			GD.Print($"FAILURE: {target.Name} does not implement IDamageable!");
 		}
 	}
 	
@@ -203,37 +200,40 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 	{
 		_player = player;
 		_chasing = true;
-		GD.Print("Player detected 👀");
 	}
 	
 	protected virtual void OnPlayerLost(Node2D player)
 	{
 		_player = null;
 		_chasing = false;
-		GD.Print("Player left detection ❌");
 	}
 	
 	// Link this to your Area2D (Hitbox) 'body_entered' signal in the editor
 
-	// Inside BaseEnemy.cs
+
 
 	public void _on_hurt_box_body_entered(Node2D body)
 	{
-		//GD.Print($"HurtBox touched something: {body.Name}"); // DEBUG 1
-		// Ensure the body hit is the player and can be damaged
+		GD.Print($"HurtBox touched: {body.Name}");
+		
 		if (body is IDamageable damageable && body.IsInGroup(PlayerGroup))
 		{
-			GD.Print($"{body.Name} is Damageable!"); // DEBUG 2
+			GD.Print($"{body.Name} is Damageable!");
+			
 			// 1. Calculate direction for knockback (from Enemy to Player)
 			Vector2 knockbackDirection = (body.GlobalPosition - GlobalPosition).Normalized();
 			
-			// 2. Deal damage using the managed variable
-			damageable.TakeDamage(AttackDamage);
 			
-			// 3. Apply knockback to the player if they support it
+			// 2. Deal damage
+			damageable.TakeDamage(AttackDamage);
+
+			
+			// 4. Keep your existing recoil trigger
 			if (body is Player player)
 			{
 				player.TriggerHitRecoil(knockbackDirection);
+				GD.Print($"==========PUSHBACK============");
+
 			}
 			
 			GD.Print($"Hit Player for {AttackDamage} damage!");
