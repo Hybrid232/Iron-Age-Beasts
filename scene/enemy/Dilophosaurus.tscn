@@ -17,7 +17,6 @@ radius = 146.02174
 [node name="Dilophosaurus" type="CharacterBody2D" groups=["enemy_hurtbox"]]
 script = ExtResource("1_ok0wq")
 Speed = 100.0
-MaxHealth = 100
 
 [node name="DinoEnemy" type="Sprite2D" parent="."]
 position = Vector2(8, -1)
