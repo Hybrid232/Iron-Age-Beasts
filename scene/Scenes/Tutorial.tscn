@@ -94,4 +94,7 @@ tint_progress = Color(0.23137255, 0.5058824, 0.19607843, 1)
 position = Vector2(5576, -8)
 
 [node name="Dilophosaurus" parent="." instance=ExtResource("7_pbiin")]
-position = Vector2(1555, 62)
+position = Vector2(1523, 109)
+
+[node name="Dilophosaurus2" parent="." instance=ExtResource("7_pbiin")]
+position = Vector2(1086, 59)
