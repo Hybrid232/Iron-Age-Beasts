@@ -89,7 +89,7 @@ tint_under = Color(0.33617434, 0.55851936, 3.85046e-07, 1)
 tint_progress = Color(0.23137255, 0.5058824, 0.19607843, 1)
 
 [node name="Boogins" parent="." instance=ExtResource("5_qjufs")]
-position = Vector2(5576, -8)
+position = Vector2(785, 90)
 
 [node name="Dilophosaurus" parent="." instance=ExtResource("7_pbiin")]
 position = Vector2(1555, 62)
