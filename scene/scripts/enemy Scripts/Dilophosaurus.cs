@@ -3,6 +3,8 @@ using Godot;
 
 public partial class Dilophosaurus : BaseEnemy
 {
+	[Export] public float KnockbackForce = 300f;  // How hard to push
+
 	public override void _Ready()
 	{	
 		base._Ready();
@@ -49,4 +51,14 @@ public partial class Dilophosaurus : BaseEnemy
 		
 		OnPlayerLost(body);
 	}
+	
+	protected override void DealDamage(Node2D target)
+	{
+	
+	// Call the base damage method first
+	base.DealDamage(target);
+	
+	}
+	
+
 }
