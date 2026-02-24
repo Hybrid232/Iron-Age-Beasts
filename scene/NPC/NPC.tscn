@@ -1,0 +1,53 @@
+[gd_scene load_steps=3 format=3 uid="uid://b6m3oycxmqq7g"]
+
+[ext_resource type="Texture2D" uid="uid://bsunr61kjpenk" path="res://sprites/test/NPC_boogins.jpg" id="1_v5spc"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_hqct7"]
+
+[node name="Boogins" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.15, 0.15)
+texture = ExtResource("1_v5spc")
+
+[node name="Area2D" type="Area2D" parent="."]
+scale = Vector2(0.15, 0.15)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+scale = Vector2(70, 70)
+shape = SubResource("CircleShape2D_hqct7")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Panel" type="Panel" parent="CanvasLayer"]
+offset_left = 41.0
+offset_top = 101.0
+offset_right = 1125.0
+offset_bottom = 459.0
+metadata/_edit_use_anchors_ = true
+
+[node name="DialogueLabel" type="Label" parent="CanvasLayer/Panel"]
+layout_mode = 0
+offset_left = 25.0
+offset_top = 25.0
+offset_right = 65.0
+offset_bottom = 48.0
+metadata/_edit_use_anchors_ = true
+
+[node name="SpeakButton" type="Button" parent="CanvasLayer/Panel"]
+layout_mode = 0
+offset_left = 22.0
+offset_top = 285.0
+offset_right = 96.0
+offset_bottom = 328.0
+text = "Talk"
+metadata/_edit_use_anchors_ = true
+
+[node name="PurchaseButton" type="Button" parent="CanvasLayer/Panel"]
+layout_mode = 0
+offset_left = 109.0
+offset_top = 285.0
+offset_right = 208.0
+offset_bottom = 329.0
+text = "Purchase"
+metadata/_edit_use_anchors_ = true
