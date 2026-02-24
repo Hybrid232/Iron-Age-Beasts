@@ -1,6 +1,7 @@
-[gd_scene load_steps=9 format=4 uid="uid://6v4cj26pkfbu"]
+[gd_scene load_steps=10 format=4 uid="uid://6v4cj26pkfbu"]
 
 [ext_resource type="PackedScene" uid="uid://d38cvt67w5bgb" path="res://scene/Player/Player.tscn" id="1_00eeo"]
+[ext_resource type="PackedScene" uid="uid://mgdagjh6wa25" path="res://scene/Scenes/PauseMenu.tscn" id="1_w8gwm"]
 [ext_resource type="TileSet" uid="uid://4au683hel220" path="res://Tilesets/game_tile_set.tres" id="2_w8gwm"]
 [ext_resource type="Script" uid="uid://ds0gpdaxyuvpe" path="res://scene/scripts/Player Scripts/UI.cs" id="3_fkj6s"]
 [ext_resource type="PackedScene" uid="uid://bbg6o4s7g1g0m" path="res://scene/enemy/Boss Healthbar.tscn" id="4_ujhhv"]
@@ -89,6 +90,8 @@ texture_under = SubResource("PlaceholderTexture2D_73or5")
 texture_progress = SubResource("PlaceholderTexture2D_hlpnd")
 tint_under = Color(0.33617434, 0.55851936, 3.85046e-07, 1)
 tint_progress = Color(0.23137255, 0.5058824, 0.19607843, 1)
+
+[node name="PauseMenu" parent="HUD" instance=ExtResource("1_w8gwm")]
 
 [node name="Boogins" parent="." instance=ExtResource("5_qjufs")]
 position = Vector2(785, 90)
