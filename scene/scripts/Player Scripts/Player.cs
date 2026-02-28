@@ -1,7 +1,6 @@
 using System.Numerics;
 using Godot;
 using Vector2 = Godot.Vector2;
-
 public partial class Player : CharacterBody2D
 {
 	// ===== HEALTH/STAMINA EXPORTS =====
@@ -51,6 +50,13 @@ public partial class Player : CharacterBody2D
 	[Export] private PackedScene bulletScene;
 	[Export] private Node2D bulletContainer;
 	[Export] private ProgressBar[] bulletBars;
+	
+	// ======= AUDIO EXPORTS =======
+	[ExportGroup("Audio System")]
+	[Export] private AudioStreamPlayer walkSFX;
+	[Export] private AudioStream walkSoundFile;
+	//[Export] private AudioStreamPlayer dodgeSFX;
+	//[Export] private AudioStreamPlayer swingSFX;
 
 	// System Components (not exported)
 	private HealthSystem healthSystem;
@@ -61,6 +67,7 @@ public partial class Player : CharacterBody2D
 	private RecoilSystem recoilSystem;
 	public bool CanMove { get; set; } = true;
 
+	
 	public override void _Ready()
 	{
 		// Initialize all systems with exported values
@@ -89,6 +96,7 @@ public partial class Player : CharacterBody2D
 			this,
 			healthSystem
 		);
+		
 		
 		shootingSystem = new ShootingSystem(maxShots, bulletCooldown, bulletScene, bulletContainer, bulletBars);
 
@@ -156,6 +164,19 @@ public partial class Player : CharacterBody2D
 
 			meleeSystem.TryAttack(moveDirection, recoilSystem);
 			shootingSystem.TryShoot(moveDirection, GlobalPosition);
+			
+			// Play walk SFX
+			if (moveDirection != Vector2.Zero)
+			{
+				if (!walkSFX.Playing)
+				{
+					walkSFX.Play();
+				}
+			}
+			else
+				{
+					walkSFX.Stop();
+				}
 		}
 
 		MoveAndSlide();
