@@ -113,6 +113,8 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 		// Try to attack if in range
 		if (CanAttack() && distance <= AttackRange)
 		{
+			GD.Print("⚔️ ATTACKING NOW!");
+
 			Attack(_player);
 			Velocity = Vector2.Zero;
 			MoveAndSlide();
@@ -145,7 +147,7 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 	// Check if enemy can attack
 	protected virtual bool CanAttack()
 	{
-		return !_isAttacking && _attackCooldownTimer <= 0f;
+		return !_isAttacking && _attackCooldownTimer <= 2f;
 	}
 	
 	// Main attack method
