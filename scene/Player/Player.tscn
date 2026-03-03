@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bdxac0jm2jtt2" path="res://scene/scripts/Player Scripts/Player.cs" id="1_4bggy"]
 [ext_resource type="PackedScene" uid="uid://77e4i6lmd7ih" path="res://scene/Player/Bullet.tscn" id="2_a1q3d"]
-[ext_resource type="Texture2D" uid="uid://41qneatxble4" path="res://sprites/mc/MC_Final_Sprite.png" id="3_a1q3d"]
+[ext_resource type="Texture2D" uid="uid://41qneatxble4" path="res://sprites/MC/MC_Final_Sprite.png" id="3_a1q3d"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_0fwxj"]
 radius = 10.98901
@@ -49,3 +49,7 @@ shape = SubResource("CircleShape2D_d75ba")
 debug_color = Color(0.9917659, 0, 0.2673412, 0.41960785)
 
 [node name="BulletContainer" type="Node2D" parent="."]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(1.5, 1.5)
+position_smoothing_enabled = true
