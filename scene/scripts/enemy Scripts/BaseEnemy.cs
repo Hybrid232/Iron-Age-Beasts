@@ -48,7 +48,7 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 		}
 	}
 	
-	// Called when damage is taken but enemy survives
+	// Called when damage is taken but enemy is still alive
 	protected virtual void OnDamageTaken(int damage)
 	{
 		// Override in derived classes for hit effects, sounds, etc.
@@ -59,7 +59,6 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 	protected virtual void Die()
 	{
 		GD.Print($"{Name} has died!");
-		// Play death animation, spawn drops, etc.
 		QueueFree(); // Remove enemy from scene
 	}
 
@@ -76,7 +75,7 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 	{
 		float dt = (float)delta;
 
-		// --- KNOCKBACK OVERRIDES AI ---
+		// --- KNOCKBACK OVERRIDES AI? ---
 		if (_knockbackTimer > 0f)
 		{
 			_knockbackTimer -= dt;
@@ -140,7 +139,6 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 		_knockbackVelocity = pushDir.Normalized() * speed;
 		_knockbackTimer = time;
 
-		// Optional: cancel attack/chase "locking" if you want knockback to interrupt
 		_isAttacking = false;
 	}
 
