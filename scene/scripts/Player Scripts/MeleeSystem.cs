@@ -15,6 +15,9 @@ public class MeleeSystem
 	
 	private HealthSystem healthSystem;
 	private Player player;
+	
+	private string targetGroup;
+	private Node2D owner;
 
 	private float attackTimer;
 	private bool isAttacking;
@@ -64,7 +67,8 @@ public class MeleeSystem
 		attackHitbox.AreaEntered += OnAttackAreaEntered;
 		attackHitbox.BodyEntered += OnAttackBodyEntered;
 	}
-
+	
+	
 	public void TryAttack(Vector2 direction, RecoilSystem recoilSystem)
 	{
 		if (!Input.IsActionJustPressed("attack") || direction == Vector2.Zero)
