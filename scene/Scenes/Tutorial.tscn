@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=4 uid="uid://6v4cj26pkfbu"]
+[gd_scene load_steps=13 format=4 uid="uid://6v4cj26pkfbu"]
 
 [ext_resource type="PackedScene" uid="uid://d38cvt67w5bgb" path="res://scene/Player/Player.tscn" id="1_00eeo"]
 [ext_resource type="PackedScene" uid="uid://mgdagjh6wa25" path="res://scene/Scenes/PauseMenu.tscn" id="1_w8gwm"]
@@ -6,7 +6,10 @@
 [ext_resource type="Script" uid="uid://ds0gpdaxyuvpe" path="res://scene/scripts/Player Scripts/UI.cs" id="3_fkj6s"]
 [ext_resource type="PackedScene" uid="uid://bbg6o4s7g1g0m" path="res://scene/enemy/Boss Healthbar.tscn" id="4_ujhhv"]
 [ext_resource type="PackedScene" uid="uid://b6m3oycxmqq7g" path="res://scene/NPC/NPC.tscn" id="5_qjufs"]
+[ext_resource type="Texture2D" uid="uid://cvcqwiun3qwbx" path="res://sprites/test/HealthBG.png" id="6_fkj6s"]
 [ext_resource type="PackedScene" uid="uid://djokcwtj4qkek" path="res://scene/enemy/Dilophosaurus.tscn" id="7_pbiin"]
+[ext_resource type="Texture2D" uid="uid://d08o5yyd2hgd0" path="res://sprites/test/HealthBar.png" id="7_ujhhv"]
+[ext_resource type="PackedScene" uid="uid://d4heq0i17knph" path="res://scene/enemy/TutorialBoss.tscn" id="10_ujhhv"]
 
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_hlpnd"]
 size = Vector2(300, 20)
@@ -97,6 +100,43 @@ tint_progress = Color(0.23137255, 0.5058824, 0.19607843, 1)
 
 [node name="PauseMenu" parent="HUD" instance=ExtResource("1_w8gwm")]
 
+[node name="BossUI" type="Control" parent="HUD"]
+layout_mode = 3
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -528.0
+offset_top = -40.0
+offset_right = 528.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="TextureProgressBar" type="TextureProgressBar" parent="HUD/BossUI"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -486.0
+offset_right = 666.0
+offset_bottom = 648.0
+grow_horizontal = 2
+scale = Vector2(0.86633056, 0.024066119)
+max_value = 300.0
+value = 300.0
+texture_under = ExtResource("6_fkj6s")
+texture_progress = ExtResource("7_ujhhv")
+
+[node name="Title" type="Label" parent="HUD/BossUI"]
+layout_mode = 1
+offset_left = 37.0
+offset_top = -61.000004
+offset_right = 108.0
+offset_bottom = -38.000004
+scale = Vector2(2.8422258, 2.6514251)
+text = "Voxspine"
+
 [node name="Boogins" parent="." instance=ExtResource("5_qjufs")]
 position = Vector2(785, 90)
 
@@ -105,3 +145,6 @@ position = Vector2(1523, 109)
 
 [node name="Dilophosaurus2" parent="." instance=ExtResource("7_pbiin")]
 position = Vector2(1086, 59)
+
+[node name="TutorialBoss" parent="." instance=ExtResource("10_ujhhv")]
+position = Vector2(7853, 37)
