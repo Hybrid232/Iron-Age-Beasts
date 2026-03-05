@@ -50,13 +50,15 @@ public partial class Player : CharacterBody2D
 	[Export] private PackedScene bulletScene;
 	[Export] private Node2D bulletContainer;
 	[Export] private ProgressBar[] bulletBars;
+	[Export] private AudioStreamPlayer gunSFX;
+	[Export] private AudioStream gunSoundFile;
 	
 	// ======= AUDIO EXPORTS =======
 	[ExportGroup("Audio System")]
 	[Export] private AudioStreamPlayer walkSFX;
 	[Export] private AudioStream walkSoundFile;
-	//[Export] private AudioStreamPlayer dodgeSFX;
-	//[Export] private AudioStreamPlayer swingSFX;
+	[Export] private AudioStreamPlayer swingSFX;
+	[Export] private AudioStream swingSoundFile;
 
 	// System Components (not exported)
 	private HealthSystem healthSystem;
@@ -98,7 +100,7 @@ public partial class Player : CharacterBody2D
 		);
 		
 		
-		shootingSystem = new ShootingSystem(maxShots, bulletCooldown, bulletScene, bulletContainer, bulletBars);
+		shootingSystem = new ShootingSystem(maxShots, bulletCooldown, bulletScene, bulletContainer, bulletBars, gunSFX, gunSoundFile);
 
 		meleeSystem.Initialize();
 	}
@@ -137,6 +139,7 @@ public partial class Player : CharacterBody2D
 		{
 			meleeSystem.UpdateAttack(dt);
 			Velocity = Vector2.Zero;
+			swingSFX.Play();
 		}
 		else if (dodgeSystem.IsDodging)
 		{
