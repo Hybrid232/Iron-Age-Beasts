@@ -1,14 +1,27 @@
-[gd_scene load_steps=5 format=3 uid="uid://d4heq0i17knph"]
+[gd_scene load_steps=8 format=3 uid="uid://d4heq0i17knph"]
 
 [ext_resource type="Script" uid="uid://bf4f5t0p3v7n6" path="res://scene/scripts/enemy Scripts/TutorialBoss.cs" id="1_4m671"]
 [ext_resource type="Texture2D" uid="uid://brhqgehvt7ib0" path="res://sprites/test/dino-miniboss.png" id="2_t0wen"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_82jai"]
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_4m671"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_t0wen"]
+radius = 49.0
+height = 154.0
+
 [sub_resource type="CircleShape2D" id="CircleShape2D_aaiw8"]
 
-[node name="TutorialBoss" type="CharacterBody2D"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4m671"]
+size = Vector2(8.358462, 20)
+
+[node name="TutorialBoss" type="CharacterBody2D" node_paths=PackedStringArray("BiteHitbox", "TailHitbox")]
+collision_layer = 2
+collision_mask = 3
 script = ExtResource("1_4m671")
+BiteHitbox = NodePath("Bite")
+TailHitbox = NodePath("TailSweep")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_t0wen")
@@ -22,21 +35,51 @@ rotation = -0.42689997
 scale = Vector2(11.257745, 9.378364)
 shape = SubResource("CircleShape2D_82jai")
 
-[node name="HitboxArea" type="Area2D" parent="."]
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="."]
+position = Vector2(-37.999992, -40.000004)
+rotation = -1.0903168
+scale = Vector2(5.555553, 12.557792)
+shape = SubResource("CircleShape2D_82jai")
+
+[node name="HurtboxArea" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxArea"]
+position = Vector2(-9.9999695, -4)
+scale = Vector2(17.479021, 12.74404)
+shape = SubResource("CircleShape2D_4m671")
+debug_color = Color(0, 0.6, 0.69803923, 0.78039217)
+
+[node name="Bite" type="Area2D" parent="."]
 collision_layer = 3
 collision_mask = 3
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxArea"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bite"]
+position = Vector2(-175, 32)
+rotation = 0.711291
+shape = SubResource("CapsuleShape2D_t0wen")
+debug_color = Color(0.76862746, 0, 0.16078432, 0.7254902)
+
+[node name="TailSweep" type="Area2D" parent="."]
+light_mask = 2
+visibility_layer = 3
+monitoring = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TailSweep"]
+scale = Vector2(26.68732, 19.915823)
 shape = SubResource("CircleShape2D_aaiw8")
+debug_color = Color(0.84705883, 0.3764706, 0, 0.62352943)
 
-[node name="HurtboxArea" type="Area2D" parent="."]
+[node name="Charge" type="Area2D" parent="."]
+light_mask = 2
+visibility_layer = 3
+monitoring = false
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxArea"]
-shape = SubResource("CircleShape2D_aaiw8")
-
-[node name="AttackArea" type="Area2D" parent="."]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
-shape = SubResource("CircleShape2D_aaiw8")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Charge"]
+position = Vector2(-172.35916, -26)
+scale = Vector2(19.056335, 6.338564)
+shape = SubResource("RectangleShape2D_4m671")
+debug_color = Color(0.191638, 0.6419517, 0, 0.62352943)
 
 [node name="StateTimer" type="Timer" parent="."]
