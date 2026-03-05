@@ -16,12 +16,13 @@ height = 154.0
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_4m671"]
 size = Vector2(8.358462, 20)
 
-[node name="TutorialBoss" type="CharacterBody2D" node_paths=PackedStringArray("BiteHitbox", "TailHitbox")]
+[node name="TutorialBoss" type="CharacterBody2D" node_paths=PackedStringArray("BiteHitbox", "TailHitbox", "ChargeHitbox")]
 collision_layer = 2
 collision_mask = 3
 script = ExtResource("1_4m671")
 BiteHitbox = NodePath("Bite")
 TailHitbox = NodePath("TailSweep")
+ChargeHitbox = NodePath("Charge")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_t0wen")

@@ -22,9 +22,7 @@ size = Vector2(300, 20)
 [node name="Player" parent="." node_paths=PackedStringArray("uiReference", "bulletBars") instance=ExtResource("1_00eeo")]
 light_mask = 2
 visibility_layer = 2
-position = Vector2(7265, 120)
-collision_layer = 3
-collision_mask = 3
+position = Vector2(5193, -47)
 uiReference = NodePath("../HUD")
 playerSpeed = 150
 bulletBars = [NodePath("../HUD/BulletBar0"), NodePath("../HUD/BulletBar1"), NodePath("../HUD/BulletBar2")]
@@ -108,9 +106,9 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -528.0
+offset_left = -635.0
 offset_top = -40.0
-offset_right = 528.0
+offset_right = 421.0
 grow_horizontal = 2
 grow_vertical = 0
 script = ExtResource("6_s3mw7")
@@ -150,3 +148,4 @@ position = Vector2(1086, 59)
 
 [node name="TutorialBoss" parent="." instance=ExtResource("10_ujhhv")]
 position = Vector2(7853, 37)
+BossUIPath = NodePath("../HUD/BossUI")
