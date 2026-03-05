@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://b83raa0sufs4v"]
+[gd_scene format=3 uid="uid://b83raa0sufs4v"]
 
 [ext_resource type="Texture2D" uid="uid://djpktvepla7xq" path="res://sprites/background/test background.jpg" id="1_gtqar"]
 [ext_resource type="Texture2D" uid="uid://c7kqv4j25x0ms" path="res://sprites/test/dino enemy.png" id="2_0vdwb"]
@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://djokcwtj4qkek" path="res://scene/enemy/Dilophosaurus.tscn" id="7_qdpo3"]
 [ext_resource type="Script" uid="uid://dt62qwb6ahakj" path="res://scene/scripts/NPC Scripts/NPC.cs" id="8_78shh"]
 [ext_resource type="Texture2D" uid="uid://bsunr61kjpenk" path="res://sprites/test/NPC_boogins.jpg" id="9_q0frb"]
+[ext_resource type="AudioStream" uid="uid://dgd7yh4png1ip" path="res://Audio/SFX/Ambient/Forest sounds - Wind, Birds.wav" id="10_q0frb"]
 
 [sub_resource type="GDScript" id="GDScript_0d08p"]
 script/source = "extends Node2D
@@ -31,20 +32,20 @@ size = Vector2(300, 20)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_6pjo8"]
 
-[node name="TestWorld" type="Node2D"]
+[node name="TestWorld" type="Node2D" unique_id=660536994]
 script = SubResource("GDScript_0d08p")
 
-[node name="TestBackground" type="Sprite2D" parent="."]
+[node name="TestBackground" type="Sprite2D" parent="." unique_id=1352056252]
 position = Vector2(600, 320)
 texture = ExtResource("1_gtqar")
 
-[node name="DinoEnemy" type="Sprite2D" parent="."]
+[node name="DinoEnemy" type="Sprite2D" parent="." unique_id=797435679]
 z_index = 1
 position = Vector2(694.00006, 439)
 scale = Vector2(0.1, 0.1)
 texture = ExtResource("2_0vdwb")
 
-[node name="Player" parent="." node_paths=PackedStringArray("uiReference", "bulletBars") instance=ExtResource("3_04lnv")]
+[node name="Player" parent="." unique_id=638266255 node_paths=PackedStringArray("uiReference", "bulletBars") instance=ExtResource("3_04lnv")]
 z_index = 1
 position = Vector2(555, 383)
 disable_mode = 1
@@ -56,7 +57,7 @@ staminaCost = 20
 staminaBuffer = 5
 bulletBars = [NodePath("../HUD/BulletBar0"), NodePath("../HUD/BulletBar1"), NodePath("../HUD/BulletBar2")]
 
-[node name="Camera2D" type="Camera2D" parent="Player"]
+[node name="Camera2D" type="Camera2D" parent="Player" unique_id=1062170694]
 visible = false
 position = Vector2(0, -2)
 zoom = Vector2(2, 2)
@@ -67,41 +68,41 @@ limit_bottom = 615
 limit_smoothed = true
 position_smoothing_enabled = true
 
-[node name="HUD" type="CanvasLayer" parent="." node_paths=PackedStringArray("healthBar", "staminaBar")]
+[node name="HUD" type="CanvasLayer" parent="." unique_id=2064188619 node_paths=PackedStringArray("healthBar", "staminaBar")]
 layer = 2
 script = ExtResource("4_qdpo3")
 healthBar = NodePath("PlayerHealthBar")
 staminaBar = NodePath("PlayerStaminaBar")
 
-[node name="BossHealthbar" parent="HUD" instance=ExtResource("5_04lnv")]
+[node name="BossHealthbar" parent="HUD" unique_id=1731484489 instance=ExtResource("5_04lnv")]
 visible = false
 offset_left = 13.0
 offset_top = -9.0
 offset_right = 13.0
 offset_bottom = -9.0
 
-[node name="BulletBar0" type="ProgressBar" parent="HUD"]
+[node name="BulletBar0" type="ProgressBar" parent="HUD" unique_id=315245885]
 offset_left = 25.0
 offset_top = 55.0
 offset_right = 73.0
 offset_bottom = 82.0
 value = 100.0
 
-[node name="BulletBar1" type="ProgressBar" parent="HUD"]
+[node name="BulletBar1" type="ProgressBar" parent="HUD" unique_id=791343464]
 offset_left = 81.0
 offset_top = 55.0
 offset_right = 129.0
 offset_bottom = 82.0
 value = 100.0
 
-[node name="BulletBar2" type="ProgressBar" parent="HUD"]
+[node name="BulletBar2" type="ProgressBar" parent="HUD" unique_id=678133668]
 offset_left = 137.0
 offset_top = 55.0
 offset_right = 185.0
 offset_bottom = 82.0
 value = 100.0
 
-[node name="PlayerHealthBar" type="TextureProgressBar" parent="HUD"]
+[node name="PlayerHealthBar" type="TextureProgressBar" parent="HUD" unique_id=1441900884]
 offset_left = 24.0
 offset_top = 16.0
 offset_right = 324.0
@@ -111,7 +112,7 @@ value = 100.0
 texture_progress = SubResource("PlaceholderTexture2D_go75h")
 tint_progress = Color(1, 0, 0, 1)
 
-[node name="PlayerStaminaBar" type="TextureProgressBar" parent="HUD"]
+[node name="PlayerStaminaBar" type="TextureProgressBar" parent="HUD" unique_id=390984346]
 offset_left = 24.000002
 offset_top = 29.000002
 offset_right = 324.0
@@ -123,21 +124,21 @@ texture_progress = SubResource("PlaceholderTexture2D_go75h")
 tint_under = Color(0.33617434, 0.55851936, 3.85046e-07, 1)
 tint_progress = Color(0.23137255, 0.5058824, 0.19607843, 1)
 
-[node name="DinoMiniboss" type="Sprite2D" parent="."]
+[node name="DinoMiniboss" type="Sprite2D" parent="." unique_id=350842082]
 position = Vector2(525, 192)
 scale = Vector2(-0.51688313, 0.40375453)
 texture = ExtResource("5_0vdwb")
 
-[node name="Dilophosaurus" parent="." instance=ExtResource("7_qdpo3")]
+[node name="Dilophosaurus" parent="." unique_id=660398318 instance=ExtResource("7_qdpo3")]
 position = Vector2(417, 408)
 
-[node name="Dilophosaurus2" parent="." instance=ExtResource("7_qdpo3")]
+[node name="Dilophosaurus2" parent="." unique_id=1628902254 instance=ExtResource("7_qdpo3")]
 position = Vector2(877, 206)
 
-[node name="Dilophosaurus3" parent="." instance=ExtResource("7_qdpo3")]
+[node name="Dilophosaurus3" parent="." unique_id=1344798613 instance=ExtResource("7_qdpo3")]
 position = Vector2(389, 74)
 
-[node name="NPC" type="Node2D" parent="." node_paths=PackedStringArray("_menu", "_dialogueLabel", "_speakButton")]
+[node name="NPC" type="Node2D" parent="." unique_id=1407386263 node_paths=PackedStringArray("_menu", "_dialogueLabel", "_speakButton")]
 position = Vector2(1000, 450)
 scale = Vector2(0.1, 0.1)
 script = ExtResource("8_78shh")
@@ -145,31 +146,31 @@ _menu = NodePath("CanvasLayer/Panel")
 _dialogueLabel = NodePath("CanvasLayer/Panel/DialogueLabel")
 _speakButton = NodePath("CanvasLayer/Panel/SpeakButton")
 
-[node name="Sprite2D" type="Sprite2D" parent="NPC"]
+[node name="Sprite2D" type="Sprite2D" parent="NPC" unique_id=204610886]
 texture = ExtResource("9_q0frb")
 
-[node name="Area2D" type="Area2D" parent="NPC"]
+[node name="Area2D" type="Area2D" parent="NPC" unique_id=832133569]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="NPC/Area2D"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="NPC/Area2D" unique_id=118365826]
 scale = Vector2(70, 70)
 shape = SubResource("CircleShape2D_6pjo8")
 
-[node name="CanvasLayer" type="CanvasLayer" parent="NPC"]
+[node name="CanvasLayer" type="CanvasLayer" parent="NPC" unique_id=866233120]
 
-[node name="Panel" type="Panel" parent="NPC/CanvasLayer"]
+[node name="Panel" type="Panel" parent="NPC/CanvasLayer" unique_id=755288021]
 offset_left = 41.0
 offset_top = 101.0
 offset_right = 1125.0
 offset_bottom = 459.0
 
-[node name="DialogueLabel" type="Label" parent="NPC/CanvasLayer/Panel"]
+[node name="DialogueLabel" type="Label" parent="NPC/CanvasLayer/Panel" unique_id=1839800144]
 layout_mode = 0
 offset_left = 25.0
 offset_top = 25.0
 offset_right = 65.0
 offset_bottom = 48.0
 
-[node name="SpeakButton" type="Button" parent="NPC/CanvasLayer/Panel"]
+[node name="SpeakButton" type="Button" parent="NPC/CanvasLayer/Panel" unique_id=1779628789]
 layout_mode = 0
 offset_left = 22.0
 offset_top = 285.0
@@ -177,13 +178,20 @@ offset_right = 96.0
 offset_bottom = 328.0
 text = "Talk"
 
-[node name="PurchaseButton" type="Button" parent="NPC/CanvasLayer/Panel"]
+[node name="PurchaseButton" type="Button" parent="NPC/CanvasLayer/Panel" unique_id=1037005821]
 layout_mode = 0
 offset_left = 109.0
 offset_top = 285.0
 offset_right = 208.0
 offset_bottom = 329.0
 text = "Purchase"
+
+[node name="Audio" type="Node" parent="." unique_id=620917376]
+
+[node name="AmbientWind" type="AudioStreamPlayer" parent="Audio" unique_id=1255045168]
+stream = ExtResource("10_q0frb")
+volume_db = -12.0
+autoplay = true
 
 [connection signal="body_entered" from="NPC/Area2D" to="NPC" method="OnAreaBodyEntered"]
 [connection signal="body_exited" from="NPC/Area2D" to="NPC" method="OnAreaBodyExited"]
