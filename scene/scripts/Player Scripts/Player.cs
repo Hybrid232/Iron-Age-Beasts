@@ -52,6 +52,15 @@ public partial class Player : CharacterBody2D, IDamageable
 	[Export] private PackedScene bulletScene;
 	[Export] private Node2D bulletContainer;
 	[Export] private ProgressBar[] bulletBars;
+	[Export] private AudioStreamPlayer gunSFX;
+	[Export] private AudioStream gunSoundFile;
+	
+	// ======= AUDIO EXPORTS =======
+	[ExportGroup("Audio System")]
+	[Export] private AudioStreamPlayer walkSFX;
+	[Export] private AudioStream walkSoundFile;
+	[Export] private AudioStreamPlayer swingSFX;
+	[Export] private AudioStream swingSoundFile;
 
 	// System Components (not exported)
 	private HealthSystem healthSystem;
@@ -62,6 +71,7 @@ public partial class Player : CharacterBody2D, IDamageable
 	private RecoilSystem recoilSystem;
 	public bool CanMove { get; set; } = true;
 
+	
 	public override void _Ready()
 	{
 		// Initialize all systems with exported values
@@ -91,7 +101,8 @@ public partial class Player : CharacterBody2D, IDamageable
 			healthSystem
 		);
 		
-		shootingSystem = new ShootingSystem(maxShots, bulletCooldown, bulletScene, bulletContainer, bulletBars);
+		
+		shootingSystem = new ShootingSystem(maxShots, bulletCooldown, bulletScene, bulletContainer, bulletBars, gunSFX, gunSoundFile);
 
 		meleeSystem.Initialize();
 	}
@@ -127,6 +138,7 @@ public partial class Player : CharacterBody2D, IDamageable
 		{
 			meleeSystem.UpdateAttack(dt);
 			Velocity = Vector2.Zero;
+			swingSFX.Play();
 		}
 		else if (dodgeSystem.IsDodging)
 		{
@@ -154,6 +166,19 @@ public partial class Player : CharacterBody2D, IDamageable
 
 			meleeSystem.TryAttack(moveDirection, recoilSystem);
 			shootingSystem.TryShoot(moveDirection, GlobalPosition);
+			
+			// Play walk SFX
+			if (moveDirection != Vector2.Zero)
+			{
+				if (!walkSFX.Playing)
+				{
+					walkSFX.Play();
+				}
+			}
+			else
+				{
+					walkSFX.Stop();
+				}
 		}
 
 		MoveAndSlide();
