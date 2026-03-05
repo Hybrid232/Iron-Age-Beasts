@@ -41,17 +41,7 @@ public class HealthSystem
 		uiReference?.InitializeHealth(maxHealth, currentHealth);
 		uiReference?.InitializeStamina(maxStamina, currentStamina);
 	}
-	
-	public void HandleDebugInput(InputEvent @event)
-	{
-		if (@event is InputEventKey eventKey && eventKey.Pressed && !eventKey.Echo)
-		{
-			if (eventKey.Keycode == Key.J) ChangeHealth(-5);
-			if (eventKey.Keycode == Key.K) ChangeHealth(5);
-			if (eventKey.Keycode == Key.U) ChangeStamina(-5);
-			if (eventKey.Keycode == Key.I) ChangeStamina(5);
-		}
-	}
+
 	
 	public void ChangeHealth(int amount)
 	{

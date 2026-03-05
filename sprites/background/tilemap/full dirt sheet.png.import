@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://41qneatxble4"
-path="res://.godot/imported/MC_Final_Sprite.png-cc18d81da4525880ac2df8bea427bd44.ctex"
+uid="uid://inwftgw6e04w"
+path="res://.godot/imported/full dirt sheet.png-99d209deab439c4f2d8a6de36c08bd14.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/mc/MC_Final_Sprite.png"
-dest_files=["res://.godot/imported/MC_Final_Sprite.png-cc18d81da4525880ac2df8bea427bd44.ctex"]
+source_file="res://sprites/background/tilemap/full dirt sheet.png"
+dest_files=["res://.godot/imported/full dirt sheet.png-99d209deab439c4f2d8a6de36c08bd14.ctex"]
 
 [params]
 

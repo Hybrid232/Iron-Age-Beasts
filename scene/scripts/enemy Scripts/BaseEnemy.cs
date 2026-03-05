@@ -3,29 +3,31 @@ using Godot;
 
 public partial class BaseEnemy : CharacterBody2D, IDamageable
 {
+	[ExportGroup("Movement")]
 	[Export] public float Speed = 60f;
 	[Export] public float StopDistance = 8f;
+
+	[ExportGroup("Combat")]
+	[Export] public int MaxHealth = 50;
+	[Export] public int AttackDamage = 20;
 	[Export] public float AttackRange = 15f;
-	[Export] public int AttackDamage = 10;
 	[Export] public float AttackCooldown = 1.5f;
 	[Export] public string PlayerGroup = "player";
-	
-	// Add health system
-	[Export] public int MaxHealth = 50;
-	[Export] protected int _currentHealth;
-	
-	protected Node2D _player = null;
-	protected bool _chasing = false;
+
+
+	// State Variables
+	protected int _currentHealth;
 	protected float _attackCooldownTimer = 0f;
 	protected bool _isAttacking = false;
-	
-	// Knockback state
+	protected bool _chasing = false;
+	protected Node2D _player = null;
+
+	// Knockback State
 	private float _knockbackTimer = 0f;
 	private Vector2 _knockbackVelocity = Vector2.Zero;
 
 	public override void _Ready()
 	{
-		// Initialize health
 		_currentHealth = MaxHealth;
 	}
 	
@@ -46,7 +48,7 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 		}
 	}
 	
-	// Called when damage is taken but enemy survives
+	// Called when damage is taken but enemy is still alive
 	protected virtual void OnDamageTaken(int damage)
 	{
 		// Override in derived classes for hit effects, sounds, etc.
@@ -57,7 +59,6 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 	protected virtual void Die()
 	{
 		GD.Print($"{Name} has died!");
-		// Play death animation, spawn drops, etc.
 		QueueFree(); // Remove enemy from scene
 	}
 
@@ -74,7 +75,7 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 	{
 		float dt = (float)delta;
 
-		// --- KNOCKBACK OVERRIDES AI ---
+		// --- KNOCKBACK OVERRIDES AI? ---
 		if (_knockbackTimer > 0f)
 		{
 			_knockbackTimer -= dt;
@@ -112,6 +113,8 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 		// Try to attack if in range
 		if (CanAttack() && distance <= AttackRange)
 		{
+			GD.Print("⚔️ ATTACKING NOW!");
+
 			Attack(_player);
 			Velocity = Vector2.Zero;
 			MoveAndSlide();
@@ -138,14 +141,13 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 		_knockbackVelocity = pushDir.Normalized() * speed;
 		_knockbackTimer = time;
 
-		// Optional: cancel attack/chase "locking" if you want knockback to interrupt
 		_isAttacking = false;
 	}
 
 	// Check if enemy can attack
 	protected virtual bool CanAttack()
 	{
-		return !_isAttacking && _attackCooldownTimer <= 0f;
+		return !_isAttacking && _attackCooldownTimer <= 2f;
 	}
 	
 	// Main attack method
@@ -173,7 +175,9 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 		if (target is IDamageable damageable)
 		{
 			damageable.TakeDamage(AttackDamage);
-			GD.Print($"Dealt {AttackDamage} damage to {target.Name}");
+		}
+		else
+		{
 		}
 	}
 	
@@ -196,13 +200,43 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 	{
 		_player = player;
 		_chasing = true;
-		GD.Print("Player detected 👀");
 	}
 	
 	protected virtual void OnPlayerLost(Node2D player)
 	{
 		_player = null;
 		_chasing = false;
-		GD.Print("Player left detection ❌");
+	}
+	
+	// Link this to your Area2D (Hitbox) 'body_entered' signal in the editor
+
+
+
+	public void _on_hurt_box_body_entered(Node2D body)
+	{
+		GD.Print($"HurtBox touched: {body.Name}");
+		
+		if (body is IDamageable damageable && body.IsInGroup(PlayerGroup))
+		{
+			GD.Print($"{body.Name} is Damageable!");
+			
+			// 1. Calculate direction for knockback (from Enemy to Player)
+			Vector2 knockbackDirection = (body.GlobalPosition - GlobalPosition).Normalized();
+			
+			
+			// 2. Deal damage
+			damageable.TakeDamage(AttackDamage);
+
+			
+			// 4. Keep your existing recoil trigger
+			if (body is Player player)
+			{
+				player.TriggerHitRecoil(knockbackDirection);
+				GD.Print($"==========PUSHBACK============");
+
+			}
+			
+			GD.Print($"Hit Player for {AttackDamage} damage!");
+		}
 	}
 }

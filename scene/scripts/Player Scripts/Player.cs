@@ -1,7 +1,9 @@
 using System.Numerics;
 using Godot;
 using Vector2 = Godot.Vector2;
-public partial class Player : CharacterBody2D
+
+
+public partial class Player : CharacterBody2D, IDamageable
 {
 	// ===== HEALTH/STAMINA EXPORTS =====
 	[ExportGroup("Health System")]
@@ -26,8 +28,8 @@ public partial class Player : CharacterBody2D
 
 	// ===== RECOIL EXPORTS =====
 	[ExportGroup("Recoil System")]
-	[Export] private float hitRecoilDistance = 12f;
-	[Export] private float hitRecoilTime = 0.06f;
+	[Export] private float hitRecoilDistance = 59f;
+	[Export] private float hitRecoilTime = 0.3f;
 	[Export] private float playerRecoilDistance = 12f;
 	[Export] private float recoilTime = 0.06f;
 
@@ -105,10 +107,7 @@ public partial class Player : CharacterBody2D
 		meleeSystem.Initialize();
 	}
 
-	public override void _UnhandledInput(InputEvent @event)
-	{
-		healthSystem.HandleDebugInput(@event);
-	}
+	
 
 	public override void _PhysicsProcess(double delta)
 	{
@@ -184,8 +183,37 @@ public partial class Player : CharacterBody2D
 
 		MoveAndSlide();
 	}
+	
 
-	// Public API for systems to interact with player
-	public Vector2 GetGlobalPosition() => GlobalPosition;
-	public void TriggerHitRecoil(Vector2 pushDirection) => recoilSystem.StartHitRecoil(pushDirection);
+	public void TriggerHitRecoil(Vector2 pushDirection) 
+	{
+		GD.Print($"========== TriggerHitRecoil called ==========");
+		GD.Print($"Push direction: {pushDirection}");
+		recoilSystem.StartHitRecoil(pushDirection);
+		GD.Print($"Is in recoil now? {recoilSystem.IsInRecoil()}");
+	}
+	
+	public void TakeDamage(int damage)
+	{
+		// This is where the enemy "touches" the health bar
+		healthSystem.ChangeHealth(-damage);
+		
+		// You can also trigger your existing recoil here!
+		TriggerHitRecoil(Vector2.Zero);
+		
+		GD.Print($"Ouch! Player health: {healthSystem.CurrentHealth}");
+	}
+	
+	public void ApplyKnockback(Vector2 force)
+	{
+		// Convert force to direction and let recoil system handle it
+		if (force.Length() > 0)
+		{
+			Vector2 direction = force.Normalized();
+			recoilSystem.StartHitRecoil(direction);
+			GD.Print($"Knockback applied via recoil system! Force: {force}");
+		}
+	}
+
+	
 }

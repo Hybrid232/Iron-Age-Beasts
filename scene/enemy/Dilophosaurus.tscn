@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://djokcwtj4qkek"]
+[gd_scene load_steps=9 format=3 uid="uid://djokcwtj4qkek"]
 
 [ext_resource type="Script" uid="uid://jjo4fptopbh2" path="res://scene/scripts/enemy Scripts/Dilophosaurus.cs" id="1_ok0wq"]
 [ext_resource type="Texture2D" uid="uid://c7kqv4j25x0ms" path="res://sprites/test/dino enemy.png" id="2_qdkvu"]
@@ -14,11 +14,14 @@ radius = 1.9416487
 [sub_resource type="CircleShape2D" id="CircleShape2D_itp1y"]
 radius = 146.02174
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5tfgd"]
+size = Vector2(30, 20)
+
 [node name="Dilophosaurus" type="CharacterBody2D" groups=["enemy_hurtbox"]]
+collision_layer = 3
+collision_mask = 3
 script = ExtResource("1_ok0wq")
 Speed = 100.0
-MaxHealth = 100
-_currentHealth = 100
 
 [node name="DinoEnemy" type="Sprite2D" parent="."]
 position = Vector2(8, -1)
@@ -63,5 +66,13 @@ texture_under = ExtResource("3_5tfgd")
 texture_progress = ExtResource("4_04kl5")
 tint_under = Color(0.82090443, 0.2227655, 0.13294452, 1)
 
+[node name="AttackArea" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
+position = Vector2(-29, 9)
+shape = SubResource("RectangleShape2D_5tfgd")
+debug_color = Color(0.87263906, 0.34679672, 0.0725858, 0.41960785)
+
+[connection signal="body_entered" from="HurtBox" to="." method="_on_hurt_box_body_entered"]
 [connection signal="body_entered" from="detection_area" to="." method="_on_detection_area_body_entered"]
 [connection signal="body_exited" from="detection_area" to="." method="_on_detection_area_body_exited"]

@@ -1,0 +1,42 @@
+[gd_scene load_steps=5 format=3 uid="uid://d4heq0i17knph"]
+
+[ext_resource type="Script" uid="uid://bf4f5t0p3v7n6" path="res://scene/scripts/enemy Scripts/TutorialBoss.cs" id="1_4m671"]
+[ext_resource type="Texture2D" uid="uid://brhqgehvt7ib0" path="res://sprites/test/dino-miniboss.png" id="2_t0wen"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_82jai"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_aaiw8"]
+
+[node name="TutorialBoss" type="CharacterBody2D"]
+script = ExtResource("1_4m671")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_t0wen")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+root_node = NodePath("../Sprite2D")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(5.000004, 66)
+rotation = -0.42689997
+scale = Vector2(11.257745, 9.378364)
+shape = SubResource("CircleShape2D_82jai")
+
+[node name="HitboxArea" type="Area2D" parent="."]
+collision_layer = 3
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxArea"]
+shape = SubResource("CircleShape2D_aaiw8")
+
+[node name="HurtboxArea" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxArea"]
+shape = SubResource("CircleShape2D_aaiw8")
+
+[node name="AttackArea" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
+shape = SubResource("CircleShape2D_aaiw8")
+
+[node name="StateTimer" type="Timer" parent="."]

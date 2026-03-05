@@ -51,7 +51,7 @@ public class RecoilSystem
 	public void StartHitRecoil(Vector2 pushDirection)
 	{
 		if (pushDirection == Vector2.Zero) return;
-		Vector2 awayFromEnemy = -pushDirection.Normalized();
+		Vector2 awayFromEnemy = pushDirection.Normalized();
 		float speed = hitRecoilTime > 0f ? (hitRecoilDistance / hitRecoilTime) : 0f;
 		hitRecoilVelocity = awayFromEnemy * speed;
 		hitRecoilTimer = hitRecoilTime;
