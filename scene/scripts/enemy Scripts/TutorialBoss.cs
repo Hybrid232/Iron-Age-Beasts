@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
 public partial class TutorialBoss : BaseEnemy
 {
@@ -30,7 +31,7 @@ public partial class TutorialBoss : BaseEnemy
 	[ExportGroup("Ranges")]
 	[Export] public float BiteRange = 40f;
 	[Export] public float TailSweepRange = 85f;
-	[Export] public float MinChargeRange = 120f; // only charge if player is far enough
+	[Export] public float MinChargeRange = 120f;
 
 	[ExportGroup("Damages")]
 	[Export] public int BiteDamage = 20;
@@ -73,11 +74,13 @@ public partial class TutorialBoss : BaseEnemy
 
 	private Vector2 chargeDir = Vector2.Zero;
 
+	// NEW: prevents multi-hits per active window (Souls-like)
+	private readonly HashSet<ulong> hitTargetsThisActive = new();
+
 	public override void _Ready()
 	{
 		base._Ready();
 
-		// BaseEnemy uses _player + _chasing; ensure we have player reference immediately
 		_player = GetTree().GetFirstNodeInGroup("Player") as Node2D;
 		_chasing = _player != null;
 
@@ -114,12 +117,6 @@ public partial class TutorialBoss : BaseEnemy
 
 	public override void _PhysicsProcess(double delta)
 	{
-		// keep BaseEnemy knockback behavior
-		// NOTE: BaseEnemy _PhysicsProcess includes a full chase/attack routine we don't want.
-		// So we copy its knockback early-return behavior by calling base first would run its AI.
-		// Instead, we rely on BaseEnemy.ApplyKnockback() data by checking Velocity override:
-		// Easiest approach: DO NOT call base._PhysicsProcess here; we implement boss AI entirely.
-
 		float dt = (float)delta;
 
 		if (_player == null || !IsInstanceValid(_player))
@@ -131,12 +128,14 @@ public partial class TutorialBoss : BaseEnemy
 		if (state == BossState.Dead)
 			return;
 
-		// If you want boss knockback support like BaseEnemy:
-		// BaseEnemy has private knockback fields, so boss can't read them.
-		// If knockback is important for the boss, we should refactor BaseEnemy later.
-		// For now: boss ignores knockback (or we implement boss-local knockback).
-
 		UpdateState(dt);
+
+		// NEW: reliable damage during active even if player was already overlapping
+		if (state == BossState.Active)
+		{
+			ApplyActiveHitboxDamage(currentAttack);
+		}
+
 		MoveAndSlide();
 	}
 
@@ -150,7 +149,6 @@ public partial class TutorialBoss : BaseEnemy
 			phase2 = true;
 			Speed = baseSpeed * Phase2SpeedMultiplier;
 
-			// Optional: make him “meaner” in phase2
 			BiteCooldown *= 0.85f;
 			TailCooldown *= 0.85f;
 		}
@@ -174,7 +172,10 @@ public partial class TutorialBoss : BaseEnemy
 			case BossState.Telegraph:
 			case BossState.Active:
 			case BossState.Recover:
-				Velocity = Vector2.Zero; // except charge sets velocity during active
+				// IMPORTANT: don't zero velocity during Charge Active
+				if (!(state == BossState.Active && currentAttack == BossAttack.Charge))
+					Velocity = Vector2.Zero;
+
 				stateTimer -= dt;
 				if (stateTimer <= 0f)
 					AdvanceAttackPhase();
@@ -202,10 +203,6 @@ public partial class TutorialBoss : BaseEnemy
 
 		bool chargeUnlocked = phase2 && UnlockChargeAt40Percent;
 
-		// Priority order (Souls-like):
-		// 1) Bite if very close
-		// 2) Tail if close/mid
-		// 3) Charge if far AND unlocked
 		if (dist <= BiteRange && biteCd <= 0f)
 		{
 			StartAttack(BossAttack.Bite);
@@ -233,11 +230,9 @@ public partial class TutorialBoss : BaseEnemy
 		currentAttack = attack;
 		state = BossState.Telegraph;
 
-		// cache charge direction at commit time
 		if (attack == BossAttack.Charge)
 			chargeDir = (_player.GlobalPosition - GlobalPosition).Normalized();
 
-		// all hitboxes off at start
 		SetHitboxEnabled(BiteHitbox, false);
 		SetHitboxEnabled(TailHitbox, false);
 		SetHitboxEnabled(ChargeHitbox, false);
@@ -252,12 +247,12 @@ public partial class TutorialBoss : BaseEnemy
 			state = BossState.Active;
 			stateTimer = GetActiveTime(currentAttack);
 
-			// enable correct hitbox and behavior
+			hitTargetsThisActive.Clear();
+
 			EnableAttackHitbox(currentAttack, true);
 
 			if (currentAttack == BossAttack.Charge)
 			{
-				// move during charge active
 				Velocity = chargeDir * (Speed * 2.2f);
 			}
 
@@ -266,7 +261,6 @@ public partial class TutorialBoss : BaseEnemy
 
 		if (state == BossState.Active)
 		{
-			// end active window
 			EnableAttackHitbox(currentAttack, false);
 			Velocity = Vector2.Zero;
 
@@ -327,12 +321,53 @@ public partial class TutorialBoss : BaseEnemy
 	{
 		if (hitbox == null) return;
 
+		// Keep BodyEntered as "bonus" damage event
 		hitbox.BodyEntered += body =>
 		{
-			if (state != BossState.Active) return; // safety
+			if (state != BossState.Active) return;
 			if (body is IDamageable dmg)
 				dmg.TakeDamage(damage);
 		};
+	}
+
+	// NEW: active overlap check
+	private void ApplyActiveHitboxDamage(BossAttack a)
+	{
+		Area2D hitbox = a switch
+		{
+			BossAttack.Bite => BiteHitbox,
+			BossAttack.TailSweep => TailHitbox,
+			BossAttack.Charge => ChargeHitbox,
+			_ => null
+		};
+
+		int dmg = a switch
+		{
+			BossAttack.Bite => BiteDamage,
+			BossAttack.TailSweep => TailDamage,
+			BossAttack.Charge => ChargeDamage,
+			_ => 0
+		};
+
+		if (hitbox == null || dmg <= 0) return;
+		if (!hitbox.Monitoring) return;
+
+		var bodies = hitbox.GetOverlappingBodies();
+		foreach (var obj in bodies)
+		{
+			if (obj is not Node2D body) continue;
+			if (body is not IDamageable damageable) continue;
+
+			ulong id = body.GetInstanceId();
+			if (hitTargetsThisActive.Contains(id)) continue;
+
+			hitTargetsThisActive.Add(id);
+			damageable.TakeDamage(dmg);
+
+			// Optional knockback on player:
+			// if (body is Player p)
+			//     p.TriggerHitRecoil((p.GlobalPosition - GlobalPosition).Normalized());
+		}
 	}
 
 	private void SetHitboxEnabled(Area2D hitbox, bool enabled)
@@ -352,6 +387,7 @@ public partial class TutorialBoss : BaseEnemy
 	{
 		state = BossState.Dead;
 		Velocity = Vector2.Zero;
+
 		SetHitboxEnabled(BiteHitbox, false);
 		SetHitboxEnabled(TailHitbox, false);
 		SetHitboxEnabled(ChargeHitbox, false);

@@ -220,20 +220,13 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 		{
 			GD.Print($"{body.Name} is Damageable!");
 			
-			// 1. Calculate direction for knockback (from Enemy to Player)
 			Vector2 knockbackDirection = (body.GlobalPosition - GlobalPosition).Normalized();
-			
-			
-			// 2. Deal damage
 			damageable.TakeDamage(AttackDamage);
 
-			
-			// 4. Keep your existing recoil trigger
 			if (body is Player player)
 			{
 				player.TriggerHitRecoil(knockbackDirection);
 				GD.Print($"==========PUSHBACK============");
-
 			}
 			
 			GD.Print($"Hit Player for {AttackDamage} damage!");
