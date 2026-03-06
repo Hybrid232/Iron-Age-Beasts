@@ -61,6 +61,9 @@ public partial class TutorialBoss : BaseEnemy
 	[Export] public Area2D TailHitbox;
 	[Export] public Area2D ChargeHitbox;
 
+	[ExportGroup("Knockback")]
+	[Export] public bool DebugPrintHitboxOverlaps = false;
+
 	private IBossUI bossUI;
 
 	private BossState state = BossState.Chasing;
@@ -74,22 +77,25 @@ public partial class TutorialBoss : BaseEnemy
 
 	private Vector2 chargeDir = Vector2.Zero;
 
-	// NEW: prevents multi-hits per active window (Souls-like)
+	// Prevents multi-hits per active window
 	private readonly HashSet<ulong> hitTargetsThisActive = new();
 
 	public override void _Ready()
 	{
 		base._Ready();
 
-		_player = GetTree().GetFirstNodeInGroup("Player") as Node2D;
+		// Your player group is "Player"
+		PlayerGroup = "Player";
+
+		_player = GetTree().GetFirstNodeInGroup(PlayerGroup) as Node2D;
 		_chasing = _player != null;
 
 		baseSpeed = Speed;
 
-		SetupHitbox(BiteHitbox, BiteDamage);
-		SetupHitbox(TailHitbox, TailDamage);
-		SetupHitbox(ChargeHitbox, ChargeDamage);
+		// NEW: Make range checks match the actual hitbox collision size
+		AutoFillRangesFromHitboxes();
 
+		// Start hitboxes disabled (including their shapes, recursively)
 		SetHitboxEnabled(BiteHitbox, false);
 		SetHitboxEnabled(TailHitbox, false);
 		SetHitboxEnabled(ChargeHitbox, false);
@@ -119,9 +125,10 @@ public partial class TutorialBoss : BaseEnemy
 	{
 		float dt = (float)delta;
 
+		// Reacquire player if needed
 		if (_player == null || !IsInstanceValid(_player))
 		{
-			_player = GetTree().GetFirstNodeInGroup("Player") as Node2D;
+			_player = GetTree().GetFirstNodeInGroup(PlayerGroup) as Node2D;
 			_chasing = _player != null;
 		}
 
@@ -130,11 +137,9 @@ public partial class TutorialBoss : BaseEnemy
 
 		UpdateState(dt);
 
-		// NEW: reliable damage during active even if player was already overlapping
+		// Deal damage during Active (works even if player was already inside the area)
 		if (state == BossState.Active)
-		{
 			ApplyActiveHitboxDamage(currentAttack);
-		}
 
 		MoveAndSlide();
 	}
@@ -172,7 +177,7 @@ public partial class TutorialBoss : BaseEnemy
 			case BossState.Telegraph:
 			case BossState.Active:
 			case BossState.Recover:
-				// IMPORTANT: don't zero velocity during Charge Active
+				// stop during telegraph/recover; during active only charge moves
 				if (!(state == BossState.Active && currentAttack == BossAttack.Charge))
 					Velocity = Vector2.Zero;
 
@@ -199,8 +204,9 @@ public partial class TutorialBoss : BaseEnemy
 
 	private void TryPickAttack()
 	{
-		float dist = GlobalPosition.DistanceTo(_player.GlobalPosition);
+		if (_player == null) return;
 
+		float dist = GlobalPosition.DistanceTo(_player.GlobalPosition);
 		bool chargeUnlocked = phase2 && UnlockChargeAt40Percent;
 
 		if (dist <= BiteRange && biteCd <= 0f)
@@ -230,9 +236,10 @@ public partial class TutorialBoss : BaseEnemy
 		currentAttack = attack;
 		state = BossState.Telegraph;
 
-		if (attack == BossAttack.Charge)
+		if (_player != null && attack == BossAttack.Charge)
 			chargeDir = (_player.GlobalPosition - GlobalPosition).Normalized();
 
+		// Disable everything until Active
 		SetHitboxEnabled(BiteHitbox, false);
 		SetHitboxEnabled(TailHitbox, false);
 		SetHitboxEnabled(ChargeHitbox, false);
@@ -249,12 +256,11 @@ public partial class TutorialBoss : BaseEnemy
 
 			hitTargetsThisActive.Clear();
 
+			PrepareHitboxForAttack(currentAttack);
 			EnableAttackHitbox(currentAttack, true);
 
 			if (currentAttack == BossAttack.Charge)
-			{
 				Velocity = chargeDir * (Speed * 2.2f);
-			}
 
 			return;
 		}
@@ -317,20 +323,43 @@ public partial class TutorialBoss : BaseEnemy
 		}
 	}
 
-	private void SetupHitbox(Area2D hitbox, int damage)
+	/// <summary>
+	/// Tail sweep should be 360 degrees -> no rotation needed, just keep it centered.
+	/// Charge should face player -> rotate hitbox if its shape is directional.
+	/// </summary>
+	private void PrepareHitboxForAttack(BossAttack a)
 	{
-		if (hitbox == null) return;
+		if (_player == null) return;
 
-		// Keep BodyEntered as "bonus" damage event
-		hitbox.BodyEntered += body =>
+		switch (a)
 		{
-			if (state != BossState.Active) return;
-			if (body is IDamageable dmg)
-				dmg.TakeDamage(damage);
-		};
+			case BossAttack.TailSweep:
+				if (TailHitbox != null)
+				{
+					TailHitbox.Rotation = 0f;
+				}
+				break;
+
+			case BossAttack.Charge:
+				if (ChargeHitbox != null)
+				{
+					var dir = _player.GlobalPosition - GlobalPosition;
+					if (dir.Length() > 0.001f)
+						ChargeHitbox.Rotation = dir.Angle();
+				}
+				break;
+
+			case BossAttack.Bite:
+				if (BiteHitbox != null)
+				{
+					var dir = _player.GlobalPosition - GlobalPosition;
+					if (dir.Length() > 0.001f)
+						BiteHitbox.Rotation = dir.Angle();
+				}
+				break;
+		}
 	}
 
-	// NEW: active overlap check
 	private void ApplyActiveHitboxDamage(BossAttack a)
 	{
 		Area2D hitbox = a switch
@@ -353,28 +382,104 @@ public partial class TutorialBoss : BaseEnemy
 		if (!hitbox.Monitoring) return;
 
 		var bodies = hitbox.GetOverlappingBodies();
+		if (DebugPrintHitboxOverlaps)
+			GD.Print($"{a} bodies overlapping: {bodies.Count}");
+
 		foreach (var obj in bodies)
 		{
 			if (obj is not Node2D body) continue;
+			if (body == this) continue;
+
+			// Only hit player (group is "Player")
+			if (!body.IsInGroup("Player")) continue;
+
 			if (body is not IDamageable damageable) continue;
 
 			ulong id = body.GetInstanceId();
 			if (hitTargetsThisActive.Contains(id)) continue;
 
 			hitTargetsThisActive.Add(id);
+
 			damageable.TakeDamage(dmg);
 
-			// Optional knockback on player:
-			// if (body is Player p)
-			//     p.TriggerHitRecoil((p.GlobalPosition - GlobalPosition).Normalized());
+			if (a == BossAttack.TailSweep && body is Player p)
+			{
+				Vector2 pushDir = (p.GlobalPosition - GlobalPosition).Normalized();
+				p.TriggerHitRecoil(pushDir);
+			}
 		}
+	}
+
+	/// <summary>
+	/// NEW: Set BiteRange/TailSweepRange/MinChargeRange from the actual hitbox collision sizes.
+	/// This keeps "start attack" range consistent with "can hit" range.
+	/// </summary>
+	private void AutoFillRangesFromHitboxes()
+	{
+		BiteRange = Math.Max(BiteRange, GetHitboxReachPixels(BiteHitbox));
+		TailSweepRange = Math.Max(TailSweepRange, GetHitboxReachPixels(TailHitbox));
+
+		// Charge "minimum distance to start charging" is gameplay-y, but if you want it tied to the hitbox:
+		MinChargeRange = Math.Max(MinChargeRange, GetHitboxReachPixels(ChargeHitbox));
+
+		GD.Print($"[Boss Ranges] BiteRange={BiteRange}, TailSweepRange={TailSweepRange}, MinChargeRange={MinChargeRange}");
+	}
+
+	private float GetHitboxReachPixels(Area2D hitbox)
+	{
+		if (hitbox == null) return 0f;
+
+		float best = 0f;
+
+		// CollisionShape2D (direct or nested)
+		foreach (var node in hitbox.FindChildren("*", "CollisionShape2D", true, false))
+		{
+			if (node is not CollisionShape2D cs) continue;
+			if (cs.Shape == null) continue;
+
+			best = Math.Max(best, ShapeReach(cs.Shape));
+		}
+
+		// CollisionPolygon2D (optional)
+		foreach (var node in hitbox.FindChildren("*", "CollisionPolygon2D", true, false))
+		{
+			if (node is not CollisionPolygon2D cp) continue;
+
+			float polyReach = 0f;
+			foreach (var p in cp.Polygon)
+				polyReach = Math.Max(polyReach, p.Length());
+
+			best = Math.Max(best, polyReach);
+		}
+
+		return best;
+	}
+
+	private float ShapeReach(Shape2D shape)
+	{
+		return shape switch
+		{
+			CircleShape2D c => c.Radius,
+			RectangleShape2D r => r.Size.Length() * 0.5f, // half diagonal
+			CapsuleShape2D cap => cap.Radius + (cap.Height * 0.5f),
+			_ => 0f
+		};
 	}
 
 	private void SetHitboxEnabled(Area2D hitbox, bool enabled)
 	{
 		if (hitbox == null) return;
+
+		// Toggle detection
 		hitbox.Monitoring = enabled;
 		hitbox.Monitorable = enabled;
+
+		// Toggle shapes recursively (fixes nested shapes + debug visibility)
+		foreach (var node in hitbox.FindChildren("*", "CollisionShape2D", true, false))
+			((CollisionShape2D)node).Disabled = !enabled;
+
+		foreach (var node in hitbox.FindChildren("*", "CollisionPolygon2D", true, false))
+			((CollisionPolygon2D)node).Disabled = !enabled;
 	}
 
 	protected override void OnDamageTaken(int damage)

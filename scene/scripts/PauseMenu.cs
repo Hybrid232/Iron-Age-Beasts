@@ -32,6 +32,9 @@ public partial class PauseMenu : Control
 		GetNode<Button>("PauseBar/Armory").Pressed += OnArmoryPressed;
    		GetNode<Button>("PauseBar/Inventory").Pressed += OnInventoryPressed;
    		GetNode<Button>("PauseBar/Menu").Pressed += OnMenuPressed;
+		GetNode<Button>("PauseBar/Menu/SystemBar/Resume").Pressed += OnUnpausePressed;
+		GetNode<Button>("PauseBar/Menu/SystemBar/Options").Pressed += OnOptionsPressed;
+		GetNode<Button>("PauseBar/Menu/SystemBar/Menu").Pressed += OnMainMenuPressed;
 	}
 
 	public override void _Input(InputEvent @event)
@@ -56,7 +59,7 @@ public partial class PauseMenu : Control
 	_menuOpen = true;
 	Visible = true;
 
-	DisablePlayerInput(true);
+	
 
 	float screenWidth = GetViewportRect().Size.X;
 	float panelWidth = _pauseBar.Size.X;
@@ -93,7 +96,7 @@ public partial class PauseMenu : Control
 	tween.TweenCallback(Callable.From(() =>
 	{
 		Visible = false;
-		DisablePlayerInput(false);
+		
 	}));
 }
 
@@ -104,14 +107,7 @@ public partial class PauseMenu : Control
 		_settingsPanel.Visible = false;
 	}
 
-	private void DisablePlayerInput(bool disable)
-	{
-		if (_player != null)
-		{
-			//_player.CanMove = !disable;
-			//_player.CanAttack = !disable;
-		}
-	}
+
 
 	// ===== BUTTON SIGNALS =====
 
@@ -134,5 +130,22 @@ public partial class PauseMenu : Control
 		GD.Print("Menu pressed");
 		HideAllPanels();
 		_settingsPanel.Visible = true;
+	}
+	
+	public void OnUnpausePressed() {
+		GD.Print("Unpaused");
+		HideAllPanels();
+		CloseMenu();
+		
+	}
+	
+	public void OnOptionsPressed(){
+		GD.Print("Optoins Menu");
+		//
+	}
+	
+	public void OnMainMenuPressed(){
+		GD.Print("To main menu!");
+		GetTree().ChangeSceneToFile("res://scene/Scenes/MainMenu.tscn");
 	}
 }
