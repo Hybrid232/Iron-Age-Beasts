@@ -1,8 +1,8 @@
 using Godot;
 
-public partial class BossUI : CanvasLayer, IBossUI
+public partial class BossUI : Control, IBossUI
 {
-	[Export] private ProgressBar bossHealthBar;
+	[Export] private TextureProgressBar bossHealthBar;
 
 	public void InitializeBoss(int maxHealth, int currentHealth)
 	{

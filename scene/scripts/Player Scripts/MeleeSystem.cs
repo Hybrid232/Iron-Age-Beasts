@@ -9,18 +9,20 @@ public class MeleeSystem
 	private float attackRange;
 	private float enemyKnockbackDistance;
 	private float enemyKnockbackTime;
-	private int meleeDamage; 
+	private int meleeDamage;
 	private int staminaCost;
 	private int staminaBuffer;
-	
+
 	private HealthSystem healthSystem;
 	private Player player;
-	
+
 	private string targetGroup;
 	private Node2D owner;
 
 	private float attackTimer;
 	private bool isAttacking;
+
+	// Re-used as "once per attack" recoil gate
 	private bool usedHitRecoilThisAttack;
 
 	// Only track which enemies were hit this attack to prevent multi-hits
@@ -29,7 +31,7 @@ public class MeleeSystem
 	// Tunable offsets
 	private float horizontalAttackOffset = 24f;
 	private float verticalAttackOffset = 40f;
-	private float verticalBias = 1.25f; // makes diagonals sit higher/lower
+	private float verticalBias = 1.25f;
 
 	public bool IsAttacking => isAttacking;
 
@@ -40,7 +42,7 @@ public class MeleeSystem
 		float range,
 		float knockbackDist,
 		float knockbackTime,
-		int damage, 
+		int damage,
 		int staminaCost,
 		int staminaBuffer,
 		Player playerRef,
@@ -52,11 +54,11 @@ public class MeleeSystem
 		attackRange = range;
 		enemyKnockbackDistance = knockbackDist;
 		enemyKnockbackTime = knockbackTime;
-		meleeDamage = damage; 
-		
+		meleeDamage = damage;
+
 		this.staminaCost = staminaCost;
 		this.staminaBuffer = staminaBuffer;
-		
+
 		player = playerRef;
 		healthSystem = healthSys;
 	}
@@ -67,22 +69,20 @@ public class MeleeSystem
 		attackHitbox.AreaEntered += OnAttackAreaEntered;
 		attackHitbox.BodyEntered += OnAttackBodyEntered;
 	}
-	
-	
+
 	public void TryAttack(Vector2 direction, RecoilSystem recoilSystem)
 	{
 		if (!Input.IsActionJustPressed("attack") || direction == Vector2.Zero)
 			return;
-		
-		// Not enough stamina, cannot attack
+
 		if (!healthSystem.CanAct())
 		{
 			GD.Print("Not enough Stamina!");
 			return;
 		}
-		
+
 		healthSystem.ChangeStamina(-staminaCost);
-		
+
 		isAttacking = true;
 		attackTimer = attackDuration;
 		enemiesHitThisAttack.Clear();
@@ -91,7 +91,6 @@ public class MeleeSystem
 		StartAttack(direction);
 	}
 
-	// Diagonal-aware, tall-sprite-safe attack positioning
 	private void StartAttack(Vector2 direction)
 	{
 		Vector2 dir = direction.Normalized();
@@ -135,26 +134,27 @@ public class MeleeSystem
 			return;
 
 		ulong id = enemyRoot.GetInstanceId();
-		
-		// Prevent hitting the same enemy multiple times in one attack
+
 		if (enemiesHitThisAttack.Contains(id))
 			return;
 
 		enemiesHitThisAttack.Add(id);
 
-		Vector2 pushDir = (enemyRoot.GlobalPosition - player.GlobalPosition).Normalized();
+		Vector2 toEnemy = enemyRoot.GlobalPosition - player.GlobalPosition;
+		Vector2 towardEnemy = toEnemy == Vector2.Zero ? Vector2.Zero : toEnemy.Normalized();
 
-		// ONLY apply player recoil if we hit ENEMY DAMAGE collider
-		if (!usedHitRecoilThisAttack && IsEnemyDamageCollider(hitNode))
+		// NEW: Push player back slightly (attacker recoil), once per attack.
+		// Toggle off in Player inspector via enableAttackerRecoilOnHit.
+		if (!usedHitRecoilThisAttack)
 		{
-			player.TriggerHitRecoil(pushDir);
+			player.TriggerAttackerRecoil(towardEnemy);
 			usedHitRecoilThisAttack = true;
 		}
 
-		// Apply knockback before damage (so enemy flies back even if it dies)
-		ApplyEnemyKnockback(enemyRoot, pushDir);
+		// Apply knockback to enemy
+		ApplyEnemyKnockback(enemyRoot, towardEnemy);
 
-		// Deal damage using IDamageable interface
+		// Deal damage
 		if (enemyRoot is IDamageable damageable)
 		{
 			damageable.TakeDamage(meleeDamage);
@@ -164,12 +164,6 @@ public class MeleeSystem
 		{
 			GD.PrintErr($"Enemy {enemyRoot.Name} does not implement IDamageable!");
 		}
-	}
-
-	// 🔹 Group-based filtering (clean + scalable)
-	private bool IsEnemyDamageCollider(Node node)
-	{
-		return node is Area2D area && area.IsInGroup("enemy_damage");
 	}
 
 	private void ApplyEnemyKnockback(Node enemyNode, Vector2 pushDir)
@@ -196,11 +190,9 @@ public class MeleeSystem
 		Node current = hit;
 		while (current != null)
 		{
-			// This checks if the node itself OR any parent has the BaseEnemy script
-			if (current is BaseEnemy enemy) 
-			{
+			if (current is BaseEnemy enemy)
 				return enemy;
-			}
+
 			current = current.GetParent();
 		}
 		return null;
