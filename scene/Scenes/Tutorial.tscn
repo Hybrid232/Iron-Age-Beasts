@@ -22,7 +22,7 @@ size = Vector2(300, 20)
 [node name="Player" parent="." node_paths=PackedStringArray("uiReference", "bulletBars") instance=ExtResource("1_00eeo")]
 light_mask = 2
 visibility_layer = 2
-position = Vector2(6989, 100)
+position = Vector2(575, 104)
 uiReference = NodePath("../HUD")
 playerSpeed = 150
 bulletBars = [NodePath("../HUD/BulletBar0"), NodePath("../HUD/BulletBar1"), NodePath("../HUD/BulletBar2")]
