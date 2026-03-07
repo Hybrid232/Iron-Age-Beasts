@@ -7,10 +7,10 @@
 [ext_resource type="PackedScene" uid="uid://bbg6o4s7g1g0m" path="res://scene/enemy/Boss Healthbar.tscn" id="4_ujhhv"]
 [ext_resource type="PackedScene" uid="uid://b6m3oycxmqq7g" path="res://scene/NPC/NPC.tscn" id="5_qjufs"]
 [ext_resource type="Texture2D" uid="uid://cvcqwiun3qwbx" path="res://sprites/test/HealthBG.png" id="6_fkj6s"]
-[ext_resource type="Script" uid="uid://xc2p1mrqn800" path="res://scene/scripts/BossUI.cs" id="6_s3mw7"]
+[ext_resource type="Script" path="res://scene/scripts/BossUI.cs" id="6_s3mw7"]
 [ext_resource type="PackedScene" uid="uid://djokcwtj4qkek" path="res://scene/enemy/Dilophosaurus.tscn" id="7_pbiin"]
 [ext_resource type="Texture2D" uid="uid://d08o5yyd2hgd0" path="res://sprites/test/HealthBar.png" id="7_ujhhv"]
-[ext_resource type="PackedScene" uid="uid://d4heq0i17knph" path="res://scene/enemy/TutorialBoss.tscn" id="10_ujhhv"]
+[ext_resource type="PackedScene" path="res://scene/enemy/TutorialBoss.tscn" id="10_ujhhv"]
 
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_hlpnd"]
 size = Vector2(300, 20)
@@ -139,7 +139,7 @@ texture_under = ExtResource("6_fkj6s")
 texture_progress = ExtResource("7_ujhhv")
 
 [node name="Boogins" parent="." instance=ExtResource("5_qjufs")]
-position = Vector2(785, 90)
+position = Vector2(3908, -524)
 
 [node name="Dilophosaurus" parent="." instance=ExtResource("7_pbiin")]
 position = Vector2(1523, 109)
