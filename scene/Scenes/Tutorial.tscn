@@ -22,7 +22,7 @@ size = Vector2(300, 20)
 [node name="Player" parent="." node_paths=PackedStringArray("uiReference", "bulletBars") instance=ExtResource("1_00eeo")]
 light_mask = 2
 visibility_layer = 2
-position = Vector2(575, 104)
+position = Vector2(6966, 83)
 uiReference = NodePath("../HUD")
 playerSpeed = 150
 bulletBars = [NodePath("../HUD/BulletBar0"), NodePath("../HUD/BulletBar1"), NodePath("../HUD/BulletBar2")]
@@ -146,9 +146,6 @@ position = Vector2(1523, 109)
 
 [node name="Dilophosaurus2" parent="." instance=ExtResource("7_pbiin")]
 position = Vector2(1086, 59)
-
-[node name="Dilophosaurus3" parent="." instance=ExtResource("7_pbiin")]
-position = Vector2(7002, -59)
 
 [node name="TutorialBoss" parent="." instance=ExtResource("10_ujhhv")]
 position = Vector2(7853, 37)
