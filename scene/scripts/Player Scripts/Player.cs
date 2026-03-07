@@ -187,13 +187,19 @@ public partial class Player : CharacterBody2D, IDamageable
 		MoveAndSlide();
 	}
 
-	// Defender recoil (when you take damage)
+	// Defender recoil (when you take damage) - default strength
 	public void TriggerHitRecoil(Vector2 pushDirection)
 	{
 		GD.Print("========== TriggerHitRecoil called ==========");
 		GD.Print($"Push direction: {pushDirection}");
 		recoilSystem.StartHitRecoil(pushDirection);
 		GD.Print($"Is in recoil now? {recoilSystem.IsInRecoil()}");
+	}
+
+	// NEW: Defender recoil with custom strength (boss can override distance/time)
+	public void TriggerHitRecoil(Vector2 pushDirection, float distance, float time)
+	{
+		recoilSystem.StartHitRecoil(pushDirection, distance, time);
 	}
 
 	// Attacker recoil (when you successfully hit something)
@@ -210,9 +216,7 @@ public partial class Player : CharacterBody2D, IDamageable
 		GD.Print($"Ouch! Player health: {healthSystem.CurrentHealth}");
 
 		if (healthSystem.CurrentHealth <= 0)
-		{
 			HandleDeath();
-		}
 	}
 
 	private void HandleDeath()
@@ -223,11 +227,10 @@ public partial class Player : CharacterBody2D, IDamageable
 		Velocity = Vector2.Zero;
 
 		if (resetSceneOnDeath)
-		{
 			GetTree().ReloadCurrentScene();
-		}
 	}
 
+	// NOTE: leaving your existing method as-is for other callers
 	public void ApplyKnockback(Vector2 force)
 	{
 		if (force.Length() > 0)

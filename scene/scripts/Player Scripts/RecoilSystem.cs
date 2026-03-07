@@ -48,6 +48,7 @@ public class RecoilSystem
 		return Vector2.Zero;
 	}
 
+	// Default recoil (uses the player's exported defaults)
 	public void StartHitRecoil(Vector2 pushDirection)
 	{
 		if (pushDirection == Vector2.Zero) return;
@@ -55,6 +56,19 @@ public class RecoilSystem
 		float speed = hitRecoilTime > 0f ? (hitRecoilDistance / hitRecoilTime) : 0f;
 		hitRecoilVelocity = awayFromEnemy * speed;
 		hitRecoilTimer = hitRecoilTime;
+	}
+
+	// NEW: Custom recoil (boss attacks can specify distance/time)
+	public void StartHitRecoil(Vector2 pushDirection, float distance, float time)
+	{
+		if (pushDirection == Vector2.Zero) return;
+
+		Vector2 awayFromEnemy = pushDirection.Normalized();
+		float t = Mathf.Max(0.001f, time);
+		float speed = distance / t;
+
+		hitRecoilVelocity = awayFromEnemy * speed;
+		hitRecoilTimer = t;
 	}
 
 	public void StartPlayerRecoil(Vector2 attackDirection)
