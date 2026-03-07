@@ -9,6 +9,8 @@ radius = 8.062258
 [node name="Area2D" type="Area2D"]
 light_mask = 3
 visibility_layer = 3
+collision_layer = 12
+collision_mask = 12
 script = ExtResource("1_xlmoy")
 damage = 30
 

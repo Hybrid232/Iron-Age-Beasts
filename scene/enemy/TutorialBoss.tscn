@@ -13,10 +13,10 @@ height = 128.08307
 size = Vector2(5.997043, 51.746735)
 
 [node name="TutorialBoss" type="CharacterBody2D" node_paths=PackedStringArray("BiteHitbox", "TailHitbox", "ChargeHitbox")]
-light_mask = 3
-visibility_layer = 3
-collision_layer = 2
-collision_mask = 3
+light_mask = 7
+visibility_layer = 7
+collision_layer = 4
+collision_mask = 4
 script = ExtResource("1_4m671")
 BiteRange = 200.0
 TailSweepRange = 260.0
