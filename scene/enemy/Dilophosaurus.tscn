@@ -18,8 +18,8 @@ radius = 146.02174
 size = Vector2(38.5, 20)
 
 [node name="Dilophosaurus" type="CharacterBody2D" node_paths=PackedStringArray("HitArea") groups=["enemy_hurtbox"]]
-collision_layer = 3
-collision_mask = 3
+collision_layer = 6
+collision_mask = 6
 script = ExtResource("1_ok0wq")
 HitArea = NodePath("HitArea")
 Speed = 100.0
@@ -82,7 +82,7 @@ metadata/_edit_use_anchors_ = true
 light_mask = 3
 visibility_layer = 3
 position = Vector2(-15, 12)
-collision_layer = 0
+collision_layer = 2
 monitoring = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HitArea"]
