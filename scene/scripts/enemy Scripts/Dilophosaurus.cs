@@ -58,19 +58,19 @@ public partial class Dilophosaurus : BaseEnemy
 		GD.Print("🦖 Dilophosaurus claw swipe!");
 		_isPerformingAttack = true;
 		_attackAnimationTimer = AttackAnimationDuration;
-		
+
 		if (HitArea != null && _player != null)
 		{
 			Vector2 dirToPlayer = (_player.GlobalPosition - GlobalPosition).Normalized();
 			float swipeDistance = 16f;
-			Vector2 newPos = dirToPlayer * swipeDistance;
+			HitArea.Position = dirToPlayer * swipeDistance;
 			
-			HitArea.Position = newPos;
-			GD.Print($"🟥 Dir: {dirToPlayer}");
-			GD.Print($"🟥 HitArea new position: {newPos}");
-			GD.Print($"🟥 HitArea actual position after set: {HitArea.Position}");
-			
-			HitArea.Monitoring = true;
+			// Small delay before enabling so rectangle appears BEFORE player is hit
+			GetTree().CreateTimer(0.1f).Timeout += () =>
+			{
+				if (HitArea != null && _isPerformingAttack)
+					HitArea.Monitoring = true;
+			};
 		}
 	}
 
