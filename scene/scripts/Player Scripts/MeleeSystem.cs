@@ -16,8 +16,8 @@ public class MeleeSystem
 	private HealthSystem healthSystem;
 	private Player player;
 	
-	private string targetGroup;
-	private Node2D owner;
+	//private string targetGroup;
+	//private Node2D owner;
 
 	private float attackTimer;
 	private bool isAttacking;

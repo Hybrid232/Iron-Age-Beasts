@@ -174,7 +174,7 @@ public partial class Player : CharacterBody2D, IDamageable
 		healthSystem.ChangeHealth(-damage);
 		
 		// You can also trigger your existing recoil here!
-		TriggerHitRecoil(Vector2.Zero);
+		//TriggerHitRecoil(Vector2.Zero);
 		
 		GD.Print($"Ouch! Player health: {healthSystem.CurrentHealth}");
 	}
