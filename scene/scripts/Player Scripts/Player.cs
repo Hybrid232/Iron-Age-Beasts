@@ -212,7 +212,6 @@ public partial class Player : CharacterBody2D, IDamageable
 	public void TakeDamage(int damage)
 	{
 		healthSystem.ChangeHealth(-damage);
-
 		GD.Print($"Ouch! Player health: {healthSystem.CurrentHealth}");
 
 		if (healthSystem.CurrentHealth <= 0)
