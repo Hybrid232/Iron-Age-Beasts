@@ -1,17 +1,20 @@
-[gd_scene load_steps=4 format=3 uid="uid://b6m3oycxmqq7g"]
+[gd_scene format=3 uid="uid://b6m3oycxmqq7g"]
 
 [ext_resource type="Script" uid="uid://dt62qwb6ahakj" path="res://scene/scripts/NPC Scripts/NPC.cs" id="1_hqct7"]
 [ext_resource type="Texture2D" uid="uid://bsunr61kjpenk" path="res://sprites/test/NPC_boogins.jpg" id="1_v5spc"]
+[ext_resource type="AudioStream" uid="uid://bi2d5olh13ypn" path="res://Audio/Music/Updated Boogin's theme.mp3" id="2_p5v3q"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_hqct7"]
 
-[node name="Boogins" type="Node2D" node_paths=PackedStringArray("_menu", "_dialogueLabel", "_speakButton")]
+[node name="Boogins" type="Node2D" unique_id=567107048 node_paths=PackedStringArray("_menu", "_dialogueLabel", "_speakButton", "booginsThemeSFX")]
 script = ExtResource("1_hqct7")
 _menu = NodePath("CanvasLayer/Panel")
 _dialogueLabel = NodePath("CanvasLayer/Panel/DialogueLabel")
 _speakButton = NodePath("CanvasLayer/Panel/SpeakButton")
+booginsThemeSFX = NodePath("BooginsTheme")
+booginsThemeFile = ExtResource("2_p5v3q")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1780001787]
 scale = Vector2(0.15, 0.15)
 texture = ExtResource("1_v5spc")
 
@@ -28,16 +31,16 @@ visibility_layer = 3
 scale = Vector2(70, 70)
 shape = SubResource("CircleShape2D_hqct7")
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=394603091]
 
-[node name="Panel" type="Panel" parent="CanvasLayer"]
+[node name="Panel" type="Panel" parent="CanvasLayer" unique_id=832865341]
 offset_left = 41.0
 offset_top = 101.0
 offset_right = 1125.0
 offset_bottom = 459.0
 metadata/_edit_use_anchors_ = true
 
-[node name="DialogueLabel" type="Label" parent="CanvasLayer/Panel"]
+[node name="DialogueLabel" type="Label" parent="CanvasLayer/Panel" unique_id=431014430]
 layout_mode = 0
 offset_left = 25.0
 offset_top = 25.0
@@ -45,7 +48,7 @@ offset_right = 65.0
 offset_bottom = 48.0
 metadata/_edit_use_anchors_ = true
 
-[node name="SpeakButton" type="Button" parent="CanvasLayer/Panel"]
+[node name="SpeakButton" type="Button" parent="CanvasLayer/Panel" unique_id=118888801]
 layout_mode = 0
 offset_left = 22.0
 offset_top = 285.0
@@ -54,7 +57,7 @@ offset_bottom = 328.0
 text = "Talk"
 metadata/_edit_use_anchors_ = true
 
-[node name="PurchaseButton" type="Button" parent="CanvasLayer/Panel"]
+[node name="PurchaseButton" type="Button" parent="CanvasLayer/Panel" unique_id=749043396]
 layout_mode = 0
 offset_left = 109.0
 offset_top = 285.0
@@ -62,6 +65,8 @@ offset_right = 208.0
 offset_bottom = 329.0
 text = "Purchase"
 metadata/_edit_use_anchors_ = true
+
+[node name="BooginsTheme" type="AudioStreamPlayer" parent="." unique_id=1026712948]
 
 [connection signal="body_entered" from="Area2D" to="." method="OnAreadBodyEntered"]
 [connection signal="body_entered" from="Area2D" to="." method="OnAreaBodyEntered"]
