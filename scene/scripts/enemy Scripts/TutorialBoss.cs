@@ -62,6 +62,16 @@ public partial class TutorialBoss : BaseEnemy
 	[ExportGroup("Facing / Orientation")]
 	[Export] public bool FlipAttackDirection = true;
 
+	// --- NEW: touch/contact damage (use an Area2D, not the CharacterBody2D collision) ---
+	[ExportGroup("Contact Damage (Body Touch)")]
+	[Export] public Area2D BodyContactDamageArea;
+	[Export] public int ContactDamage = 5;
+	[Export] public float ContactKnockbackDistance = 140f;
+	[Export] public float ContactKnockbackTime = 0.18f;
+	[Export] public float ContactDamageCooldown = 0.40f; // per player
+
+	private readonly Dictionary<ulong, float> _contactDamageCdByTarget = new();
+
 	private IBossUI bossUI;
 
 	private BossState state = BossState.Chasing;
@@ -99,6 +109,16 @@ public partial class TutorialBoss : BaseEnemy
 			bossUI = GetNodeOrNull(BossUIPath) as IBossUI;
 
 		bossUI?.InitializeBoss(MaxHealth, _currentHealth);
+
+		// --- NEW: contact damage area hookup ---
+		if (BodyContactDamageArea != null)
+		{
+			BodyContactDamageArea.Monitoring = true;
+			BodyContactDamageArea.Monitorable = true;
+
+			BodyContactDamageArea.BodyEntered += OnBodyContactEntered;
+			BodyContactDamageArea.BodyExited += OnBodyContactExited;
+		}
 	}
 
 	public override void _Process(double delta)
@@ -109,6 +129,14 @@ public partial class TutorialBoss : BaseEnemy
 		biteCd = Math.Max(0, biteCd - dt);
 		tailCd = Math.Max(0, tailCd - dt);
 		chargeCd = Math.Max(0, chargeCd - dt);
+
+		// --- NEW: tick per-target contact cooldowns ---
+		if (_contactDamageCdByTarget.Count > 0)
+		{
+			var keys = new List<ulong>(_contactDamageCdByTarget.Keys);
+			foreach (var k in keys)
+				_contactDamageCdByTarget[k] = Math.Max(0f, _contactDamageCdByTarget[k] - dt);
+		}
 
 		HandlePhase2();
 	}
@@ -401,6 +429,48 @@ public partial class TutorialBoss : BaseEnemy
 		}
 	}
 
+	// --- NEW: contact damage handlers ---
+	private void OnBodyContactEntered(Node2D body)
+	{
+		TryApplyContactDamage(body);
+	}
+
+	private void OnBodyContactExited(Node2D body)
+	{
+		// Optional: uncomment if you want re-entering to hurt immediately.
+		// if (body != null && IsInstanceValid(body))
+		//     _contactDamageCdByTarget.Remove(body.GetInstanceId());
+	}
+
+	private void TryApplyContactDamage(Node2D body)
+	{
+		if (state == BossState.Dead) return;
+		if (body == null) return;
+		if (!IsInstanceValid(body)) return;
+		if (!body.IsInGroup("Player")) return;
+		if (body is not IDamageable dmgable) return;
+
+		ulong id = body.GetInstanceId();
+		if (_contactDamageCdByTarget.TryGetValue(id, out float cd) && cd > 0f)
+			return;
+
+		_contactDamageCdByTarget[id] = ContactDamageCooldown;
+
+		// small damage
+		dmgable.TakeDamage(ContactDamage);
+
+		// knockback away from boss center
+		if (body is Player p)
+		{
+			Vector2 pushDir = (p.GlobalPosition - GlobalPosition);
+			if (pushDir.LengthSquared() < 0.0001f)
+				pushDir = Vector2.Right; // fallback
+			pushDir = pushDir.Normalized();
+
+			p.TriggerHitRecoil(pushDir, ContactKnockbackDistance, ContactKnockbackTime);
+		}
+	}
+
 	private void AutoFillRangesFromHitboxes()
 	{
 		BiteRange = Math.Max(BiteRange, GetHitboxReachPixels(BiteHitbox));
@@ -474,6 +544,10 @@ public partial class TutorialBoss : BaseEnemy
 		SetHitboxEnabled(BiteHitbox, false);
 		SetHitboxEnabled(TailHitbox, false);
 		SetHitboxEnabled(ChargeHitbox, false);
+
+		// optional: also disable the contact damage area
+		if (BodyContactDamageArea != null)
+			SetHitboxEnabled(BodyContactDamageArea, false);
 
 		base.Die();
 	}
