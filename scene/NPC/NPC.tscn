@@ -16,9 +16,15 @@ scale = Vector2(0.15, 0.15)
 texture = ExtResource("1_v5spc")
 
 [node name="Area2D" type="Area2D" parent="."]
+light_mask = 3
+visibility_layer = 3
 scale = Vector2(0.15, 0.15)
+collision_layer = 3
+collision_mask = 3
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+light_mask = 3
+visibility_layer = 3
 scale = Vector2(70, 70)
 shape = SubResource("CircleShape2D_hqct7")
 
@@ -58,4 +64,5 @@ text = "Purchase"
 metadata/_edit_use_anchors_ = true
 
 [connection signal="body_entered" from="Area2D" to="." method="OnAreadBodyEntered"]
+[connection signal="body_entered" from="Area2D" to="." method="OnAreaBodyEntered"]
 [connection signal="body_exited" from="Area2D" to="." method="OnAreaBodyExited"]
