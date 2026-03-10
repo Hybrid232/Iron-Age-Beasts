@@ -1,30 +1,29 @@
 // Dilophosaurus.cs
 using Godot;
-
 public partial class Dilophosaurus : BaseEnemy
 {
-	[Export] public float KnockbackForce = 300f;
-	[Export] public Area2D AttackArea; // Drag your attack Area2D here
-	[Export] public float AttackAnimationDuration = 0.3f;
+	[Export] public Area2D HitArea;
+	[Export] public float AttackAnimationDuration = 0.5f;
 	
 	private bool _isPerformingAttack = false;
 	private float _attackAnimationTimer = 0f;
 	
 	public override void _Ready()
-	{	
+	{   
 		base._Ready();
 		
 		Speed = 60f;
 		StopDistance = 8f;
-		AttackRange = 15f;
+		AttackRange = 30f;  // Increased so attack triggers earlier
 		AttackDamage = 15;
-		AttackCooldown = 1.5f;
+		AttackCooldown = 2.0f; // Attack every 2 seconds
 		
-		// Setup attack area
-		if (AttackArea != null)
+		if (HitArea != null)
 		{
-			AttackArea.Monitoring = false; // Start disabled
-			AttackArea.BodyEntered += OnAttackHit;
+			HitArea.Monitoring = false;
+			HitArea.Monitorable = false;
+			HitArea.BodyEntered += OnHitAreaBodyEntered;
+			GD.Print($"HitArea mask: {HitArea.CollisionMask}");
 		}
 	}
 	
@@ -32,69 +31,91 @@ public partial class Dilophosaurus : BaseEnemy
 	{
 		base._Process(delta);
 		
-		// Handle attack animation
+		//if (_chasing) {
+				//GD.Print($"CooldownTimer: {_attackCooldownTimer:F2} | CanAttack: {CanAttack()} | Distance: {GlobalPosition.DistanceTo(_player.GlobalPosition):F1} | AttackRange: {AttackRange}");
+//
+		//}
+		
 		if (_isPerformingAttack)
 		{
 			_attackAnimationTimer -= (float)delta;
-			if (_attackAnimationTimer <= 0f)
+			if (_attackAnimationTimer >= 1.5f)
 			{
 				_isPerformingAttack = false;
-				if (AttackArea != null)
-					AttackArea.Monitoring = false;
+				if (HitArea != null)
+					HitArea.Monitoring = false;
 			}
 		}
 	}
 	
+	protected override bool CanAttack()
+	{
+		return !_isPerformingAttack && _attackCooldownTimer <= 0f;
+	}
+	
 	protected override void OnAttackStart()
 	{
-		GD.Print("🦖 Dilophosaurus bites ferociously!");
-		
-		// Enable attack hitbox
+		GD.Print("🦖 Dilophosaurus claw swipe!");
 		_isPerformingAttack = true;
 		_attackAnimationTimer = AttackAnimationDuration;
-		
-		if (AttackArea != null)
-			AttackArea.Monitoring = true;
-		
-		// Play attack animation here
-		// AnimationPlayer?.Play("bite_attack");
-	}
-	
-	protected override void OnAttackEnd()
-	{
-		GD.Print("Dilophosaurus attack complete");
-	}
-	
-	// This is called when the attack hitbox hits something
-	private void OnAttackHit(Node2D body)
-	{
-		if (!body.IsInGroup(PlayerGroup)) return;
-		
-		GD.Print($"Attack hit {body.Name}!");
-		
-		// Damage is already handled by base DealDamage
-		// Just apply knockback here
-		Vector2 knockbackDir = (body.GlobalPosition - GlobalPosition).Normalized();
-		
-		if (body is Player player)
+
+		if (HitArea != null && _player != null)
 		{
-			player.TriggerHitRecoil(knockbackDir);
+			Vector2 dirToPlayer = (_player.GlobalPosition - GlobalPosition).Normalized();
+			float swipeDistance = 16f;
+			HitArea.Position = dirToPlayer * swipeDistance;
+			
+			// Small delay before enabling so rectangle appears BEFORE player is hit
+			GetTree().CreateTimer(0.1f).Timeout += () =>
+			{
+				if (HitArea != null && _isPerformingAttack)
+					HitArea.Monitoring = true;
+			};
 		}
 	}
+
+
+
+	private void OnHitAreaBodyEntered(Node2D body)
+	{
+		GD.Print($"🟥 HitArea body entered: {body.Name}");
+		
+		if (!body.IsInGroup(PlayerGroup))
+		{
+			GD.Print($"❌ {body.Name} not in player group!");
+			return;
+		}
+
+		//GD.Print($"✅ HitArea hit player!");
+
+		if (body is IDamageable damageable)
+			damageable.TakeDamage(AttackDamage);
+
+		Vector2 knockbackDir = (body.GlobalPosition - GlobalPosition).Normalized();
+		if (body is Player player)
+			player.TriggerHitRecoil(knockbackDir);
+
+		if (HitArea != null)
+			HitArea.Monitoring = false;
+	}
 	
+	protected override void MoveTowardsTarget(Node2D target, double delta)
+	{
+		Vector2 direction = (target.GlobalPosition - GlobalPosition).Normalized();
+		
+		Velocity = direction * Speed;
+		MoveAndSlide();
+	}
+
 	public void _on_detection_area_body_entered(Node2D body)
 	{
-		if (!body.IsInGroup(PlayerGroup))
-			return;
-		
+		if (!body.IsInGroup(PlayerGroup)) return;
 		OnPlayerDetected(body);
 	}
 	
 	public void _on_detection_area_body_exited(Node2D body)
 	{
-		if (body != _player)
-			return;
-		
+		if (body != _player) return;
 		OnPlayerLost(body);
 	}
 }

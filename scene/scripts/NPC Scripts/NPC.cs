@@ -11,12 +11,19 @@ public partial class NPC : Node2D
 
 	public override void _Ready()
 	{
+		// 1. Safety check to ensure exports aren't null
+		if (_menu == null || _dialogueLabel == null || _speakButton == null)
+		{
+			GD.PrintErr("NPC Error: Please assign all Exported nodes in the Inspector!");
+		}
+
 		_menu.Visible = false; // Hide menu on start
 	}
 
-	public override void _UnhandledInput(InputEvent @event)
+	public override void _Input(InputEvent @event)
 	{
-		if (_activePlayer != null && Input.IsActionJustPressed("interact"))
+		// 2. Check if the "interact" action was just pressed
+		if (@event.IsActionPressed("interact") && _activePlayer != null)
 		{
 			_menu.Visible = !_menu.Visible; // Toggle menu
 			_activePlayer.CanMove = !_menu.Visible; // Disable player movement when menu is open
@@ -35,11 +42,14 @@ public partial class NPC : Node2D
 		}
 	}
 
+	// --- Signal Connections (Ensure these are connected in the Editor!) ---
+
 	private void OnAreaBodyEntered(Node2D body)
 	{
 		if (body is Player p)
 		{
 			_activePlayer = p;
+			GD.Print("Player entered interaction range.");
 		}
 	}
 
@@ -47,8 +57,14 @@ public partial class NPC : Node2D
 	{
 		if (body == _activePlayer)
 		{
-			// Ensure player can move if they somehow leave while menu is open
-			_activePlayer.CanMove = true; 
+			GD.Print("Player left interaction range.");
+			
+			// Force reset state if player walks away
+			if (_activePlayer != null)
+			{
+				_activePlayer.CanMove = true; 
+			}
+			
 			_activePlayer = null;
 			_menu.Visible = false;
 		}
@@ -61,6 +77,6 @@ public partial class NPC : Node2D
 
 	private void OnPurchasePressed()
 	{
-		_dialogueLabel.Text = "I don't have anything to sell yet. Sorry lil bro";
+		_dialogueLabel.Text = "I don't have anything to sell yet. Sorry lil bro.";
 	}
 }

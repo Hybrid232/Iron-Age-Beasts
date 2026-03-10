@@ -1,0 +1,75 @@
+[gd_scene load_steps=8 format=3 uid="uid://cvhh0xi2cb8ee"]
+
+[ext_resource type="Texture2D" uid="uid://13qrj07e47ls" path="res://sprites/test/Range-enemy.png" id="1_ii01c"]
+[ext_resource type="Texture2D" uid="uid://cvcqwiun3qwbx" path="res://sprites/test/HealthBG.png" id="2_oq0ax"]
+[ext_resource type="Texture2D" uid="uid://d08o5yyd2hgd0" path="res://sprites/test/HealthBar.png" id="3_djt10"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_dgp13"]
+radius = 4.3185654
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_0y17p"]
+radius = 1.9416487
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_apcrj"]
+radius = 146.02174
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_7y421"]
+size = Vector2(48, 20)
+
+[node name="RangeEnemy" type="Node2D"]
+
+[node name="RangeEnemy" type="Sprite2D" parent="."]
+position = Vector2(32, -64.999985)
+scale = Vector2(0.191, 0.19)
+texture = ExtResource("1_ii01c")
+
+[node name="CollisionBox" type="CollisionShape2D" parent="." groups=["enemy_hurtbox"]]
+z_index = 1
+position = Vector2(6, -55)
+scale = Vector2(9.999999, 9.999999)
+shape = SubResource("CircleShape2D_dgp13")
+
+[node name="HurtBox" type="Area2D" parent="." groups=["enemy_hurtbox"]]
+position = Vector2(92.00001, 36.000004)
+scale = Vector2(10, 10)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox"]
+z_index = 7
+position = Vector2(-0.3000009, 0.09999943)
+shape = SubResource("CircleShape2D_0y17p")
+debug_color = Color(0.68824255, 0.28912774, 0.39706942, 0.41960785)
+
+[node name="detection_area" type="Area2D" parent="."]
+visible = false
+collision_layer = 64
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="detection_area"]
+position = Vector2(5.0000005, 11.000002)
+rotation = -0.11664813
+scale = Vector2(0.7789615, 0.7722881)
+shape = SubResource("CircleShape2D_apcrj")
+debug_color = Color(0.6890767, 0, 0.114161395, 0.41960785)
+
+[node name="HealthBar" type="TextureProgressBar" parent="."]
+offset_left = -7.0
+offset_top = -10.0
+offset_right = 1145.0
+offset_bottom = 638.0
+scale = Vector2(0.01952623, 0.0015463252)
+value = 100.0
+rounded = true
+texture_under = ExtResource("2_oq0ax")
+texture_progress = ExtResource("3_djt10")
+tint_under = Color(0.82090443, 0.2227655, 0.13294452, 1)
+metadata/_edit_use_anchors_ = true
+
+[node name="AttackArea" type="Area2D" parent="."]
+position = Vector2(-22, 11)
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
+light_mask = 2
+visibility_layer = 2
+position = Vector2(220, -76)
+shape = SubResource("RectangleShape2D_7y421")
+debug_color = Color(0.6217127, 0.53408116, 0, 0.41960785)

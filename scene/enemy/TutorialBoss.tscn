@@ -3,12 +3,51 @@
 [ext_resource type="Script" uid="uid://bf4f5t0p3v7n6" path="res://scene/scripts/enemy Scripts/TutorialBoss.cs" id="1_4m671"]
 [ext_resource type="Texture2D" uid="uid://brhqgehvt7ib0" path="res://sprites/test/dino-miniboss.png" id="2_t0wen"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_82jai"]
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_4m671"]
+radius = 6.3945007
+height = 128.08307
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_aaiw8"]
 
-[node name="TutorialBoss" type="CharacterBody2D"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4m671"]
+size = Vector2(5.997043, 51.746735)
+
+[node name="TutorialBoss" type="CharacterBody2D" node_paths=PackedStringArray("BiteHitbox", "TailHitbox", "ChargeHitbox", "BodyContactDamageArea")]
+light_mask = 7
+visibility_layer = 7
+collision_layer = 5
+collision_mask = 5
 script = ExtResource("1_4m671")
+BiteRange = 200.0
+TailSweepRange = 260.0
+MinChargeRange = 300.0
+ChargeDamage = 50
+BiteCooldown = 2.0
+TailCooldown = 4.0
+ChargeCooldown = 5.5
+BiteTelegraph = 0.7
+TailTelegraph = 1.2
+TailRecover = 1.0
+ChargeTelegraph = 2.0
+ChargeActive = 4.0
+ChargeRecover = 1.0
+BiteHitbox = NodePath("Bite")
+TailHitbox = NodePath("TailSweep")
+ChargeHitbox = NodePath("Charge")
+TailKnockbackDistance = 200.0
+ChargeKnockbackDistance = 400.0
+ChargeKnockbackTime = 0.2
+DebugPrintHitboxOverlaps = true
+BodyContactDamageArea = NodePath("CollisionDamage")
+ContactKnockbackDistance = 80.0
+MaxHealth = 200
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+light_mask = 7
+visibility_layer = 7
+position = Vector2(-40, -99)
+scale = Vector2(10.242796, 16.70305)
+polygon = PackedVector2Array(-10.155752, -1.2759495, -13.839702, 4.2531643, -12.844039, 4.678481, -11.25098, 4.556962, -6.770501, 7.0481014, -6.1731043, 7.412658, -4.7791777, 8.3848095, -3.584383, 9.6, -1.0952282, 8.567089, 0.49783087, 9.417721, 0.49783087, 11.301266, 1.0952282, 12.881012, 3.0865521, 14.096202, 1.2943606, 14.582278, -0.39826488, 15.250632, 4.380913, 15.918987, 8.263994, 15.797468, 9.060524, 14.521519, 8.263994, 11.96962, 12.147077, 12.091139, 15.233628, 11.544304, 17.424084, 10.207595, 20.112373, 7.3518987, 19.61454, 4.556962, 17.623219, 2.5518987, 17.623219, 0.48607588, 19.017143, -1.0329113, 20.012806, -2.0658226, 19.714108, -2.9772148, 16.129725, -1.2759495, 14.038834, 0.9113927, 13.043172, 1.3974686, 11.25098, 0.060759544, 6.8700676, -0.60759497, 4.580045, -0.18227863, 2.986986, 0.48607588, 0.79652953, 1.7620254, -0.9956622, 1.3974686, -4.9783096, -1.4582276, -7.766164, -1.4582276)
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_t0wen")
@@ -16,27 +55,63 @@ texture = ExtResource("2_t0wen")
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 root_node = NodePath("../Sprite2D")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(5.000004, 66)
-rotation = -0.42689997
-scale = Vector2(11.257745, 9.378364)
-shape = SubResource("CircleShape2D_82jai")
-
-[node name="HitboxArea" type="Area2D" parent="."]
+[node name="HurtboxArea" type="Area2D" parent="."]
 collision_layer = 3
 collision_mask = 3
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxArea"]
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="HurtboxArea"]
+position = Vector2(-40, -93)
+scale = Vector2(10.04357, 16.458334)
+polygon = PackedVector2Array(-10.155752, -1.2759495, -13.939267, 4.435443, -11.25098, 4.556962, -5.874406, 2.0658228, -4.0822144, 4.2531643, -4.0822144, 6.562025, -6.1731043, 7.412658, -4.7791777, 8.3848095, -3.7835155, 9.782278, -1.0952282, 8.567089, 0.49783087, 9.417721, 0.49783087, 11.301266, 1.0952282, 12.881012, 3.0865521, 14.096202, 1.2943606, 14.582278, -0.39826488, 15.250632, 4.380913, 15.918987, 8.263994, 15.797468, 9.060524, 14.521519, 8.263994, 11.96962, 12.147077, 12.091139, 15.233628, 11.544304, 17.424084, 10.207595, 20.112373, 7.3518987, 19.61454, 4.556962, 17.623219, 2.5518987, 17.623219, 0.48607588, 19.41541, -2.7341766, 16.129725, -1.2759495, 14.237967, 0.5468354, 11.25098, 0.060759544, 6.8700676, -0.60759497, 0.79652953, 1.7620254, -0.9956622, 1.3974686, -4.9783096, -1.4582276)
+
+[node name="Bite" type="Area2D" parent="."]
+light_mask = 3
+visibility_layer = 3
+collision_layer = 3
+collision_mask = 3
+monitoring = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bite"]
+position = Vector2(-181.99998, 18.000008)
+rotation = 0.6380969
+scale = Vector2(-3.131869, 0.61528426)
+shape = SubResource("CapsuleShape2D_4m671")
+debug_color = Color(0.76862746, 0, 0.16078432, 0.7254902)
+
+[node name="TailSweep" type="Area2D" parent="."]
+light_mask = 2
+visibility_layer = 3
+collision_layer = 3
+collision_mask = 3
+monitoring = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TailSweep"]
+scale = Vector2(23.37586, 20.47389)
 shape = SubResource("CircleShape2D_aaiw8")
+debug_color = Color(0.84705883, 0.3764706, 0, 0.62352943)
 
-[node name="HurtboxArea" type="Area2D" parent="."]
+[node name="Charge" type="Area2D" parent="."]
+light_mask = 3
+visibility_layer = 3
+collision_layer = 3
+collision_mask = 3
+monitoring = false
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxArea"]
-shape = SubResource("CircleShape2D_aaiw8")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Charge"]
+position = Vector2(-149.85916, 1.9999986)
+scale = Vector2(19.056335, 6.338564)
+shape = SubResource("RectangleShape2D_4m671")
+debug_color = Color(0.191638, 0.6419517, 0, 0.62352943)
 
-[node name="AttackArea" type="Area2D" parent="."]
+[node name="CollisionDamage" type="Area2D" parent="."]
+collision_layer = 7
+collision_mask = 7
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
-shape = SubResource("CircleShape2D_aaiw8")
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="CollisionDamage"]
+light_mask = 7
+visibility_layer = 7
+position = Vector2(-40, -99)
+scale = Vector2(10.242796, 16.70305)
+polygon = PackedVector2Array(-10.155752, -1.2759495, -13.839702, 4.2531643, -12.844039, 4.678481, -11.25098, 4.556962, -6.770501, 7.0481014, -6.1731043, 7.412658, -4.7791777, 8.3848095, -3.584383, 9.6, -1.0952282, 8.567089, 0.49783087, 9.417721, 0.49783087, 11.301266, 1.0952282, 12.881012, 3.0865521, 14.096202, 1.2943606, 14.582278, -0.39826488, 15.250632, 4.380913, 15.918987, 8.263994, 15.797468, 9.060524, 14.521519, 8.263994, 11.96962, 12.147077, 12.091139, 15.233628, 11.544304, 17.424084, 10.207595, 20.112373, 7.3518987, 19.61454, 4.556962, 17.623219, 2.5518987, 17.623219, 0.48607588, 19.017143, -1.0329113, 20.012806, -2.0658226, 19.714108, -2.9772148, 16.129725, -1.2759495, 14.038834, 0.9113927, 13.043172, 1.3974686, 11.25098, 0.060759544, 6.8700676, -0.60759497, 4.580045, -0.18227863, 2.986986, 0.48607588, 0.79652953, 1.7620254, -0.9956622, 1.3974686, -4.9783096, -1.4582276, -7.766164, -1.4582276)
 
 [node name="StateTimer" type="Timer" parent="."]

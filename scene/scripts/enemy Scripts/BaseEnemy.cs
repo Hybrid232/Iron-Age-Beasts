@@ -10,14 +10,14 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 	[ExportGroup("Combat")]
 	[Export] public int MaxHealth = 50;
 	[Export] public int AttackDamage = 20;
-	[Export] public float AttackRange = 15f;
+	[Export] public float AttackRange = 30f;
 	[Export] public float AttackCooldown = 1.5f;
 	[Export] public string PlayerGroup = "player";
 
 
 	// State Variables
 	protected int _currentHealth;
-	protected float _attackCooldownTimer = 0f;
+	protected float _attackCooldownTimer = 2f;
 	protected bool _isAttacking = false;
 	protected bool _chasing = false;
 	protected Node2D _player = null;
@@ -58,7 +58,7 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 	// Called when enemy dies
 	protected virtual void Die()
 	{
-		GD.Print($"{Name} has died!");
+		//GD.Print($"{Name} has died!");
 		QueueFree(); // Remove enemy from scene
 	}
 
@@ -107,8 +107,11 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 			MoveAndSlide();
 			return;
 		}
+		
+
 
 		float distance = GlobalPosition.DistanceTo(_player.GlobalPosition);
+		//GD.Print($"Distance: {distance:F1}, AttackRange: {AttackRange}, CanAttack: {CanAttack()}, Cooldown: {_attackCooldownTimer:F2}");
 
 		// Try to attack if in range
 		if (CanAttack() && distance <= AttackRange)
@@ -147,7 +150,7 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 	// Check if enemy can attack
 	protected virtual bool CanAttack()
 	{
-		return !_isAttacking && _attackCooldownTimer <= 2f;
+		return !_isAttacking && _attackCooldownTimer <= 0f;
 	}
 	
 	// Main attack method
@@ -166,7 +169,7 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 	// Called when attack starts - override for animations/sounds
 	protected virtual void OnAttackStart()
 	{
-		GD.Print("Enemy attacks!");
+		//GD.Print("Enemy attacks!");
 	}
 	
 	// Deal damage to target
@@ -213,27 +216,18 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 
 
 	public void _on_hurt_box_body_entered(Node2D body)
-	{
-		GD.Print($"HurtBox touched: {body.Name}");
-		
+	{		
 		if (body is IDamageable damageable && body.IsInGroup(PlayerGroup))
 		{
-			GD.Print($"{body.Name} is Damageable!");
+			//GD.Print($"{body.Name} is Damageable!");
 			
-			// 1. Calculate direction for knockback (from Enemy to Player)
 			Vector2 knockbackDirection = (body.GlobalPosition - GlobalPosition).Normalized();
-			
-			
-			// 2. Deal damage
 			damageable.TakeDamage(AttackDamage);
 
-			
-			// 4. Keep your existing recoil trigger
 			if (body is Player player)
 			{
 				player.TriggerHitRecoil(knockbackDirection);
 				GD.Print($"==========PUSHBACK============");
-
 			}
 			
 			GD.Print($"Hit Player for {AttackDamage} damage!");

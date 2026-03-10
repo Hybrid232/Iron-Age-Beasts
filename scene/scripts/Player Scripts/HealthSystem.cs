@@ -42,7 +42,6 @@ public class HealthSystem
 		uiReference?.InitializeStamina(maxStamina, currentStamina);
 	}
 
-	
 	public void ChangeHealth(int amount)
 	{
 		currentHealth = Math.Clamp(currentHealth + amount, 0, maxHealth);
