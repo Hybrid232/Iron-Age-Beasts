@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://41qneatxble4"
-path="res://.godot/imported/MC_Final_Sprite.png-cc18d81da4525880ac2df8bea427bd44.ctex"
+uid="uid://c388xc8x15glg"
+path="res://.godot/imported/Screenshot 2026-03-05 at 8.36.41 AM.png-2a4fcfa8a068840208fff984c208d972.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/mc/MC_Final_Sprite.png"
-dest_files=["res://.godot/imported/MC_Final_Sprite.png-cc18d81da4525880ac2df8bea427bd44.ctex"]
+source_file="res://scene/Scenes/Screenshot 2026-03-05 at 8.36.41 AM.png"
+dest_files=["res://.godot/imported/Screenshot 2026-03-05 at 8.36.41 AM.png-2a4fcfa8a068840208fff984c208d972.ctex"]
 
 [params]
 
