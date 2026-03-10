@@ -43,8 +43,8 @@ ContactKnockbackDistance = 80.0
 MaxHealth = 200
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
-light_mask = 7
-visibility_layer = 7
+light_mask = 5
+visibility_layer = 5
 position = Vector2(-40, -99)
 scale = Vector2(10.242796, 16.70305)
 polygon = PackedVector2Array(-10.155752, -1.2759495, -13.839702, 4.2531643, -12.844039, 4.678481, -11.25098, 4.556962, -6.770501, 7.0481014, -6.1731043, 7.412658, -4.7791777, 8.3848095, -3.584383, 9.6, -1.0952282, 8.567089, 0.49783087, 9.417721, 0.49783087, 11.301266, 1.0952282, 12.881012, 3.0865521, 14.096202, 1.2943606, 14.582278, -0.39826488, 15.250632, 4.380913, 15.918987, 8.263994, 15.797468, 9.060524, 14.521519, 8.263994, 11.96962, 12.147077, 12.091139, 15.233628, 11.544304, 17.424084, 10.207595, 20.112373, 7.3518987, 19.61454, 4.556962, 17.623219, 2.5518987, 17.623219, 0.48607588, 19.017143, -1.0329113, 20.012806, -2.0658226, 19.714108, -2.9772148, 16.129725, -1.2759495, 14.038834, 0.9113927, 13.043172, 1.3974686, 11.25098, 0.060759544, 6.8700676, -0.60759497, 4.580045, -0.18227863, 2.986986, 0.48607588, 0.79652953, 1.7620254, -0.9956622, 1.3974686, -4.9783096, -1.4582276, -7.766164, -1.4582276)
@@ -56,10 +56,14 @@ texture = ExtResource("2_t0wen")
 root_node = NodePath("../Sprite2D")
 
 [node name="HurtboxArea" type="Area2D" parent="."]
+light_mask = 3
+visibility_layer = 3
 collision_layer = 3
 collision_mask = 3
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="HurtboxArea"]
+light_mask = 3
+visibility_layer = 3
 position = Vector2(-40, -93)
 scale = Vector2(10.04357, 16.458334)
 polygon = PackedVector2Array(-10.155752, -1.2759495, -13.939267, 4.435443, -11.25098, 4.556962, -5.874406, 2.0658228, -4.0822144, 4.2531643, -4.0822144, 6.562025, -6.1731043, 7.412658, -4.7791777, 8.3848095, -3.7835155, 9.782278, -1.0952282, 8.567089, 0.49783087, 9.417721, 0.49783087, 11.301266, 1.0952282, 12.881012, 3.0865521, 14.096202, 1.2943606, 14.582278, -0.39826488, 15.250632, 4.380913, 15.918987, 8.263994, 15.797468, 9.060524, 14.521519, 8.263994, 11.96962, 12.147077, 12.091139, 15.233628, 11.544304, 17.424084, 10.207595, 20.112373, 7.3518987, 19.61454, 4.556962, 17.623219, 2.5518987, 17.623219, 0.48607588, 19.41541, -2.7341766, 16.129725, -1.2759495, 14.237967, 0.5468354, 11.25098, 0.060759544, 6.8700676, -0.60759497, 0.79652953, 1.7620254, -0.9956622, 1.3974686, -4.9783096, -1.4582276)
@@ -72,6 +76,8 @@ collision_mask = 3
 monitoring = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Bite"]
+light_mask = 3
+visibility_layer = 3
 position = Vector2(-181.99998, 18.000008)
 rotation = 0.6380969
 scale = Vector2(-3.131869, 0.61528426)
@@ -79,13 +85,15 @@ shape = SubResource("CapsuleShape2D_4m671")
 debug_color = Color(0.76862746, 0, 0.16078432, 0.7254902)
 
 [node name="TailSweep" type="Area2D" parent="."]
-light_mask = 2
+light_mask = 3
 visibility_layer = 3
 collision_layer = 3
 collision_mask = 3
 monitoring = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TailSweep"]
+light_mask = 3
+visibility_layer = 3
 scale = Vector2(23.37586, 20.47389)
 shape = SubResource("CircleShape2D_aaiw8")
 debug_color = Color(0.84705883, 0.3764706, 0, 0.62352943)
@@ -98,6 +106,8 @@ collision_mask = 3
 monitoring = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Charge"]
+light_mask = 3
+visibility_layer = 3
 position = Vector2(-149.85916, 1.9999986)
 scale = Vector2(19.056335, 6.338564)
 shape = SubResource("RectangleShape2D_4m671")
