@@ -150,7 +150,7 @@ public partial class Player : CharacterBody2D, IDamageable
 			Velocity = Vector2.Zero;
 
 			// Optional: only play once per attack (your current code plays every frame during attack)
-			swingSFX.Play();
+			if (swingSFX != null && !swingSFX.Playing) swingSFX.Play(); // ← was firing every frame + no null check
 		}
 		else if (dodgeSystem.IsDodging)
 		{
@@ -176,11 +176,11 @@ public partial class Player : CharacterBody2D, IDamageable
 			// Walk SFX
 			if (moveDirection != Vector2.Zero)
 			{
-				if (!walkSFX.Playing) walkSFX.Play();
+				if (walkSFX != null && !walkSFX.Playing) walkSFX.Play();
 			}
 			else
 			{
-				walkSFX.Stop();
+				walkSFX?.Stop();
 			}
 		}
 
@@ -226,7 +226,8 @@ public partial class Player : CharacterBody2D, IDamageable
 		Velocity = Vector2.Zero;
 
 		if (resetSceneOnDeath)
-			GetTree().ReloadCurrentScene();
+			GetTree().CallDeferred("reload_current_scene");
+
 	}
 
 	// NOTE: leaving your existing method as-is for other callers
