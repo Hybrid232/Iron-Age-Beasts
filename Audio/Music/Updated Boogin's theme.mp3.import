@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://bi2d5olh13ypn"
+path="res://.godot/imported/Updated Boogin's theme.mp3-a0edb9c8e81caae02b77e6205f9b243b.mp3str"
+
+[deps]
+
+source_file="res://Audio/Music/Updated Boogin's theme.mp3"
+dest_files=["res://.godot/imported/Updated Boogin's theme.mp3-a0edb9c8e81caae02b77e6205f9b243b.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

@@ -1,8 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://d38cvt67w5bgb"]
+[gd_scene load_steps=9 format=3 uid="uid://d38cvt67w5bgb"]
 
 [ext_resource type="Script" uid="uid://bdxac0jm2jtt2" path="res://scene/scripts/Player Scripts/Player.cs" id="1_4bggy"]
 [ext_resource type="PackedScene" uid="uid://77e4i6lmd7ih" path="res://scene/Player/Bullet.tscn" id="2_a1q3d"]
-[ext_resource type="Texture2D" uid="uid://41qneatxble4" path="res://sprites/mc/MC_Final_Sprite.png" id="3_a1q3d"]
+[ext_resource type="Texture2D" uid="uid://41qneatxble4" path="res://sprites/MC/MC_Final_Sprite.png" id="3_a1q3d"]
+[ext_resource type="AudioStream" uid="uid://cb82wynxgbpu5" path="res://Audio/SFX/Weapon/Gun/Fired Shot.wav" id="3_wsr1k"]
+[ext_resource type="AudioStream" uid="uid://ymffvfq4hyy7" path="res://Audio/SFX/Player/FootStepsGrass.wav" id="4_0fwxj"]
+[ext_resource type="AudioStream" uid="uid://b0xmaderrnmxx" path="res://Audio/SFX/Weapon/Halberd/Swoosh.wav" id="5_wsr1k"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_0fwxj"]
 radius = 10.98901
@@ -23,8 +26,18 @@ staminaBuffer = 10
 bulletScene = ExtResource("2_a1q3d")
 bulletContainer = NodePath("BulletContainer")
 bulletBars = [null, null, null]
+gunSFX = NodePath("PlayerSFX/GunSFX")
+gunSoundFile = ExtResource("3_wsr1k")
+walkSFX = NodePath("PlayerSFX/WalkSFX")
+walkSoundFile = ExtResource("4_0fwxj")
+swingSFX = NodePath("PlayerSFX/HalberdSwing")
+swingSoundFile = ExtResource("5_wsr1k")
 
-[node name="PlayerSprite" type="Sprite2D" parent="." groups=["player"]]
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(1.5, 1.5)
+position_smoothing_enabled = true
+
+[node name="PlayerSprite" type="Sprite2D" parent="." groups=["Player"]]
 z_index = 1
 position = Vector2(0, -1)
 texture = ExtResource("3_a1q3d")
@@ -48,3 +61,12 @@ shape = SubResource("CircleShape2D_d75ba")
 debug_color = Color(0.9917659, 0, 0.2673412, 0.41960785)
 
 [node name="BulletContainer" type="Node2D" parent="."]
+
+[node name="PlayerSFX" type="Node" parent="."]
+
+[node name="WalkSFX" type="AudioStreamPlayer" parent="PlayerSFX"]
+stream = ExtResource("4_0fwxj")
+
+[node name="GunSFX" type="AudioStreamPlayer" parent="PlayerSFX"]
+
+[node name="HalberdSwing" type="AudioStreamPlayer" parent="PlayerSFX"]

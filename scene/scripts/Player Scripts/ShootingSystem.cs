@@ -7,18 +7,30 @@ public class ShootingSystem
 	private PackedScene bulletScene;
 	private Node2D bulletContainer;
 	private ProgressBar[] bulletBars;
+	private AudioStreamPlayer gunSFX;
+	private AudioStream gunSoundFile;
 
 	private int availableShots;
 	private float[] shotTimers;
 
 	public ShootingSystem(int maxShots, float cooldown, PackedScene scene, 
-						  Node2D container, ProgressBar[] bars)
+						  Node2D container, ProgressBar[] bars, 
+						AudioStreamPlayer shootSFX, AudioStream shootFile)
 	{
 		this.maxShots = maxShots;
 		bulletCooldown = cooldown;
 		bulletScene = scene;
 		bulletContainer = container;
 		bulletBars = bars;
+		
+		// Assigning the audio files
+		gunSFX = shootSFX;
+		gunSoundFile = shootFile;
+		
+		if (gunSFX != null && gunSoundFile != null)
+		{
+			gunSFX.Stream = gunSoundFile;
+		}
 
 		availableShots = maxShots;
 		shotTimers = new float[maxShots];
@@ -35,6 +47,10 @@ public class ShootingSystem
 
 		GD.Print("Shooting bullet! Direction: ", direction);
 		SpawnBullet(direction.Normalized(), playerPosition);
+		
+		if (Input.IsActionJustPressed("shoot"))
+			gunSFX.Play();
+			GD.Print("Gun Sound Played");
 
 		for (int i = 0; i < maxShots; i++)
 		{
