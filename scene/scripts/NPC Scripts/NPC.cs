@@ -5,6 +5,8 @@ public partial class NPC : Node2D
 	[Export] private Control _menu;
 	[Export] private Label _dialogueLabel;
 	[Export] private Button _speakButton; // I added this so that the game focuses on it when the menu is pulled up
+	[Export] private AudioStreamPlayer booginsThemeSFX;
+	[Export] private AudioStream booginsThemeFile;
 	private Player _activePlayer;
 
 	public override void _Ready()
@@ -19,11 +21,16 @@ public partial class NPC : Node2D
 			_menu.Visible = !_menu.Visible; // Toggle menu
 			_activePlayer.CanMove = !_menu.Visible; // Disable player movement when menu is open
 			_dialogueLabel.Text = ""; // Clear dialogue when opening menu
+			
 
 			if (_menu.Visible)
 			{
 				//focus on the speak button so that the player can immediately interact with it using keyboard/controller
 				_speakButton.GrabFocus();
+				
+				// Work in Progress - Boogin's theme
+				booginsThemeSFX.Stream = booginsThemeFile;
+				booginsThemeSFX.Play();
 			}
 		}
 	}

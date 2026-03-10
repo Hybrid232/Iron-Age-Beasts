@@ -57,7 +57,7 @@ staminaCost = 20
 staminaBuffer = 5
 bulletBars = [NodePath("../HUD/BulletBar0"), NodePath("../HUD/BulletBar1"), NodePath("../HUD/BulletBar2")]
 
-[node name="Camera2D" type="Camera2D" parent="Player" unique_id=1062170694]
+[node name="Camera2D2" type="Camera2D" parent="Player" unique_id=1062170694]
 visible = false
 position = Vector2(0, -2)
 zoom = Vector2(2, 2)
