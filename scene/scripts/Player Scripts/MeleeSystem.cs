@@ -12,7 +12,9 @@ public class MeleeSystem
 	private int meleeDamage;
 	private int staminaCost;
 	private int staminaBuffer;
-
+	private AudioStreamPlayer halberdSFX;
+	private AudioStream halberdSoundFile;
+	
 	private HealthSystem healthSystem;
 	private Player player;
 	
@@ -46,7 +48,9 @@ public class MeleeSystem
 		int staminaCost,
 		int staminaBuffer,
 		Player playerRef,
-		HealthSystem healthSys)
+		HealthSystem healthSys,
+		AudioStreamPlayer halberdSFX,
+		AudioStream halberdSoundFile)
 	{
 		attackPivot = pivot;
 		attackHitbox = hitbox;
@@ -54,8 +58,14 @@ public class MeleeSystem
 		attackRange = range;
 		enemyKnockbackDistance = knockbackDist;
 		enemyKnockbackTime = knockbackTime;
-		meleeDamage = damage;
-
+		meleeDamage = damage; 
+		halberdSFX = halberdSFX;
+		halberdSoundFile = halberdSoundFile;
+		
+		if (halberdSFX != null && halberdSoundFile != null)
+		{
+			halberdSFX.Stream = halberdSoundFile;
+		}
 		this.staminaCost = staminaCost;
 		this.staminaBuffer = staminaBuffer;
 

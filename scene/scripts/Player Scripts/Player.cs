@@ -51,6 +51,8 @@ public partial class Player : CharacterBody2D, IDamageable
 	[Export] private int meleeDamage = 15;
 	[Export] private int staminaCost = 20;
 	[Export] private int staminaBuffer = 5;
+	[Export] private AudioStreamPlayer halberdSFX;
+	[Export] private AudioStream halberdSoundFile;
 
 	// ===== SHOOTING EXPORTS =====
 	[ExportGroup("Shooting System")]
@@ -105,7 +107,9 @@ public partial class Player : CharacterBody2D, IDamageable
 			staminaCost,
 			staminaBuffer,
 			this,
-			healthSystem
+			healthSystem,
+			halberdSFX,
+			halberdSoundFile
 		);
 
 		shootingSystem = new ShootingSystem(

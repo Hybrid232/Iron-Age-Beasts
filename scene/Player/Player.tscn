@@ -14,8 +14,7 @@ height = 109.89011
 [sub_resource type="CircleShape2D" id="CircleShape2D_d75ba"]
 radius = 12.649111
 
-[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("attackPivot", "attackHitbox", "bulletContainer", "bulletBars") groups=["player"]]
-collision_mask = 2
+[node name="Player" type="CharacterBody2D" unique_id=1963656755 node_paths=PackedStringArray("attackPivot", "attackHitbox", "halberdSFX", "bulletContainer", "bulletBars", "gunSFX", "walkSFX", "swingSFX") groups=["player"]]
 script = ExtResource("1_4bggy")
 exhaustedSpeedMultiplier = 0.1
 dodgeSpeed = 400
@@ -23,6 +22,8 @@ attackPivot = NodePath("AttackPivot")
 attackHitbox = NodePath("AttackPivot/Attackbox")
 staminaCost = 10
 staminaBuffer = 10
+halberdSFX = NodePath("PlayerSFX/HalberdSwing")
+halberdSoundFile = ExtResource("5_wsr1k")
 bulletScene = ExtResource("2_a1q3d")
 bulletContainer = NodePath("BulletContainer")
 bulletBars = [null, null, null]
