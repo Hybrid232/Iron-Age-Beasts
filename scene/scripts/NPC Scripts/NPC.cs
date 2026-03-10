@@ -4,8 +4,9 @@ public partial class NPC : Node2D
 {
 	[Export] private Control _menu;
 	[Export] private Label _dialogueLabel;
-	[Export] private Button _speakButton; 
-	
+	[Export] private Button _speakButton; // I added this so that the game focuses on it when the menu is pulled up
+	[Export] private AudioStreamPlayer booginsThemeSFX;
+	[Export] private AudioStream booginsThemeFile;
 	private Player _activePlayer;
 
 	public override void _Ready()
@@ -24,31 +25,20 @@ public partial class NPC : Node2D
 		// 2. Check if the "interact" action was just pressed
 		if (@event.IsActionPressed("interact") && _activePlayer != null)
 		{
-			ToggleInteraction();
+			_menu.Visible = !_menu.Visible; // Toggle menu
+			_activePlayer.CanMove = !_menu.Visible; // Disable player movement when menu is open
+			_dialogueLabel.Text = ""; // Clear dialogue when opening menu
 			
-			// 3. Mark the input as handled so other systems don't use it
-			GetViewport().SetInputAsHandled();
-		}
-	}
 
-	private void ToggleInteraction()
-	{
-		GD.Print("Interacting with Boogins.");
-		
-		// Toggle menu visibility
-		_menu.Visible = !_menu.Visible;
-		
-		// Disable player movement when menu is open
-		if (_activePlayer != null)
-		{
-			_activePlayer.CanMove = !_menu.Visible;
-		}
-
-		// Clear dialogue and focus button if opening
-		if (_menu.Visible)
-		{
-			_dialogueLabel.Text = "Waiting for Boogins to speak...";
-			_speakButton.GrabFocus();
+			if (_menu.Visible)
+			{
+				//focus on the speak button so that the player can immediately interact with it using keyboard/controller
+				_speakButton.GrabFocus();
+				
+				// Work in Progress - Boogin's theme
+				booginsThemeSFX.Stream = booginsThemeFile;
+				booginsThemeSFX.Play();
+			}
 		}
 	}
 

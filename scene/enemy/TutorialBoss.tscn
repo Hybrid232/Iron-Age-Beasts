@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://d4heq0i17knph"]
+[gd_scene format=3 uid="uid://d4heq0i17knph"]
 
 [ext_resource type="Script" uid="uid://bf4f5t0p3v7n6" path="res://scene/scripts/enemy Scripts/TutorialBoss.cs" id="1_4m671"]
 [ext_resource type="Texture2D" uid="uid://brhqgehvt7ib0" path="res://sprites/test/dino-miniboss.png" id="2_t0wen"]
@@ -15,8 +15,8 @@ size = Vector2(5.997043, 51.746735)
 [node name="TutorialBoss" type="CharacterBody2D" node_paths=PackedStringArray("BiteHitbox", "TailHitbox", "ChargeHitbox", "BodyContactDamageArea")]
 light_mask = 7
 visibility_layer = 7
-collision_layer = 7
-collision_mask = 7
+collision_layer = 5
+collision_mask = 5
 script = ExtResource("1_4m671")
 BiteRange = 200.0
 TailSweepRange = 260.0
