@@ -24,7 +24,7 @@ script = ExtResource("1_ok0wq")
 HitArea = NodePath("HitArea")
 Speed = 100.0
 AttackDamage = 80
-AttackCooldown = 2.0
+AttackRange = 100.0
 
 [node name="DinoEnemy" type="Sprite2D" parent="."]
 position = Vector2(8, -1)

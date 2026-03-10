@@ -51,6 +51,13 @@ script = ExtResource("3_fkj6s")
 healthBar = NodePath("PlayerHealthBar")
 staminaBar = NodePath("PlayerStaminaBar")
 
+[node name="BossHealthbar" parent="HUD" unique_id=786047224 instance=ExtResource("4_ujhhv")]
+visible = false
+offset_left = 13.0
+offset_top = -9.0
+offset_right = 13.0
+offset_bottom = -9.0
+
 [node name="BulletBar0" type="ProgressBar" parent="HUD" unique_id=176212575]
 offset_left = 25.0
 offset_top = 55.0
@@ -138,6 +145,8 @@ position = Vector2(3908, -524)
 
 [node name="Dilophosaurus" parent="." unique_id=1649228380 instance=ExtResource("7_pbiin")]
 position = Vector2(1523, 109)
+collision_layer = 2
+collision_mask = 2
 
 [node name="Dilophosaurus2" parent="." unique_id=1969694045 instance=ExtResource("7_pbiin")]
 position = Vector2(1086, 59)
