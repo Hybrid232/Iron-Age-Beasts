@@ -76,6 +76,7 @@ public partial class Player : CharacterBody2D, IDamageable
 	private MeleeSystem meleeSystem;
 	private ShootingSystem shootingSystem;
 	private RecoilSystem recoilSystem;
+	private PotionSystem potionSystem;
 
 	public bool CanMove { get; set; } = true;
 
@@ -118,6 +119,8 @@ public partial class Player : CharacterBody2D, IDamageable
 		);
 
 		meleeSystem.Initialize();
+
+		potionSystem = new PotionSystem(50, healthSystem, uiReference);
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -185,6 +188,8 @@ public partial class Player : CharacterBody2D, IDamageable
 		}
 
 		MoveAndSlide();
+
+		potionSystem.TryUsePotion();
 	}
 
 	// Defender recoil (when you take damage) - default strength
