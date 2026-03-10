@@ -15,6 +15,7 @@ height = 109.89011
 radius = 12.649111
 
 [node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("attackPivot", "attackHitbox", "bulletContainer", "bulletBars") groups=["player"]]
+collision_layer = 2
 collision_mask = 2
 script = ExtResource("1_4bggy")
 exhaustedSpeedMultiplier = 0.1
@@ -26,11 +27,8 @@ staminaBuffer = 10
 bulletScene = ExtResource("2_a1q3d")
 bulletContainer = NodePath("BulletContainer")
 bulletBars = [null, null, null]
-gunSFX = NodePath("PlayerSFX/GunSFX")
 gunSoundFile = ExtResource("3_wsr1k")
-walkSFX = NodePath("PlayerSFX/WalkSFX")
 walkSoundFile = ExtResource("4_0fwxj")
-swingSFX = NodePath("PlayerSFX/HalberdSwing")
 swingSoundFile = ExtResource("5_wsr1k")
 
 [node name="Camera2D" type="Camera2D" parent="."]
