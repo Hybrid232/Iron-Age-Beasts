@@ -7,6 +7,8 @@ public partial class Dilophosaurus : BaseEnemy
 	
 	private bool _isPerformingAttack = false;
 	private float _attackAnimationTimer = 0f;
+	private Vector2 _lungeDirection = Vector2.Zero; 
+
 	
 	public override void _Ready()
 	{   
@@ -14,9 +16,9 @@ public partial class Dilophosaurus : BaseEnemy
 		
 		Speed = 60f;
 		StopDistance = 8f;
-		AttackRange = 30f;  // Increased so attack triggers earlier
+		//AttackRange = 30f;  // Increased so attack triggers earlier
 		AttackDamage = 15;
-		AttackCooldown = 2.0f; // Attack every 2 seconds
+		AttackCooldown = 1.5f; // Attack every 2 seconds
 		
 		if (HitArea != null)
 		{
@@ -61,15 +63,30 @@ public partial class Dilophosaurus : BaseEnemy
 
 		if (HitArea != null && _player != null)
 		{
-			Vector2 dirToPlayer = (_player.GlobalPosition - GlobalPosition).Normalized();
-			float swipeDistance = 16f;
-			HitArea.Position = dirToPlayer * swipeDistance;
+			// Start at center (overlapping dino)
+			HitArea.Position = Vector2.Zero;
+
+			// Calculate direction toward player
+			_lungeDirection = (_player.GlobalPosition - GlobalPosition).Normalized();
 			
-			// Small delay before enabling so rectangle appears BEFORE player is hit
-			GetTree().CreateTimer(0.1f).Timeout += () =>
+			// After short delay, shoot the rectangle outward
+			GetTree().CreateTimer(0.15f).Timeout += () =>
 			{
 				if (HitArea != null && _isPerformingAttack)
+				{
+					HitArea.Position = _lungeDirection * 20f; // shoot out
 					HitArea.Monitoring = true;
+				}
+			};
+
+			// After attack window, retract back to center
+			GetTree().CreateTimer(0.4f).Timeout += () =>
+			{
+				if (HitArea != null)
+				{
+					HitArea.Position = Vector2.Zero; // retract
+					HitArea.Monitoring = false;
+				}
 			};
 		}
 	}
