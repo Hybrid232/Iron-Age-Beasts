@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bdxac0jm2jtt2" path="res://scene/scripts/Player Scripts/Player.cs" id="1_4bggy"]
 [ext_resource type="PackedScene" uid="uid://77e4i6lmd7ih" path="res://scene/Player/Bullet.tscn" id="2_a1q3d"]
-[ext_resource type="Texture2D" uid="uid://41qneatxble4" path="res://sprites/mc/MC_Final_Sprite.png" id="3_a1q3d"]
+[ext_resource type="Texture2D" uid="uid://41qneatxble4" path="res://sprites/MC/MC_Final_Sprite.png" id="3_a1q3d"]
 [ext_resource type="AudioStream" uid="uid://cb82wynxgbpu5" path="res://Audio/SFX/Weapon/Gun/Fired Shot.wav" id="3_wsr1k"]
 [ext_resource type="AudioStream" uid="uid://ymffvfq4hyy7" path="res://Audio/SFX/Player/FootStepsGrass.wav" id="4_0fwxj"]
 [ext_resource type="AudioStream" uid="uid://b0xmaderrnmxx" path="res://Audio/SFX/Weapon/Halberd/Swoosh.wav" id="5_wsr1k"]
@@ -14,9 +14,9 @@ height = 109.89011
 [sub_resource type="CircleShape2D" id="CircleShape2D_d75ba"]
 radius = 12.649111
 
-[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("attackPivot", "attackHitbox", "bulletContainer", "bulletBars") groups=["player"]]
-collision_layer = 2
-collision_mask = 4
+[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("attackPivot", "attackHitbox", "bulletContainer", "bulletBars", "gunSFX", "walkSFX", "swingSFX") groups=["player"]]
+collision_layer = 3
+collision_mask = 3
 script = ExtResource("1_4bggy")
 exhaustedSpeedMultiplier = 0.1
 dodgeSpeed = 400
@@ -28,8 +28,11 @@ halberdSoundFile = ExtResource("5_wsr1k")
 bulletScene = ExtResource("2_a1q3d")
 bulletContainer = NodePath("BulletContainer")
 bulletBars = [null, null, null]
+gunSFX = NodePath("PlayerSFX/GunSFX")
 gunSoundFile = ExtResource("3_wsr1k")
+walkSFX = NodePath("PlayerSFX/WalkSFX")
 walkSoundFile = ExtResource("4_0fwxj")
+swingSFX = NodePath("PlayerSFX/HalberdSwing")
 swingSoundFile = ExtResource("5_wsr1k")
 
 [node name="Camera2D" type="Camera2D" parent="."]

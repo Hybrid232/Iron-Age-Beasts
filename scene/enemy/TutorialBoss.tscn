@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://d4heq0i17knph"]
+[gd_scene load_steps=6 format=3 uid="uid://d4heq0i17knph"]
 
 [ext_resource type="Script" uid="uid://bf4f5t0p3v7n6" path="res://scene/scripts/enemy Scripts/TutorialBoss.cs" id="1_4m671"]
 [ext_resource type="Texture2D" uid="uid://brhqgehvt7ib0" path="res://sprites/test/dino-miniboss.png" id="2_t0wen"]
@@ -15,8 +15,8 @@ size = Vector2(5.997043, 51.746735)
 [node name="TutorialBoss" type="CharacterBody2D" node_paths=PackedStringArray("BiteHitbox", "TailHitbox", "ChargeHitbox", "BodyContactDamageArea")]
 light_mask = 7
 visibility_layer = 7
-collision_layer = 5
-collision_mask = 5
+collision_layer = 7
+collision_mask = 7
 script = ExtResource("1_4m671")
 BiteRange = 200.0
 TailSweepRange = 260.0
@@ -39,21 +39,23 @@ ChargeKnockbackDistance = 400.0
 ChargeKnockbackTime = 0.2
 DebugPrintHitboxOverlaps = true
 BodyContactDamageArea = NodePath("CollisionDamage")
-ContactKnockbackDistance = 80.0
 MaxHealth = 200
-
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
-light_mask = 5
-visibility_layer = 5
-position = Vector2(-40, -99)
-scale = Vector2(10.242796, 16.70305)
-polygon = PackedVector2Array(-10.155752, -1.2759495, -13.839702, 4.2531643, -12.844039, 4.678481, -11.25098, 4.556962, -6.770501, 7.0481014, -6.1731043, 7.412658, -4.7791777, 8.3848095, -3.584383, 9.6, -1.0952282, 8.567089, 0.49783087, 9.417721, 0.49783087, 11.301266, 1.0952282, 12.881012, 3.0865521, 14.096202, 1.2943606, 14.582278, -0.39826488, 15.250632, 4.380913, 15.918987, 8.263994, 15.797468, 9.060524, 14.521519, 8.263994, 11.96962, 12.147077, 12.091139, 15.233628, 11.544304, 17.424084, 10.207595, 20.112373, 7.3518987, 19.61454, 4.556962, 17.623219, 2.5518987, 17.623219, 0.48607588, 19.017143, -1.0329113, 20.012806, -2.0658226, 19.714108, -2.9772148, 16.129725, -1.2759495, 14.038834, 0.9113927, 13.043172, 1.3974686, 11.25098, 0.060759544, 6.8700676, -0.60759497, 4.580045, -0.18227863, 2.986986, 0.48607588, 0.79652953, 1.7620254, -0.9956622, 1.3974686, -4.9783096, -1.4582276, -7.766164, -1.4582276)
+AttackRange = 15.0
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+light_mask = 5
+visibility_layer = 5
 texture = ExtResource("2_t0wen")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 root_node = NodePath("../Sprite2D")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+light_mask = 7
+visibility_layer = 7
+position = Vector2(-40, -96.00001)
+scale = Vector2(9.865882, 16.088413)
+polygon = PackedVector2Array(-10.155752, -1.2759495, -13.839702, 4.2531643, -12.844039, 4.678481, -11.25098, 4.556962, -6.770501, 7.0481014, -6.1731043, 7.412658, -4.7791777, 8.3848095, -3.584383, 9.6, -1.0952282, 8.567089, 0.49783087, 9.417721, 0.49783087, 11.301266, 1.0952282, 12.881012, 3.0865521, 14.096202, 1.2943606, 14.582278, -0.39826488, 15.250632, 4.380913, 15.918987, 8.263994, 15.797468, 9.060524, 14.521519, 8.263994, 11.96962, 12.147077, 12.091139, 15.233628, 11.544304, 17.424084, 10.207595, 20.112373, 7.3518987, 19.61454, 4.556962, 17.623219, 2.5518987, 17.623219, 0.48607588, 19.017143, -1.0329113, 20.012806, -2.0658226, 19.714108, -2.9772148, 16.129725, -1.2759495, 14.038834, 0.9113927, 13.043172, 1.3974686, 11.25098, 0.060759544, 6.8700676, -0.60759497, 4.580045, -0.18227863, 2.986986, 0.48607588, 0.79652953, 1.7620254, -0.9956622, 1.3974686, -4.9783096, -1.4582276, -7.766164, -1.4582276)
 
 [node name="HurtboxArea" type="Area2D" parent="."]
 light_mask = 3
@@ -114,6 +116,8 @@ shape = SubResource("RectangleShape2D_4m671")
 debug_color = Color(0.191638, 0.6419517, 0, 0.62352943)
 
 [node name="CollisionDamage" type="Area2D" parent="."]
+light_mask = 7
+visibility_layer = 7
 collision_layer = 7
 collision_mask = 7
 
