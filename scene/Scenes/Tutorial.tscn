@@ -54,13 +54,6 @@ healthBar = NodePath("PlayerHealthBar")
 staminaBar = NodePath("PlayerStaminaBar")
 _potionIcon = NodePath("PotionIcon")
 
-[node name="BossHealthbar" parent="HUD" unique_id=786047224 instance=ExtResource("4_ujhhv")]
-visible = false
-offset_left = 13.0
-offset_top = -9.0
-offset_right = 13.0
-offset_bottom = -9.0
-
 [node name="BulletBar0" type="ProgressBar" parent="HUD"]
 offset_left = 25.0
 offset_top = 55.0
