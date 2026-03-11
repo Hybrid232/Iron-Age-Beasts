@@ -44,7 +44,9 @@ z_index = 1
 position = Vector2(0, -1)
 texture = ExtResource("3_a1q3d")
 
-[node name="HitboxArea" type="CollisionShape2D" parent="."]
+[node name="HitboxArea" type="CollisionShape2D" parent="." groups=["Player", "player"]]
+light_mask = 7
+visibility_layer = 7
 z_index = 2
 position = Vector2(6.7762636e-21, -3)
 rotation = -3.1415927
