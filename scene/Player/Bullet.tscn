@@ -12,6 +12,7 @@ visibility_layer = 3
 collision_layer = 12
 collision_mask = 12
 script = ExtResource("1_xlmoy")
+speed = 500.0
 damage = 30
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
