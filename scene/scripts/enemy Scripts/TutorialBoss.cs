@@ -52,6 +52,20 @@ public partial class TutorialBoss : BaseEnemy
 	[Export] public Area2D TailHitbox;
 	[Export] public Area2D ChargeHitbox;
 
+	// =========================================================
+	// NEW: Telegraph visuals (yellow attack radius indicators)
+	// Assign these in the editor to any CanvasItem (Polygon2D, Sprite2D, Line2D, etc.)
+	// that visually represents the warning area for each attack.
+	// =========================================================
+	[ExportGroup("Telegraphs (Visuals)")]
+	[Export] public NodePath BiteTelegraphPath;
+	[Export] public NodePath TailTelegraphPath;
+	[Export] public NodePath ChargeTelegraphPath;
+
+	private CanvasItem biteTelegraph;
+	private CanvasItem tailTelegraph;
+	private CanvasItem chargeTelegraph;
+
 	[ExportGroup("Knockback Attacks")]
 	[Export] public float BiteKnockbackDistance = 100f;
 	[Export] public float BiteKnockbackTime = 0.20f;
@@ -109,6 +123,13 @@ public partial class TutorialBoss : BaseEnemy
 			BodyContactDamageArea.BodyEntered += OnBodyContactEntered;
 			BodyContactDamageArea.BodyExited += OnBodyContactExited;
 		}
+
+		// ===== Telegraph visuals hookup =====
+		biteTelegraph = ResolveTelegraph(BiteTelegraphPath, "BiteTelegraphPath");
+		tailTelegraph = ResolveTelegraph(TailTelegraphPath, "TailTelegraphPath");
+		chargeTelegraph = ResolveTelegraph(ChargeTelegraphPath, "ChargeTelegraphPath");
+
+		HideAllTelegraphs();
 
 		// ===== Boss UI hookup (with diagnostics) =====
 		GD.Print($"[Boss] BossUIPath='{BossUIPath}' (isEmpty={BossUIPath == null || BossUIPath.IsEmpty})");
@@ -370,9 +391,13 @@ public partial class TutorialBoss : BaseEnemy
 		if (_player != null && attack == BossAttack.Charge)
 			chargeDir = (_player.GlobalPosition - GlobalPosition).Normalized();
 
+		// Disable real hitboxes during telegraph (no damage yet)
 		SetHitboxEnabled(BiteHitbox, false);
 		SetHitboxEnabled(TailHitbox, false);
 		SetHitboxEnabled(ChargeHitbox, false);
+
+		// NEW: show yellow indicator during telegraph
+		ShowTelegraph(attack, true);
 
 		stateTimer = GetTelegraphTime(attack);
 	}
@@ -387,6 +412,10 @@ public partial class TutorialBoss : BaseEnemy
 			hitTargetsThisActive.Clear();
 
 			PrepareHitboxForAttack(currentAttack);
+
+			// NEW: hide indicator as the attack becomes active
+			ShowTelegraph(currentAttack, false);
+
 			EnableAttackHitbox(currentAttack, true);
 
 			if (currentAttack == BossAttack.Charge)
@@ -398,6 +427,10 @@ public partial class TutorialBoss : BaseEnemy
 		if (state == BossState.Active)
 		{
 			EnableAttackHitbox(currentAttack, false);
+
+			// (safety) ensure indicator is hidden
+			ShowTelegraph(currentAttack, false);
+
 			Velocity = Vector2.Zero;
 
 			state = BossState.Recover;
@@ -469,6 +502,9 @@ public partial class TutorialBoss : BaseEnemy
 				if (BiteHitbox != null) BiteHitbox.GlobalRotation = angle;
 				break;
 		}
+
+		// OPTIONAL: if your telegraph visuals need to rotate with the attack, rotate them too:
+		RotateTelegraphToAngle(a, angle);
 	}
 
 	private void ApplyActiveHitboxDamage(BossAttack a)
@@ -493,7 +529,6 @@ public partial class TutorialBoss : BaseEnemy
 		if (!hitbox.Monitoring) return;
 
 		var bodies = hitbox.GetOverlappingBodies();
-
 
 		foreach (var obj in bodies)
 		{
@@ -613,6 +648,71 @@ public partial class TutorialBoss : BaseEnemy
 			((CollisionPolygon2D)node).Disabled = !enabled;
 	}
 
+	// ============================
+	// NEW: Telegraph helper methods
+	// ============================
+
+	private CanvasItem ResolveTelegraph(NodePath path, string label)
+	{
+		if (path == null || path.IsEmpty)
+		{
+			GD.PushWarning($"[Boss] {label} is not assigned (NodePath empty). Telegraph will not show for that attack.");
+			return null;
+		}
+
+		var node = GetNodeOrNull(path) as CanvasItem;
+		if (node == null)
+		{
+			GD.PushWarning($"[Boss] {label} was set but node is missing or not a CanvasItem at path='{path}'.");
+			return null;
+		}
+
+		return node;
+	}
+
+	private void HideAllTelegraphs()
+	{
+		if (biteTelegraph != null) biteTelegraph.Visible = false;
+		if (tailTelegraph != null) tailTelegraph.Visible = false;
+		if (chargeTelegraph != null) chargeTelegraph.Visible = false;
+	}
+
+	private void ShowTelegraph(BossAttack a, bool show)
+	{
+		// Only show one at a time
+		HideAllTelegraphs();
+		if (!show) return;
+
+		switch (a)
+		{
+			case BossAttack.Bite:
+				if (biteTelegraph != null) biteTelegraph.Visible = true;
+				break;
+			case BossAttack.TailSweep:
+				if (tailTelegraph != null) tailTelegraph.Visible = true;
+				break;
+			case BossAttack.Charge:
+				if (chargeTelegraph != null) chargeTelegraph.Visible = true;
+				break;
+		}
+	}
+
+	// Optional helper: rotate the indicator to match the attack facing.
+	// If your indicators are circles, rotation doesn't matter.
+	private void RotateTelegraphToAngle(BossAttack a, float angle)
+	{
+		CanvasItem t = a switch
+		{
+			BossAttack.Bite => biteTelegraph,
+			BossAttack.TailSweep => tailTelegraph,
+			BossAttack.Charge => chargeTelegraph,
+			_ => null
+		};
+
+		if (t is Node2D n2d)
+			n2d.GlobalRotation = angle;
+	}
+
 	protected override void OnDamageTaken(int damage)
 	{
 		base.OnDamageTaken(damage);
@@ -623,6 +723,9 @@ public partial class TutorialBoss : BaseEnemy
 	{
 		state = BossState.Dead;
 		Velocity = Vector2.Zero;
+
+		// NEW: hide telegraphs on death
+		HideAllTelegraphs();
 
 		SetHitboxEnabled(BiteHitbox, false);
 		SetHitboxEnabled(TailHitbox, false);
