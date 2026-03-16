@@ -30,12 +30,12 @@ scale = Vector2(9.999999, 9.999999)
 shape = SubResource("CircleShape2D_dgp13")
 
 [node name="HurtBox" type="Area2D" parent="." groups=["enemy_hurtbox"]]
-position = Vector2(92.00001, 36.000004)
+position = Vector2(11.000015, -44.999977)
 scale = Vector2(10, 10)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox"]
 z_index = 7
-position = Vector2(-0.3000009, 0.09999943)
+position = Vector2(-0.40000176, -0.4000026)
 shape = SubResource("CircleShape2D_0y17p")
 debug_color = Color(0.68824255, 0.28912774, 0.39706942, 0.41960785)
 
