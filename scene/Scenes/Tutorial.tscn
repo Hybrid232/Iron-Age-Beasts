@@ -34,7 +34,6 @@ playerSpeed = 150
 dodgeIFrameStartNormalized = 0.45
 dodgeIFrameDurationNormalized = 0.85
 bulletBars = [NodePath("../HUD/BulletBar0"), NodePath("../HUD/BulletBar1"), NodePath("../HUD/BulletBar2")]
-gunSoundFile = null
 walkSoundFile = null
 swingSoundFile = null
 
