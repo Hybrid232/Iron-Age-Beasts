@@ -141,7 +141,7 @@ texture = ExtResource("9_113gb")
 position = Vector2(3908, -524)
 
 [node name="Dilophosaurus" parent="." instance=ExtResource("7_pbiin")]
-position = Vector2(1523, 109)
+position = Vector2(1524, 109)
 collision_layer = 2
 collision_mask = 2
 
