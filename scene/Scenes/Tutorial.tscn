@@ -160,6 +160,8 @@ collision_mask = 2
 position = Vector2(1086, 59)
 
 [node name="TutorialBoss" parent="." node_paths=PackedStringArray("ArenaTriggerArea", "EntranceGate") groups=["Player", "enemy_hurtbox"] instance=ExtResource("10_ujhhv")]
+light_mask = 15
+visibility_layer = 15
 position = Vector2(8432, -155)
 ArenaTriggerArea = NodePath("../BossStart")
 EntranceGate = NodePath("../StaticBody2D")

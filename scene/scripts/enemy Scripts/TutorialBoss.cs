@@ -7,54 +7,33 @@ public partial class TutorialBoss : BaseEnemy
 	private enum BossState { Idle, Chasing, Telegraph, Active, Recover, Dead }
 	private enum BossAttack { None, Bite, TailSweep, Charge }
 
-	// =========================
-	// Arena Activation / Gate
-	// =========================
 	[ExportGroup("Arena Activation")]
-	[Export] public Area2D ArenaTriggerArea;      // Area2D (trigger) with its own CollisionShape2D child
-	[Export] public StaticBody2D EntranceGate;    // StaticBody2D (blocker) with its own CollisionShape2D child
+	[Export] public Area2D ArenaTriggerArea;
+	[Export] public StaticBody2D EntranceGate;
 	[Export] public bool LockEntranceOnStart = true;
 
-	// =========================
-	// Boss UI
-	// =========================
 	[ExportGroup("Boss UI")]
 	[Export] public NodePath BossUIPath;
 
-	// =========================
-	// Phase 2
-	// =========================
 	[ExportGroup("Phase 2 (<=40% HP)")]
 	[Export] public float Phase2SpeedMultiplier = 1.35f;
 	[Export] public bool UnlockChargeAt40Percent = true;
 
-	// =========================
-	// Ranges
-	// =========================
 	[ExportGroup("Ranges")]
 	[Export] public float BiteRange = 40f;
 	[Export] public float TailSweepRange = 85f;
 	[Export] public float MinChargeRange = 120f;
 
-	// =========================
-	// Damages
-	// =========================
 	[ExportGroup("Damages")]
 	[Export] public int BiteDamage = 20;
 	[Export] public int TailDamage = 15;
 	[Export] public int ChargeDamage = 30;
 
-	// =========================
-	// Cooldowns
-	// =========================
 	[ExportGroup("Cooldowns")]
 	[Export] public float BiteCooldown = 1.2f;
 	[Export] public float TailCooldown = 1.8f;
 	[Export] public float ChargeCooldown = 3.0f;
 
-	// =========================
-	// Timings
-	// =========================
 	[ExportGroup("Timings: Telegraph / Active / Recover")]
 	[Export] public float BiteTelegraph = 0.20f;
 	[Export] public float BiteActive = 0.12f;
@@ -68,17 +47,11 @@ public partial class TutorialBoss : BaseEnemy
 	[Export] public float ChargeActive = 0.75f;
 	[Export] public float ChargeRecover = 0.85f;
 
-	// =========================
-	// Hitboxes
-	// =========================
 	[ExportGroup("Hitboxes (Area2D)")]
 	[Export] public Area2D BiteHitbox;
 	[Export] public Area2D TailHitbox;
 	[Export] public Area2D ChargeHitbox;
 
-	// =========================
-	// Knockback
-	// =========================
 	[ExportGroup("Knockback Attacks")]
 	[Export] public float BiteKnockbackDistance = 100f;
 	[Export] public float BiteKnockbackTime = 0.20f;
@@ -87,28 +60,19 @@ public partial class TutorialBoss : BaseEnemy
 	[Export] public float ChargeKnockbackDistance = 250f;
 	[Export] public float ChargeKnockbackTime = 2.0f;
 
-	// =========================
-	// Debug / Facing
-	// =========================
 	[ExportGroup("Debug")]
 	[Export] public bool DebugPrintHitboxOverlaps = false;
 
 	[ExportGroup("Facing / Orientation")]
 	[Export] public bool FlipAttackDirection = true;
 
-	// =========================
-	// Contact Damage
-	// =========================
 	[ExportGroup("Contact Damage (Body Touch)")]
 	[Export] public Area2D BodyContactDamageArea;
 	[Export] public int ContactDamage = 5;
 	[Export] public float ContactKnockbackDistance = 140f;
 	[Export] public float ContactKnockbackTime = 0.18f;
-	[Export] public float ContactDamageCooldown = 0.40f; // per player
+	[Export] public float ContactDamageCooldown = 0.40f;
 
-	// =========================
-	// Internals
-	// =========================
 	private readonly Dictionary<ulong, float> _contactDamageCdByTarget = new();
 	private IBossUI bossUI;
 
@@ -130,19 +94,15 @@ public partial class TutorialBoss : BaseEnemy
 	{
 		base._Ready();
 
-		// One consistent player group name
 		PlayerGroup = "Player";
-
 		baseSpeed = Speed;
 
 		AutoFillRangesFromHitboxes();
 
-		// Disable attack hitboxes at startup
 		SetHitboxEnabled(BiteHitbox, false);
 		SetHitboxEnabled(TailHitbox, false);
 		SetHitboxEnabled(ChargeHitbox, false);
 
-		// Contact damage OFF until fight starts
 		if (BodyContactDamageArea != null)
 		{
 			SetHitboxEnabled(BodyContactDamageArea, false);
@@ -150,27 +110,49 @@ public partial class TutorialBoss : BaseEnemy
 			BodyContactDamageArea.BodyExited += OnBodyContactExited;
 		}
 
-		// Boss UI hookup + hide at start
-		if (BossUIPath != null && !BossUIPath.IsEmpty)
-			bossUI = GetNodeOrNull(BossUIPath) as IBossUI;
+		// ===== Boss UI hookup (with diagnostics) =====
+		GD.Print($"[Boss] BossUIPath='{BossUIPath}' (isEmpty={BossUIPath == null || BossUIPath.IsEmpty})");
 
-		bossUI?.InitializeBoss(MaxHealth, _currentHealth);
+		var uiCanvasItem = (BossUIPath != null && !BossUIPath.IsEmpty)
+			? GetNodeOrNull(BossUIPath) as CanvasItem
+			: null;
 
-		// Hide UI until arena entry (BossUI implements IBossUI, but visibility is on CanvasItem)
-		var uiNode = GetNodeOrNull(BossUIPath) as CanvasItem;
-		if (uiNode != null) uiNode.Visible = false;
+		if (uiCanvasItem == null)
+		{
+			GD.PushWarning("[Boss] Could not find Boss UI node via BossUIPath (CanvasItem was null).");
+		}
+		else
+		{
+			GD.Print($"[Boss] Found UI CanvasItem at path={uiCanvasItem.GetPath()} type={uiCanvasItem.GetType().Name}");
+		}
 
-		// Boss starts idle
+		bossUI = (BossUIPath != null && !BossUIPath.IsEmpty)
+			? GetNodeOrNull(BossUIPath) as IBossUI
+			: null;
+
+		if (bossUI == null)
+		{
+			GD.PushWarning("[Boss] Boss UI node does not implement IBossUI OR was not found.");
+		}
+		else
+		{
+			GD.Print($"[Boss] bossUI interface resolved. Type={bossUI.GetType().Name}");
+
+			// Initialize immediately (BossUI will resolve the progress bar safely now)
+			bossUI.InitializeBoss(MaxHealth, _currentHealth);
+		}
+
+		// Hide UI until arena entry
+		if (uiCanvasItem != null) uiCanvasItem.Visible = false;
+
 		fightStarted = false;
 		state = BossState.Idle;
 		_player = null;
 		_chasing = false;
 		Velocity = Vector2.Zero;
 
-		// Gate starts OPEN
 		SetEntranceGateLocked(false);
 
-		// Arena trigger hookup
 		if (ArenaTriggerArea != null)
 		{
 			ArenaTriggerArea.Monitoring = true;
@@ -186,7 +168,6 @@ public partial class TutorialBoss : BaseEnemy
 	public override void _Process(double delta)
 	{
 		base._Process(delta);
-
 		if (!fightStarted) return;
 
 		float dt = (float)delta;
@@ -194,7 +175,6 @@ public partial class TutorialBoss : BaseEnemy
 		tailCd = Math.Max(0, tailCd - dt);
 		chargeCd = Math.Max(0, chargeCd - dt);
 
-		// tick per-target contact cooldowns
 		if (_contactDamageCdByTarget.Count > 0)
 		{
 			var keys = new List<ulong>(_contactDamageCdByTarget.Keys);
@@ -207,7 +187,6 @@ public partial class TutorialBoss : BaseEnemy
 
 	public override void _PhysicsProcess(double delta)
 	{
-		// Stay idle until player enters arena
 		if (!fightStarted || state == BossState.Idle)
 		{
 			Velocity = Vector2.Zero;
@@ -234,9 +213,6 @@ public partial class TutorialBoss : BaseEnemy
 		MoveAndSlide();
 	}
 
-	// =========================
-	// Arena trigger -> start fight
-	// =========================
 	private void OnArenaTriggerBodyEntered(Node body)
 	{
 		if (fightStarted) return;
@@ -256,19 +232,15 @@ public partial class TutorialBoss : BaseEnemy
 		state = BossState.Chasing;
 		currentAttack = BossAttack.None;
 
-		// Show UI now
 		var uiNode = GetNodeOrNull(BossUIPath) as CanvasItem;
 		if (uiNode != null) uiNode.Visible = true;
 
-		// Enable contact damage now
 		if (BodyContactDamageArea != null)
 			SetHitboxEnabled(BodyContactDamageArea, true);
 
-		// Lock the entrance
 		if (LockEntranceOnStart)
 			SetEntranceGateLocked(true);
 
-		// Optional: prevent re-trigger spam
 		if (ArenaTriggerArea != null)
 			ArenaTriggerArea.Monitoring = false;
 
@@ -276,37 +248,34 @@ public partial class TutorialBoss : BaseEnemy
 	}
 
 	private void SetEntranceGateLocked(bool locked)
-{
-	if (EntranceGate == null)
 	{
-		GD.PushWarning("[Boss] EntranceGate is not assigned.");
-		return;
+		if (EntranceGate == null)
+		{
+			GD.PushWarning("[Boss] EntranceGate is not assigned.");
+			return;
+		}
+
+		int shapeCount = 0;
+
+		foreach (var node in EntranceGate.GetChildren())
+		{
+			if (node is CollisionShape2D cs)
+			{
+				shapeCount++;
+				cs.Disabled = !locked;
+				GD.Print($"[Boss] Gate shape '{cs.Name}' Disabled={cs.Disabled} (locked={locked})");
+			}
+			else if (node is CollisionPolygon2D cp)
+			{
+				shapeCount++;
+				cp.Disabled = !locked;
+				GD.Print($"[Boss] Gate polygon '{cp.Name}' Disabled={cp.Disabled} (locked={locked})");
+			}
+		}
+
+		GD.Print($"[Boss] EntranceGateLocked={locked}, gatePath={EntranceGate.GetPath()}, shapesFound={shapeCount}");
 	}
 
-	int shapeCount = 0;
-
-	foreach (var node in EntranceGate.GetChildren())
-	{
-		if (node is CollisionShape2D cs)
-		{
-			shapeCount++;
-			cs.Disabled = !locked;
-			GD.Print($"[Boss] Gate shape '{cs.Name}' Disabled={cs.Disabled} (locked={locked})");
-		}
-		else if (node is CollisionPolygon2D cp)
-		{
-			shapeCount++;
-			cp.Disabled = !locked;
-			GD.Print($"[Boss] Gate polygon '{cp.Name}' Disabled={cp.Disabled} (locked={locked})");
-		}
-	}
-
-	GD.Print($"[Boss] EntranceGateLocked={locked}, gatePath={EntranceGate.GetPath()}, shapesFound={shapeCount}");
-}
-
-	// =========================
-	// Phase / AI
-	// =========================
 	private void HandlePhase2()
 	{
 		if (phase2) return;
@@ -472,15 +441,9 @@ public partial class TutorialBoss : BaseEnemy
 	{
 		switch (a)
 		{
-			case BossAttack.Bite:
-				SetHitboxEnabled(BiteHitbox, enabled);
-				break;
-			case BossAttack.TailSweep:
-				SetHitboxEnabled(TailHitbox, enabled);
-				break;
-			case BossAttack.Charge:
-				SetHitboxEnabled(ChargeHitbox, enabled);
-				break;
+			case BossAttack.Bite: SetHitboxEnabled(BiteHitbox, enabled); break;
+			case BossAttack.TailSweep: SetHitboxEnabled(TailHitbox, enabled); break;
+			case BossAttack.Charge: SetHitboxEnabled(ChargeHitbox, enabled); break;
 		}
 	}
 
@@ -492,24 +455,18 @@ public partial class TutorialBoss : BaseEnemy
 		if (toPlayer.Length() <= 0.001f) return;
 
 		float angle = toPlayer.Angle();
-		if (FlipAttackDirection)
-			angle += Mathf.Pi;
+		if (FlipAttackDirection) angle += Mathf.Pi;
 
 		switch (a)
 		{
 			case BossAttack.TailSweep:
-				if (TailHitbox != null)
-					TailHitbox.Rotation = 0f;
+				if (TailHitbox != null) TailHitbox.Rotation = 0f;
 				break;
-
 			case BossAttack.Charge:
-				if (ChargeHitbox != null)
-					ChargeHitbox.GlobalRotation = angle;
+				if (ChargeHitbox != null) ChargeHitbox.GlobalRotation = angle;
 				break;
-
 			case BossAttack.Bite:
-				if (BiteHitbox != null)
-					BiteHitbox.GlobalRotation = angle;
+				if (BiteHitbox != null) BiteHitbox.GlobalRotation = angle;
 				break;
 		}
 	}
@@ -536,13 +493,12 @@ public partial class TutorialBoss : BaseEnemy
 		if (!hitbox.Monitoring) return;
 
 		var bodies = hitbox.GetOverlappingBodies();
-		if (DebugPrintHitboxOverlaps)
-			GD.Print($"{a} bodies overlapping: {bodies.Count}");
+
 
 		foreach (var obj in bodies)
 		{
 			if (obj is not Node2D body) continue;
-			if (body == this || IsAncestorOf(body)) continue; // no self/children
+			if (body == this || IsAncestorOf(body)) continue;
 			if (!body.IsInGroup(PlayerGroup)) continue;
 			if (body is not IDamageable damageable) continue;
 
@@ -572,9 +528,6 @@ public partial class TutorialBoss : BaseEnemy
 		}
 	}
 
-	// =========================
-	// Contact damage
-	// =========================
 	private void OnBodyContactEntered(Node2D body) => TryApplyContactDamage(body);
 	private void OnBodyContactExited(Node2D body) { }
 
@@ -590,8 +543,7 @@ public partial class TutorialBoss : BaseEnemy
 		if (body is not IDamageable dmgable) return;
 
 		ulong id = body.GetInstanceId();
-		if (_contactDamageCdByTarget.TryGetValue(id, out float cd) && cd > 0f)
-			return;
+		if (_contactDamageCdByTarget.TryGetValue(id, out float cd) && cd > 0f) return;
 
 		_contactDamageCdByTarget[id] = ContactDamageCooldown;
 
@@ -606,9 +558,6 @@ public partial class TutorialBoss : BaseEnemy
 		}
 	}
 
-	// =========================
-	// Ranges from hitboxes
-	// =========================
 	private void AutoFillRangesFromHitboxes()
 	{
 		BiteRange = Math.Max(BiteRange, GetHitboxReachPixels(BiteHitbox));
@@ -642,16 +591,13 @@ public partial class TutorialBoss : BaseEnemy
 		return best;
 	}
 
-	private float ShapeReach(Shape2D shape)
+	private float ShapeReach(Shape2D shape) => shape switch
 	{
-		return shape switch
-		{
-			CircleShape2D c => c.Radius,
-			RectangleShape2D r => r.Size.Length() * 0.5f,
-			CapsuleShape2D cap => cap.Radius + (cap.Height * 0.5f),
-			_ => 0f
-		};
-	}
+		CircleShape2D c => c.Radius,
+		RectangleShape2D r => r.Size.Length() * 0.5f,
+		CapsuleShape2D cap => cap.Radius + (cap.Height * 0.5f),
+		_ => 0f
+	};
 
 	private void SetHitboxEnabled(Area2D hitbox, bool enabled)
 	{
@@ -667,9 +613,6 @@ public partial class TutorialBoss : BaseEnemy
 			((CollisionPolygon2D)node).Disabled = !enabled;
 	}
 
-	// =========================
-	// UI updates
-	// =========================
 	protected override void OnDamageTaken(int damage)
 	{
 		base.OnDamageTaken(damage);
