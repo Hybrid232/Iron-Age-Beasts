@@ -2,7 +2,7 @@ using Godot;
 
 public class PotionSystem
 {
-    private int maxPotions = 1;
+    private int maxPotions = 5;
     private int currentPotions;
     private int healAmount;
     
@@ -16,7 +16,7 @@ public class PotionSystem
         this.uiReference = uiReference;
         
         currentPotions = maxPotions;
-        uiReference?.UpdatePotionDisplay(currentPotions > 0);
+        uiReference?.UpdatePotionDisplay(currentPotions);
     }
 
     public void TryUsePotion()
@@ -26,8 +26,8 @@ public class PotionSystem
             healthSystem.ChangeHealth(healAmount); // Heals the player
             currentPotions--;
             
-            uiReference?.UpdatePotionDisplay(false); // Hide HUD icon
-            GD.Print("Potion used!");
+            uiReference?.UpdatePotionDisplay(currentPotions);
+		    GD.Print($"Potion used! Remaining: {currentPotions}");
         }
     }
 
@@ -35,6 +35,6 @@ public class PotionSystem
     public void RefillPotions() 
     {
         currentPotions = maxPotions;
-        uiReference?.UpdatePotionDisplay(true);
+        uiReference?.UpdatePotionDisplay(currentPotions);
     }
 }

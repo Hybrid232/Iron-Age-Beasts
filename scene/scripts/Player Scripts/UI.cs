@@ -5,7 +5,7 @@ public partial class UI : CanvasLayer
 {
 	[Export] private TextureProgressBar healthBar;
 	[Export] private TextureProgressBar staminaBar;
-	[Export] private TextureRect _potionIcon;
+	[Export] private TextureRect[] _potionIcons;
 
 	public void InitializeHealth(int maxHealth, int currentHealth)
 	{
@@ -32,15 +32,17 @@ public partial class UI : CanvasLayer
 		staminaBar.Value = currentStamina;
 	}
 
-	public void UpdatePotionDisplay(bool hasPotion)
+	public void UpdatePotionDisplay(int currentPotions)
 	{
-		if (_potionIcon != null)
+		if (_potionIcons == null) return;
+
+		for (int i = 0; i < _potionIcons.Length; i++)
 		{
-			_potionIcon.Visible = hasPotion;
+			if (_potionIcons[i] != null)
+			{
+				// Shows the icon if its index is less than the remaining potions
+				_potionIcons[i].Visible = i < currentPotions;
+			}
 		}
-		else
-		{
-			GD.PrintErr("Potion icon is not assigned in the UI script!");
-		}
-	}
+	} 
 }

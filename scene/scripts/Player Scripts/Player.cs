@@ -9,6 +9,7 @@ public partial class Player : CharacterBody2D, IDamageable
 	[Export] private UI uiReference;
 	[Export] private int maxHealth = 100;
 	[Export] private int maxStamina = 100;
+	[Export] private int potionHealAmount = 30;
 
 	[ExportGroup("Death")]
 	[Export] private bool resetSceneOnDeath = true;
@@ -146,7 +147,7 @@ public partial class Player : CharacterBody2D, IDamageable
 
 		meleeSystem.Initialize();
 
-		potionSystem = new PotionSystem(50, healthSystem, uiReference);
+		potionSystem = new PotionSystem(potionHealAmount, healthSystem, uiReference);
 	}
 
 	public override void _PhysicsProcess(double delta)
