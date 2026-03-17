@@ -12,7 +12,8 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 	[Export] public int AttackDamage = 20;
 	[Export] public float AttackRange = 30f;
 	[Export] public float AttackCooldown = 1.5f;
-	[Export] public string PlayerGroup = "player";
+	public const string PLAYER_GROUP = "Player";
+	[Export] public string PlayerGroup = PLAYER_GROUP;
 
 
 	// State Variables
