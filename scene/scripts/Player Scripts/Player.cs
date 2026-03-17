@@ -10,13 +10,11 @@ public partial class Player : CharacterBody2D, IDamageable
 	[Export] private int maxHealth = 100;
 	[Export] private int maxStamina = 100;
 
-	// NEW: Death handling (simple for now: reload scene)
 	[ExportGroup("Death")]
 	[Export] private bool resetSceneOnDeath = true;
 
-	// NEW: attacker recoil (pushback when YOU hit the boss/enemy)
 	[ExportGroup("Combat Feel")]
-	[Export] private bool enableAttackerRecoilOnHit = true; // turn off for testing
+	[Export] private bool enableAttackerRecoilOnHit = true;
 
 	// ===== MOVEMENT EXPORTS =====
 	[ExportGroup("Movement System")]
@@ -32,6 +30,13 @@ public partial class Player : CharacterBody2D, IDamageable
 	[Export] private float dodgeTime = 0.20f;
 	[Export] private float dodgeCooldown = 0.7f;
 	[Export] private int dodgeStaminaCost = 20;
+
+	// i-frames tuning (normalized 0..1 within the dodge)
+	[Export(PropertyHint.Range, "0,1,0.01")]
+	private float dodgeIFrameStartNormalized = 0.10f;
+
+	[Export(PropertyHint.Range, "0,1,0.01")]
+	private float dodgeIFrameDurationNormalized = 0.50f;
 
 	// ===== RECOIL EXPORTS =====
 	[ExportGroup("Recoil System")]
@@ -82,6 +87,10 @@ public partial class Player : CharacterBody2D, IDamageable
 
 	public bool CanMove { get; set; } = true;
 
+	// Single source of truth: can the player be “hit” right now?
+	// (Use this to block damage AND knockback/stagger.)
+	public bool IsInvulnerable => dodgeSystem != null && dodgeSystem.IsInIFrames;
+
 	public override void _Ready()
 	{
 		healthSystem = new HealthSystem(
@@ -93,7 +102,16 @@ public partial class Player : CharacterBody2D, IDamageable
 		);
 
 		movementSystem = new MovementSystem(playerSpeed);
-		dodgeSystem = new DodgeSystem(dodgeSpeed, dodgeTime, dodgeCooldown, dodgeStaminaCost);
+
+		dodgeSystem = new DodgeSystem(
+			dodgeSpeed,
+			dodgeTime,
+			dodgeCooldown,
+			dodgeStaminaCost,
+			dodgeIFrameStartNormalized,
+			dodgeIFrameDurationNormalized
+		);
+
 		recoilSystem = new RecoilSystem(hitRecoilDistance, hitRecoilTime, playerRecoilDistance, recoilTime);
 
 		meleeSystem = new MeleeSystem(
@@ -156,8 +174,7 @@ public partial class Player : CharacterBody2D, IDamageable
 			meleeSystem.UpdateAttack(dt);
 			Velocity = Vector2.Zero;
 
-			// Optional: only play once per attack (your current code plays every frame during attack)
-			if (swingSFX != null && !swingSFX.Playing) swingSFX.Play(); // ← was firing every frame + no null check
+			if (swingSFX != null && !swingSFX.Playing) swingSFX.Play();
 		}
 		else if (dodgeSystem.IsDodging)
 		{
@@ -199,15 +216,23 @@ public partial class Player : CharacterBody2D, IDamageable
 	// Defender recoil (when you take damage) - default strength
 	public void TriggerHitRecoil(Vector2 pushDirection)
 	{
+		// NEW: no knockback/stagger during successful dodge i-frames
+		if (IsInvulnerable)
+			return;
+
 		GD.Print("========== TriggerHitRecoil called ==========");
 		GD.Print($"Push direction: {pushDirection}");
 		recoilSystem.StartHitRecoil(pushDirection);
 		GD.Print($"Is in recoil now? {recoilSystem.IsInRecoil()}");
 	}
 
-	// NEW: Defender recoil with custom strength (boss can override distance/time)
+	// Defender recoil with custom strength (boss can override distance/time)
 	public void TriggerHitRecoil(Vector2 pushDirection, float distance, float time)
 	{
+		// NEW: no knockback/stagger during successful dodge i-frames
+		if (IsInvulnerable)
+			return;
+
 		recoilSystem.StartHitRecoil(pushDirection, distance, time);
 	}
 
@@ -220,6 +245,10 @@ public partial class Player : CharacterBody2D, IDamageable
 
 	public void TakeDamage(int damage)
 	{
+		// Still good to keep: ignore damage during i-frames
+		if (IsInvulnerable)
+			return;
+
 		healthSystem.ChangeHealth(-damage);
 		GD.Print($"Ouch! Player health: {healthSystem.CurrentHealth}");
 
@@ -236,12 +265,15 @@ public partial class Player : CharacterBody2D, IDamageable
 
 		if (resetSceneOnDeath)
 			GetTree().CallDeferred("reload_current_scene");
-
 	}
 
-	// NOTE: leaving your existing method as-is for other callers
+	// If anything uses this to knock you back, block it during i-frames too.
 	public void ApplyKnockback(Vector2 force)
 	{
+		// NEW: no knockback during successful dodge i-frames
+		if (IsInvulnerable)
+			return;
+
 		if (force.Length() > 0)
 		{
 			Vector2 direction = force.Normalized();
