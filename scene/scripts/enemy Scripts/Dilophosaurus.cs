@@ -14,7 +14,7 @@ public partial class Dilophosaurus : BaseEnemy
 	private float _attackAnimationTimer = 0f;
 	private Vector2 _lungeDirection = Vector2.Zero;
 
-	private Vector2 _startPosition;      // where THIS dino started
+	private Vector2 _startPosition;      //  
 	private Vector2 _lastSeenPosition;   // where player was last seen
 	private float _searchTimer = 0f;
 	private float _patrolAngle = 0f;     // current angle around the circle
