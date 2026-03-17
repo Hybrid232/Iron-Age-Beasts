@@ -24,14 +24,12 @@ size = Vector2(1144.5664, 641.3425)
 size = Vector2(2172, 306.91953)
 
 [node name="Tutorial" type="Node2D"]
-position = Vector2(159, -127)
 
 [node name="Player" parent="." node_paths=PackedStringArray("uiReference", "bulletBars") groups=["enemy_hurtbox"] instance=ExtResource("1_00eeo")]
 light_mask = 2
 visibility_layer = 2
 position = Vector2(1308, 81)
 uiReference = NodePath("../HUD")
-potionHealAmount = 30
 playerSpeed = 150
 dodgeIFrameStartNormalized = 0.45
 dodgeIFrameDurationNormalized = 0.85
@@ -190,12 +188,13 @@ collision_mask = 2
 [node name="Dilophosaurus2" parent="." instance=ExtResource("7_pbiin")]
 position = Vector2(1086, 59)
 
-[node name="TutorialBoss" parent="." node_paths=PackedStringArray("ArenaTriggerArea", "EntranceGate") groups=["Player", "enemy_hurtbox", "player"] instance=ExtResource("10_ujhhv")]
+[node name="TutorialBoss" parent="." groups=["Player", "enemy_hurtbox", "player"] instance=ExtResource("10_ujhhv")]
 light_mask = 15
 visibility_layer = 15
 position = Vector2(8432, -155)
 BossUIPath = NodePath("../HUD/BossUI")
 MaxHealth = 400
+PlayerGroup = "player"
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 position = Vector2(6694.0005, 120)
