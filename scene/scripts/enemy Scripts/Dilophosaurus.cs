@@ -7,8 +7,7 @@ public partial class Dilophosaurus : BaseEnemy
 	
 	private bool _isPerformingAttack = false;
 	private float _attackAnimationTimer = 0f;
-	private Vector2 _lungeDirection = Vector2.Zero; 
-
+	private Vector2 _lungeDirection = Vector2.Zero;
 	
 	public override void _Ready()
 	{   
@@ -16,40 +15,43 @@ public partial class Dilophosaurus : BaseEnemy
 		
 		Speed = 60f;
 		StopDistance = 8f;
-		//AttackRange = 30f;  // Increased so attack triggers earlier
+		AttackRange = 80f;
 		AttackDamage = 15;
-		AttackCooldown = 1.5f; // Attack every 2 seconds
+		AttackCooldown = 1.5f;
+		_attackCooldownTimer = 1.5f; // wait before first attack
 		
 		if (HitArea != null)
 		{
+			HitArea.Position = Vector2.Zero; // start overlapping dino
 			HitArea.Monitoring = false;
 			HitArea.Monitorable = false;
 			HitArea.BodyEntered += OnHitAreaBodyEntered;
 			GD.Print($"HitArea mask: {HitArea.CollisionMask}");
 		}
+
+		GD.Print($"AttackRange after _Ready: {AttackRange}");
+		GD.Print($"AttackCooldown after _Ready: {AttackCooldown}");
 	}
 	
 	public override void _Process(double delta)
 	{
 		base._Process(delta);
 		
-		//if (_chasing) {
-				//GD.Print($"CooldownTimer: {_attackCooldownTimer:F2} | CanAttack: {CanAttack()} | Distance: {GlobalPosition.DistanceTo(_player.GlobalPosition):F1} | AttackRange: {AttackRange}");
-//
-		//}
-		
 		if (_isPerformingAttack)
 		{
 			_attackAnimationTimer -= (float)delta;
-			if (_attackAnimationTimer >= 1.5f)
+			if (_attackAnimationTimer <= 0f)
 			{
 				_isPerformingAttack = false;
 				if (HitArea != null)
+				{
+					HitArea.Position = Vector2.Zero;
 					HitArea.Monitoring = false;
+				}
 			}
 		}
 	}
-	
+
 	protected override bool CanAttack()
 	{
 		return !_isPerformingAttack && _attackCooldownTimer <= 0f;
@@ -63,18 +65,18 @@ public partial class Dilophosaurus : BaseEnemy
 
 		if (HitArea != null && _player != null)
 		{
-			// Start at center (overlapping dino)
+			// Start overlapping dino
 			HitArea.Position = Vector2.Zero;
 
-			// Calculate direction toward player
+			// Capture direction toward player at moment of attack
 			_lungeDirection = (_player.GlobalPosition - GlobalPosition).Normalized();
-			
-			// After short delay, shoot the rectangle outward
+
+			// After short delay, shoot rectangle outward
 			GetTree().CreateTimer(0.15f).Timeout += () =>
 			{
 				if (HitArea != null && _isPerformingAttack)
 				{
-					HitArea.Position = _lungeDirection * 20f; // shoot out
+					HitArea.Position = _lungeDirection * 20f;
 					HitArea.Monitoring = true;
 				}
 			};
@@ -84,42 +86,37 @@ public partial class Dilophosaurus : BaseEnemy
 			{
 				if (HitArea != null)
 				{
-					HitArea.Position = Vector2.Zero; // retract
+					HitArea.Position = Vector2.Zero;
 					HitArea.Monitoring = false;
 				}
 			};
 		}
 	}
 
-
+	protected override void OnAttackEnd() { }
 
 	private void OnHitAreaBodyEntered(Node2D body)
 	{
-		GD.Print($"🟥 HitArea body entered: {body.Name}");
-		
 		if (!body.IsInGroup(PlayerGroup))
-		{
-			GD.Print($"❌ {body.Name} not in player group!");
 			return;
-		}
 
-		//GD.Print($"✅ HitArea hit player!");
+		GD.Print($"✅ Claw hit {body.Name}!");
 
 		if (body is IDamageable damageable)
 			damageable.TakeDamage(AttackDamage);
 
-		Vector2 knockbackDir = (body.GlobalPosition - GlobalPosition).Normalized();
+		Vector2 knockbackDir = (_player.GlobalPosition - GlobalPosition).Normalized();
 		if (body is Player player)
 			player.TriggerHitRecoil(knockbackDir);
 
+		// Disable after one hit per swing
 		if (HitArea != null)
 			HitArea.Monitoring = false;
 	}
-	
+
 	protected override void MoveTowardsTarget(Node2D target, double delta)
 	{
 		Vector2 direction = (target.GlobalPosition - GlobalPosition).Normalized();
-		
 		Velocity = direction * Speed;
 		MoveAndSlide();
 	}

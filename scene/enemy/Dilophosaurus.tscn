@@ -23,7 +23,7 @@ collision_mask = 14
 script = ExtResource("1_ok0wq")
 Speed = 100.0
 AttackDamage = 80
-AttackRange = 100.0
+AttackRange = 15.0
 
 [node name="DinoEnemy" type="Sprite2D" parent="."]
 position = Vector2(8, -1)
@@ -51,9 +51,8 @@ shape = SubResource("CircleShape2D_5tfgd")
 debug_color = Color(0.68824255, 0.28912774, 0.39706942, 0.41960785)
 
 [node name="detection_area" type="Area2D" parent="."]
-collision_layer = 3
-collision_mask = 3
-metadata/_edit_group_ = true
+collision_layer = 2
+collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="detection_area"]
 light_mask = 3
@@ -80,14 +79,15 @@ metadata/_edit_use_anchors_ = true
 [node name="HitArea" type="Area2D" parent="."]
 light_mask = 3
 visibility_layer = 3
-position = Vector2(-15, 12)
-collision_layer = 2
+position = Vector2(2, 13)
+collision_layer = 0
+collision_mask = 3
 monitoring = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HitArea"]
 light_mask = 2
 visibility_layer = 2
-position = Vector2(20.25, 0)
+position = Vector2(1, 0)
 shape = SubResource("RectangleShape2D_5tfgd")
 debug_color = Color(0.5531096, 0.4047217, 0.9911578, 0.41960785)
 
