@@ -53,7 +53,7 @@ debug_color = Color(0.68824255, 0.28912774, 0.39706942, 0.41960785)
 
 [node name="detection_area" type="Area2D" parent="."]
 collision_layer = 2
-collision_mask = 2
+collision_mask = 3
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="detection_area"]
 light_mask = 3
