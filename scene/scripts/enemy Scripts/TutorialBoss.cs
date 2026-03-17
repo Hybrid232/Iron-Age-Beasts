@@ -108,7 +108,7 @@ public partial class TutorialBoss : BaseEnemy
 	{
 		base._Ready();
 
-		PlayerGroup = "Player";
+		PlayerGroup = BaseEnemy.PLAYER_GROUP;
 		baseSpeed = Speed;
 
 		AutoFillRangesFromHitboxes();
@@ -184,6 +184,12 @@ public partial class TutorialBoss : BaseEnemy
 		{
 			GD.PushWarning("[Boss] ArenaTriggerArea is not assigned.");
 		}
+		
+		if (BodyContactDamageArea != null)
+		{
+			BodyContactDamageArea.CollisionLayer = 2; // boss layer
+			BodyContactDamageArea.CollisionMask = 1;  // detects player layer
+		}
 	}
 
 	public override void _Process(double delta)
@@ -257,7 +263,15 @@ public partial class TutorialBoss : BaseEnemy
 		if (uiNode != null) uiNode.Visible = true;
 
 		if (BodyContactDamageArea != null)
+		{
 			SetHitboxEnabled(BodyContactDamageArea, true);
+
+			GD.Print($"[Boss] Contact Area Enabled: Monitoring={BodyContactDamageArea.Monitoring}, Monitorable={BodyContactDamageArea.Monitorable}");
+		}
+		else
+		{
+			GD.Print("❌ BodyContactDamageArea is NULL");
+		}
 
 		if (LockEntranceOnStart)
 			SetEntranceGateLocked(true);
@@ -563,22 +577,40 @@ public partial class TutorialBoss : BaseEnemy
 		}
 	}
 
-	private void OnBodyContactEntered(Node2D body) => TryApplyContactDamage(body);
+	private void OnBodyContactEntered(Node2D body)
+	{
+		GD.Print($"[Boss] Body entered: {body.Name}");
+		TryApplyContactDamage(body);
+	}
 	private void OnBodyContactExited(Node2D body) { }
 
 	private void TryApplyContactDamage(Node2D body)
 	{
-		if (!fightStarted) return;
-		if (state == BossState.Dead) return;
-		if (body == null) return;
-		if (!IsInstanceValid(body)) return;
+		GD.Print($"[Boss] Checking contact with: {body.Name}");
 
-		if (body == this || IsAncestorOf(body)) return;
-		if (!body.IsInGroup(PlayerGroup)) return;
-		if (body is not IDamageable dmgable) return;
+		if (!fightStarted)
+		{
+			GD.Print("❌ Fight not started");
+			return;
+		}
+
+		if (!body.IsInGroup(PlayerGroup))
+		{
+			GD.Print($"❌ Not in Player group. Groups: {string.Join(",", body.GetGroups())}");
+			return;
+		}
+
+		if (body is not IDamageable dmgable)
+		{
+			GD.Print("❌ Not damageable");
+			return;
+		}
+
+		GD.Print("✅ VALID HIT");
 
 		ulong id = body.GetInstanceId();
-		if (_contactDamageCdByTarget.TryGetValue(id, out float cd) && cd > 0f) return;
+		if (_contactDamageCdByTarget.TryGetValue(id, out float cd) && cd > 0f)
+			return;
 
 		_contactDamageCdByTarget[id] = ContactDamageCooldown;
 
@@ -586,10 +618,10 @@ public partial class TutorialBoss : BaseEnemy
 
 		if (body is Player p)
 		{
-			Vector2 pushDir = (p.GlobalPosition - GlobalPosition);
-			if (pushDir.LengthSquared() < 0.0001f) pushDir = Vector2.Right;
-			pushDir = pushDir.Normalized();
+			Vector2 pushDir = (p.GlobalPosition - GlobalPosition).Normalized();
 			p.TriggerHitRecoil(pushDir, ContactKnockbackDistance, ContactKnockbackTime);
+
+			GD.Print("🔥 Knockback applied!");
 		}
 	}
 
@@ -639,7 +671,7 @@ public partial class TutorialBoss : BaseEnemy
 		if (hitbox == null) return;
 
 		hitbox.Monitoring = enabled;
-		hitbox.Monitorable = enabled;
+		hitbox.Monitorable = true;
 
 		foreach (var node in hitbox.FindChildren("*", "CollisionShape2D", true, false))
 			((CollisionShape2D)node).Disabled = !enabled;

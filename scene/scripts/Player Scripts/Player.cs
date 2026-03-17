@@ -92,14 +92,18 @@ public partial class Player : CharacterBody2D, IDamageable
 	public bool IsInvulnerable => dodgeSystem != null && dodgeSystem.IsInIFrames;
 
 	public override void _Ready()
-	{
-		healthSystem = new HealthSystem(
-			maxHealth,
-			maxStamina,
-			uiReference,
-			softExhaustThreshold,
-			hardExhaustThreshold
-		);
+{
+	AddToGroup(BaseEnemy.PLAYER_GROUP);
+	CollisionLayer = 1;
+	CollisionMask = 2;
+
+	healthSystem = new HealthSystem(
+		maxHealth,
+		maxStamina,
+		uiReference,
+		softExhaustThreshold,
+		hardExhaustThreshold
+	);
 
 		movementSystem = new MovementSystem(playerSpeed);
 
@@ -229,9 +233,15 @@ public partial class Player : CharacterBody2D, IDamageable
 	// Defender recoil with custom strength (boss can override distance/time)
 	public void TriggerHitRecoil(Vector2 pushDirection, float distance, float time)
 	{
-		// NEW: no knockback/stagger during successful dodge i-frames
+		GD.Print($"[Player] Knockback attempt | Invulnerable={IsInvulnerable}");
+
 		if (IsInvulnerable)
+		{
+			GD.Print("❌ Knockback BLOCKED by i-frames");
 			return;
+		}
+
+		GD.Print("✅ Knockback APPLIED");
 
 		recoilSystem.StartHitRecoil(pushDirection, distance, time);
 	}
