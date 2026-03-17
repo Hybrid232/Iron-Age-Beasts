@@ -15,22 +15,18 @@ public partial class Dilophosaurus : BaseEnemy
 		
 		Speed = 60f;
 		StopDistance = 8f;
-		AttackRange = 80f;
+		AttackRange = 60f;
 		AttackDamage = 15;
-		AttackCooldown = 1.5f;
-		_attackCooldownTimer = 1.5f; // wait before first attack
+		AttackCooldown = 2f;
+		_attackCooldownTimer = 1.5f;
 		
 		if (HitArea != null)
 		{
-			HitArea.Position = Vector2.Zero; // start overlapping dino
+			HitArea.Position = Vector2.Zero;
 			HitArea.Monitoring = false;
 			HitArea.Monitorable = false;
 			HitArea.BodyEntered += OnHitAreaBodyEntered;
-			GD.Print($"HitArea mask: {HitArea.CollisionMask}");
 		}
-
-		GD.Print($"AttackRange after _Ready: {AttackRange}");
-		GD.Print($"AttackCooldown after _Ready: {AttackCooldown}");
 	}
 	
 	public override void _Process(double delta)
@@ -51,7 +47,7 @@ public partial class Dilophosaurus : BaseEnemy
 			}
 		}
 	}
-
+	
 	protected override bool CanAttack()
 	{
 		return !_isPerformingAttack && _attackCooldownTimer <= 0f;
@@ -65,18 +61,18 @@ public partial class Dilophosaurus : BaseEnemy
 
 		if (HitArea != null && _player != null)
 		{
-			// Start overlapping dino
+			// Start at center (overlapping dino)
 			HitArea.Position = Vector2.Zero;
 
-			// Capture direction toward player at moment of attack
+			// Calculate direction toward player
 			_lungeDirection = (_player.GlobalPosition - GlobalPosition).Normalized();
-
-			// After short delay, shoot rectangle outward
+			
+			// After short delay, shoot the rectangle outward
 			GetTree().CreateTimer(0.15f).Timeout += () =>
 			{
 				if (HitArea != null && _isPerformingAttack)
 				{
-					HitArea.Position = _lungeDirection * 20f;
+					HitArea.Position = _lungeDirection * 20f; // shoot out
 					HitArea.Monitoring = true;
 				}
 			};
@@ -86,30 +82,27 @@ public partial class Dilophosaurus : BaseEnemy
 			{
 				if (HitArea != null)
 				{
-					HitArea.Position = Vector2.Zero;
+					HitArea.Position = Vector2.Zero; // retract
 					HitArea.Monitoring = false;
 				}
 			};
 		}
 	}
 
-	protected override void OnAttackEnd() { }
-
 	private void OnHitAreaBodyEntered(Node2D body)
 	{
 		if (!body.IsInGroup(PlayerGroup))
 			return;
 
-		GD.Print($"✅ Claw hit {body.Name}!");
+		GD.Print($"✅ HitArea hit player!");
 
 		if (body is IDamageable damageable)
 			damageable.TakeDamage(AttackDamage);
 
-		Vector2 knockbackDir = (_player.GlobalPosition - GlobalPosition).Normalized();
+		Vector2 knockbackDir = (body.GlobalPosition - GlobalPosition).Normalized();
 		if (body is Player player)
 			player.TriggerHitRecoil(knockbackDir);
 
-		// Disable after one hit per swing
 		if (HitArea != null)
 			HitArea.Monitoring = false;
 	}
