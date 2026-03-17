@@ -49,16 +49,13 @@ public partial class NPC : Node2D
 		if (body is Player p)
 		{
 			_activePlayer = p;
-			GD.Print("Player entered interaction range.");
 		}
 	}
 
 	private void OnAreaBodyExited(Node2D body)
 	{
 		if (body == _activePlayer)
-		{
-			GD.Print("Player left interaction range.");
-			
+		{			
 			// Force reset state if player walks away
 			if (_activePlayer != null)
 			{
