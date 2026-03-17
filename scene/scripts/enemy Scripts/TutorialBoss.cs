@@ -52,11 +52,6 @@ public partial class TutorialBoss : BaseEnemy
 	[Export] public Area2D TailHitbox;
 	[Export] public Area2D ChargeHitbox;
 
-	// =========================================================
-	// NEW: Telegraph visuals (yellow attack radius indicators)
-	// Assign these in the editor to any CanvasItem (Polygon2D, Sprite2D, Line2D, etc.)
-	// that visually represents the warning area for each attack.
-	// =========================================================
 	[ExportGroup("Telegraphs (Visuals)")]
 	[Export] public NodePath BiteTelegraphPath;
 	[Export] public NodePath TailTelegraphPath;
@@ -124,14 +119,11 @@ public partial class TutorialBoss : BaseEnemy
 			BodyContactDamageArea.BodyExited += OnBodyContactExited;
 		}
 
-		// ===== Telegraph visuals hookup =====
 		biteTelegraph = ResolveTelegraph(BiteTelegraphPath, "BiteTelegraphPath");
 		tailTelegraph = ResolveTelegraph(TailTelegraphPath, "TailTelegraphPath");
 		chargeTelegraph = ResolveTelegraph(ChargeTelegraphPath, "ChargeTelegraphPath");
-
 		HideAllTelegraphs();
 
-		// ===== Boss UI hookup (with diagnostics) =====
 		GD.Print($"[Boss] BossUIPath='{BossUIPath}' (isEmpty={BossUIPath == null || BossUIPath.IsEmpty})");
 
 		var uiCanvasItem = (BossUIPath != null && !BossUIPath.IsEmpty)
@@ -139,13 +131,7 @@ public partial class TutorialBoss : BaseEnemy
 			: null;
 
 		if (uiCanvasItem == null)
-		{
 			GD.PushWarning("[Boss] Could not find Boss UI node via BossUIPath (CanvasItem was null).");
-		}
-		else
-		{
-			GD.Print($"[Boss] Found UI CanvasItem at path={uiCanvasItem.GetPath()} type={uiCanvasItem.GetType().Name}");
-		}
 
 		bossUI = (BossUIPath != null && !BossUIPath.IsEmpty)
 			? GetNodeOrNull(BossUIPath) as IBossUI
@@ -157,13 +143,9 @@ public partial class TutorialBoss : BaseEnemy
 		}
 		else
 		{
-			GD.Print($"[Boss] bossUI interface resolved. Type={bossUI.GetType().Name}");
-
-			// Initialize immediately (BossUI will resolve the progress bar safely now)
 			bossUI.InitializeBoss(MaxHealth, _currentHealth);
 		}
 
-		// Hide UI until arena entry
 		if (uiCanvasItem != null) uiCanvasItem.Visible = false;
 
 		fightStarted = false;
@@ -176,20 +158,33 @@ public partial class TutorialBoss : BaseEnemy
 
 		if (ArenaTriggerArea != null)
 		{
-			ArenaTriggerArea.Monitoring = true;
 			ArenaTriggerArea.Monitorable = true;
+			ArenaTriggerArea.Monitoring = false; // off at start
 			ArenaTriggerArea.BodyEntered += OnArenaTriggerBodyEntered;
+
+			CallDeferred(nameof(ArmArenaTriggerNextFrame));
 		}
 		else
 		{
 			GD.PushWarning("[Boss] ArenaTriggerArea is not assigned.");
 		}
-		
+
 		if (BodyContactDamageArea != null)
 		{
-			BodyContactDamageArea.CollisionLayer = 2; // boss layer
-			BodyContactDamageArea.CollisionMask = 1;  // detects player layer
+			BodyContactDamageArea.CollisionLayer = 2;
+			BodyContactDamageArea.CollisionMask = 1;
 		}
+	}
+
+	private async void ArmArenaTriggerNextFrame()
+	{
+		await ToSignal(GetTree(), SceneTree.SignalName.PhysicsFrame);
+
+		if (fightStarted) return;
+		if (ArenaTriggerArea == null) return;
+
+		ArenaTriggerArea.Monitoring = true;
+		GD.Print("[Boss] Arena trigger armed.");
 	}
 
 	public override void _Process(double delta)
@@ -225,7 +220,7 @@ public partial class TutorialBoss : BaseEnemy
 
 		if (_player == null || !IsInstanceValid(_player))
 		{
-			_player = GetTree().GetFirstNodeInGroup(PlayerGroup) as Node2D;
+			_player = GetTree().GetFirstNodeInGroup(PlayerGroup) as Player;
 			_chasing = _player != null;
 		}
 
@@ -243,13 +238,19 @@ public partial class TutorialBoss : BaseEnemy
 	private void OnArenaTriggerBodyEntered(Node body)
 	{
 		if (fightStarted) return;
-		if (body is not Node2D n2d) return;
-		if (!n2d.IsInGroup(PlayerGroup)) return;
 
-		StartBossFight(n2d);
+		if (body is not Player player)
+			return;
+
+		if (!player.IsInGroup(PlayerGroup))
+			return;
+
+		GD.Print($"[Boss] Arena triggered by Player '{player.Name}'. Starting fight.");
+		StartBossFight(player);
 	}
 
-	private void StartBossFight(Node2D player)
+	// FIX: accept Player (not Node2D) so it matches BaseEnemy._player type
+	private void StartBossFight(Player player)
 	{
 		fightStarted = true;
 
@@ -265,12 +266,7 @@ public partial class TutorialBoss : BaseEnemy
 		if (BodyContactDamageArea != null)
 		{
 			SetHitboxEnabled(BodyContactDamageArea, true);
-
 			GD.Print($"[Boss] Contact Area Enabled: Monitoring={BodyContactDamageArea.Monitoring}, Monitorable={BodyContactDamageArea.Monitorable}");
-		}
-		else
-		{
-			GD.Print("❌ BodyContactDamageArea is NULL");
 		}
 
 		if (LockEntranceOnStart)
@@ -281,6 +277,8 @@ public partial class TutorialBoss : BaseEnemy
 
 		GD.Print("[Boss] Fight started; gate locked.");
 	}
+
+	// ---- rest of your file unchanged below ----
 
 	private void SetEntranceGateLocked(bool locked)
 	{
@@ -405,12 +403,10 @@ public partial class TutorialBoss : BaseEnemy
 		if (_player != null && attack == BossAttack.Charge)
 			chargeDir = (_player.GlobalPosition - GlobalPosition).Normalized();
 
-		// Disable real hitboxes during telegraph (no damage yet)
 		SetHitboxEnabled(BiteHitbox, false);
 		SetHitboxEnabled(TailHitbox, false);
 		SetHitboxEnabled(ChargeHitbox, false);
 
-		// NEW: show yellow indicator during telegraph
 		ShowTelegraph(attack, true);
 
 		stateTimer = GetTelegraphTime(attack);
@@ -427,7 +423,6 @@ public partial class TutorialBoss : BaseEnemy
 
 			PrepareHitboxForAttack(currentAttack);
 
-			// NEW: hide indicator as the attack becomes active
 			ShowTelegraph(currentAttack, false);
 
 			EnableAttackHitbox(currentAttack, true);
@@ -441,8 +436,6 @@ public partial class TutorialBoss : BaseEnemy
 		if (state == BossState.Active)
 		{
 			EnableAttackHitbox(currentAttack, false);
-
-			// (safety) ensure indicator is hidden
 			ShowTelegraph(currentAttack, false);
 
 			Velocity = Vector2.Zero;
@@ -517,7 +510,6 @@ public partial class TutorialBoss : BaseEnemy
 				break;
 		}
 
-		// OPTIONAL: if your telegraph visuals need to rotate with the attack, rotate them too:
 		RotateTelegraphToAngle(a, angle);
 	}
 
@@ -586,27 +578,9 @@ public partial class TutorialBoss : BaseEnemy
 
 	private void TryApplyContactDamage(Node2D body)
 	{
-		GD.Print($"[Boss] Checking contact with: {body.Name}");
-
-		if (!fightStarted)
-		{
-			GD.Print("❌ Fight not started");
-			return;
-		}
-
-		if (!body.IsInGroup(PlayerGroup))
-		{
-			GD.Print($"❌ Not in Player group. Groups: {string.Join(",", body.GetGroups())}");
-			return;
-		}
-
-		if (body is not IDamageable dmgable)
-		{
-			GD.Print("❌ Not damageable");
-			return;
-		}
-
-		GD.Print("✅ VALID HIT");
+		if (!fightStarted) return;
+		if (!body.IsInGroup(PlayerGroup)) return;
+		if (body is not IDamageable dmgable) return;
 
 		ulong id = body.GetInstanceId();
 		if (_contactDamageCdByTarget.TryGetValue(id, out float cd) && cd > 0f)
@@ -620,8 +594,6 @@ public partial class TutorialBoss : BaseEnemy
 		{
 			Vector2 pushDir = (p.GlobalPosition - GlobalPosition).Normalized();
 			p.TriggerHitRecoil(pushDir, ContactKnockbackDistance, ContactKnockbackTime);
-
-			GD.Print("🔥 Knockback applied!");
 		}
 	}
 
@@ -630,8 +602,6 @@ public partial class TutorialBoss : BaseEnemy
 		BiteRange = Math.Max(BiteRange, GetHitboxReachPixels(BiteHitbox));
 		TailSweepRange = Math.Max(TailSweepRange, GetHitboxReachPixels(TailHitbox));
 		MinChargeRange = Math.Max(MinChargeRange, GetHitboxReachPixels(ChargeHitbox));
-
-		GD.Print($"[Boss Ranges] BiteRange={BiteRange}, TailSweepRange={TailSweepRange}, MinChargeRange={MinChargeRange}");
 	}
 
 	private float GetHitboxReachPixels(Area2D hitbox)
@@ -680,26 +650,10 @@ public partial class TutorialBoss : BaseEnemy
 			((CollisionPolygon2D)node).Disabled = !enabled;
 	}
 
-	// ============================
-	// NEW: Telegraph helper methods
-	// ============================
-
 	private CanvasItem ResolveTelegraph(NodePath path, string label)
 	{
-		if (path == null || path.IsEmpty)
-		{
-			GD.PushWarning($"[Boss] {label} is not assigned (NodePath empty). Telegraph will not show for that attack.");
-			return null;
-		}
-
-		var node = GetNodeOrNull(path) as CanvasItem;
-		if (node == null)
-		{
-			GD.PushWarning($"[Boss] {label} was set but node is missing or not a CanvasItem at path='{path}'.");
-			return null;
-		}
-
-		return node;
+		if (path == null || path.IsEmpty) return null;
+		return GetNodeOrNull(path) as CanvasItem;
 	}
 
 	private void HideAllTelegraphs()
@@ -711,26 +665,17 @@ public partial class TutorialBoss : BaseEnemy
 
 	private void ShowTelegraph(BossAttack a, bool show)
 	{
-		// Only show one at a time
 		HideAllTelegraphs();
 		if (!show) return;
 
 		switch (a)
 		{
-			case BossAttack.Bite:
-				if (biteTelegraph != null) biteTelegraph.Visible = true;
-				break;
-			case BossAttack.TailSweep:
-				if (tailTelegraph != null) tailTelegraph.Visible = true;
-				break;
-			case BossAttack.Charge:
-				if (chargeTelegraph != null) chargeTelegraph.Visible = true;
-				break;
+			case BossAttack.Bite: if (biteTelegraph != null) biteTelegraph.Visible = true; break;
+			case BossAttack.TailSweep: if (tailTelegraph != null) tailTelegraph.Visible = true; break;
+			case BossAttack.Charge: if (chargeTelegraph != null) chargeTelegraph.Visible = true; break;
 		}
 	}
 
-	// Optional helper: rotate the indicator to match the attack facing.
-	// If your indicators are circles, rotation doesn't matter.
 	private void RotateTelegraphToAngle(BossAttack a, float angle)
 	{
 		CanvasItem t = a switch
@@ -756,7 +701,6 @@ public partial class TutorialBoss : BaseEnemy
 		state = BossState.Dead;
 		Velocity = Vector2.Zero;
 
-		// NEW: hide telegraphs on death
 		HideAllTelegraphs();
 
 		SetHitboxEnabled(BiteHitbox, false);

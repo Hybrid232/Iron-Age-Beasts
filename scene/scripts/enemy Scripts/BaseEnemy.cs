@@ -15,13 +15,14 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 	public const string PLAYER_GROUP = "Player";
 	[Export] public string PlayerGroup = PLAYER_GROUP;
 
-
 	// State Variables
 	protected int _currentHealth;
 	protected float _attackCooldownTimer = 2f;
 	protected bool _isAttacking = false;
 	protected bool _chasing = false;
-	protected Node2D _player = null;
+
+	// CHANGE: store the actual Player (prevents chasing a random node in the "Player" group)
+	protected Player _player = null;
 
 	// Knockback State
 	private float _knockbackTimer = 0f;
@@ -31,14 +32,12 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 	{
 		_currentHealth = MaxHealth;
 	}
-	
-	// Implement IDamageable interface
+
 	public void TakeDamage(int damage)
 	{
 		_currentHealth -= damage;
 		GD.Print($"{Name} took {damage} damage! Health: {_currentHealth}/{MaxHealth}");
-		
-		// Check if enemy died
+
 		if (_currentHealth <= 0)
 		{
 			Die();
@@ -48,35 +47,29 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 			OnDamageTaken(damage);
 		}
 	}
-	
-	// Called when damage is taken but enemy is still alive
+
 	protected virtual void OnDamageTaken(int damage)
 	{
-		// Override in derived classes for hit effects, sounds, etc.
 		GD.Print($"{Name} was hit!");
 	}
-	
-	// Called when enemy dies
+
 	protected virtual void Die()
 	{
-		//GD.Print($"{Name} has died!");
-		QueueFree(); // Remove enemy from scene
+		QueueFree();
 	}
 
 	public override void _Process(double delta)
 	{
-		// Update attack cooldown
 		if (_attackCooldownTimer > 0f)
 		{
 			_attackCooldownTimer -= (float)delta;
 		}
 	}
-	
+
 	public override void _PhysicsProcess(double delta)
 	{
 		float dt = (float)delta;
 
-		// --- KNOCKBACK OVERRIDES AI? ---
 		if (_knockbackTimer > 0f)
 		{
 			_knockbackTimer -= dt;
@@ -91,7 +84,6 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 			return;
 		}
 
-		// If not chasing or player reference is gone, stop moving
 		if (!_chasing || _player == null)
 		{
 			Velocity = Vector2.Zero;
@@ -99,7 +91,6 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 			return;
 		}
 
-		// Check if player still exists
 		if (!IsInstanceValid(_player))
 		{
 			_player = null;
@@ -108,24 +99,17 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 			MoveAndSlide();
 			return;
 		}
-		
-
 
 		float distance = GlobalPosition.DistanceTo(_player.GlobalPosition);
-		//GD.Print($"Distance: {distance:F1}, AttackRange: {AttackRange}, CanAttack: {CanAttack()}, Cooldown: {_attackCooldownTimer:F2}");
 
-		// Try to attack if in range
 		if (CanAttack() && distance <= AttackRange)
 		{
-			GD.Print("⚔️ ATTACKING NOW!");
-
 			Attack(_player);
 			Velocity = Vector2.Zero;
 			MoveAndSlide();
 			return;
 		}
 
-		// Stop if close but can't attack
 		if (distance <= StopDistance)
 		{
 			Velocity = Vector2.Zero;
@@ -133,7 +117,6 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 			return;
 		}
 
-		// Otherwise chase
 		MoveTowardsTarget(_player, delta);
 	}
 
@@ -148,80 +131,61 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 		_isAttacking = false;
 	}
 
-	// Check if enemy can attack
 	protected virtual bool CanAttack()
 	{
 		return !_isAttacking && _attackCooldownTimer <= 0f;
 	}
-	
-	// Main attack method
+
 	protected virtual void Attack(Node2D target)
 	{
 		_isAttacking = true;
 		_attackCooldownTimer = AttackCooldown;
-		
+
 		OnAttackStart();
 		DealDamage(target);
 		OnAttackEnd();
-		
+
 		_isAttacking = false;
 	}
-	
-	// Called when attack starts - override for animations/sounds
-	protected virtual void OnAttackStart()
-	{
-		//GD.Print("Enemy attacks!");
-	}
-	
-	// Deal damage to target
+
+	protected virtual void OnAttackStart() { }
+
 	protected virtual void DealDamage(Node2D target)
 	{
 		if (target is IDamageable damageable)
-		{
 			damageable.TakeDamage(AttackDamage);
-		}
-		else
-		{
-		}
 	}
-	
-	// Called when attack ends - override for cleanup
-	protected virtual void OnAttackEnd()
-	{
-		// Override in derived classes for specific behavior
-	}
-	
-	// Movement logic
+
+	protected virtual void OnAttackEnd() { }
+
 	protected virtual void MoveTowardsTarget(Node2D target, double delta)
 	{
 		Vector2 direction = (target.GlobalPosition - GlobalPosition).Normalized();
 		Velocity = direction * Speed;
 		MoveAndSlide();
 	}
-	
-	// Detection methods - call these from your Area2D signals
+
 	protected virtual void OnPlayerDetected(Node2D player)
 	{
-		_player = player;
+		// CHANGE: only accept actual Player
+		if (player is not Player p) return;
+
+		_player = p;
 		_chasing = true;
 	}
-	
+
 	protected virtual void OnPlayerLost(Node2D player)
 	{
+		if (player is not Player) return;
+
 		_player = null;
 		_chasing = false;
 	}
-	
-	// Link this to your Area2D (Hitbox) 'body_entered' signal in the editor
-
-
 
 	public void _on_hurt_box_body_entered(Node2D body)
-	{		
+	{
 		if (body is IDamageable damageable && body.IsInGroup(PlayerGroup))
 		{
-			//GD.Print($"{body.Name} is Damageable!");
-			
 			Vector2 knockbackDirection = (body.GlobalPosition - GlobalPosition).Normalized();
 			damageable.TakeDamage(AttackDamage);
 
@@ -230,7 +194,7 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 				player.TriggerHitRecoil(knockbackDirection);
 				GD.Print($"==========PUSHBACK============");
 			}
-			
+
 			GD.Print($"Hit Player for {AttackDamage} damage!");
 		}
 	}
