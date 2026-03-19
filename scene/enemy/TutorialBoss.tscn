@@ -13,7 +13,7 @@ height = 128.08307
 size = Vector2(5.997043, 51.746735)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_4m671"]
-radius = 243.55902
+radius = 119.117615
 
 [node name="TutorialBoss" type="CharacterBody2D" node_paths=PackedStringArray("BiteHitbox", "TailHitbox", "ChargeHitbox", "BodyContactDamageArea")]
 light_mask = 7
@@ -21,6 +21,7 @@ visibility_layer = 7
 collision_layer = 6
 collision_mask = 6
 script = ExtResource("1_4m671")
+Phase2SpeedMultiplier = 2.0
 BiteRange = 200.0
 TailSweepRange = 240.0
 MinChargeRange = 300.0
@@ -32,7 +33,7 @@ BiteTelegraph = 0.7
 TailTelegraph = 1.2
 TailRecover = 1.0
 ChargeTelegraph = 2.0
-ChargeActive = 4.0
+ChargeActive = 3.0
 ChargeRecover = 1.0
 BiteHitbox = NodePath("Bite")
 TailHitbox = NodePath("TailSweep")
@@ -154,6 +155,6 @@ collision_layer = 3
 collision_mask = 3
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CollisionDamage"]
-light_mask = 3
-visibility_layer = 3
+light_mask = 7
+visibility_layer = 7
 shape = SubResource("CircleShape2D_4m671")
