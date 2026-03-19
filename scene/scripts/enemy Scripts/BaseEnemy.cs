@@ -9,7 +9,7 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 
 	[ExportGroup("Combat")]
 	[Export] public int MaxHealth = 50;
-	[Export] public int AttackDamage = 20;
+	public int AttackDamage = 20;
 	[Export] public float AttackRange = 30f;
 	[Export] public float AttackCooldown = 1.5f;
 	public const string PLAYER_GROUP = "Player";

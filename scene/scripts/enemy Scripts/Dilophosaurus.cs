@@ -28,7 +28,7 @@ public partial class Dilophosaurus : BaseEnemy
 		Speed = 60f;
 		StopDistance = 8f;
 		AttackRange = 60f;
-		AttackDamage = 10;
+		[Export] AttackDamage = 5;
 		AttackCooldown = 1.5f;
 		_attackCooldownTimer = 1.5f;
 
