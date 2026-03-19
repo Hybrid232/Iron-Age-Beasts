@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://13qrj07e47ls"
-path="res://.godot/imported/Range-enemy.png-2a289e35993f93c6779f7368856ecc91.ctex"
+uid="uid://bdgwjmsoo0ypx"
+path="res://.godot/imported/spike.png-f63fd75e0f89083723876e8dcd68cc77.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/test/Range-enemy.png"
-dest_files=["res://.godot/imported/Range-enemy.png-2a289e35993f93c6779f7368856ecc91.ctex"]
+source_file="res://sprites/test/spike.png"
+dest_files=["res://.godot/imported/spike.png-f63fd75e0f89083723876e8dcd68cc77.ctex"]
 
 [params]
 
