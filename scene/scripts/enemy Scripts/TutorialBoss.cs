@@ -721,4 +721,42 @@ public partial class TutorialBoss : BaseEnemy
 
 		base.Die();
 	}
+
+	public override void ResetEnemy() //Method is called when player dies and respawns at checkpoint
+	{
+		base.ResetEnemy(); // Resets position, health, and chasing state
+
+		// Reset boss-specific states
+		state = BossState.Idle;
+		currentAttack = BossAttack.None;
+		fightStarted = false;
+		phase2 = false;
+		Speed = baseSpeed;
+		
+		// Reset cooldowns
+		biteCd = 0f;
+		tailCd = 0f;
+		chargeCd = 0f;
+		hitTargetsThisActive.Clear();
+		_contactDamageCdByTarget.Clear();
+
+		// Reset UI
+		if (_bossUIItem != null) _bossUIItem.Visible = false;
+		bossUI?.InitializeBoss(MaxHealth, _currentHealth);
+
+		// Reset Hitboxes & Visuals
+		HideAllTelegraphs();
+		SetHitboxEnabled(BiteHitbox, false);
+		SetHitboxEnabled(TailHitbox, false);
+		SetHitboxEnabled(ChargeHitbox, false);
+		if (BodyContactDamageArea != null) SetHitboxEnabled(BodyContactDamageArea, false);
+
+		// Reset Arena Gate and Trigger
+		SetEntranceGateLocked(false);
+		if (ArenaTriggerArea != null)
+		{
+			ArenaTriggerArea.Monitoring = false; 
+			CallDeferred(nameof(ArmArenaTriggerNextFrame)); 
+		}
+	}
 }

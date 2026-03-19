@@ -87,24 +87,25 @@ public partial class Player : CharacterBody2D, IDamageable
 	private PotionSystem potionSystem;
 
 	public bool CanMove { get; set; } = true;
+	private Vector2 respawnPosition;
 
 	// Single source of truth: can the player be “hit” right now?
 	// (Use this to block damage AND knockback/stagger.)
 	public bool IsInvulnerable => dodgeSystem != null && dodgeSystem.IsInIFrames;
 
 	public override void _Ready()
-{
-	AddToGroup(BaseEnemy.PLAYER_GROUP);
-	CollisionLayer = 1;
-	CollisionMask = 2;
+	{
+		AddToGroup(BaseEnemy.PLAYER_GROUP);
+		CollisionLayer = 1;
+		CollisionMask = 2;
 
-	healthSystem = new HealthSystem(
-		maxHealth,
-		maxStamina,
-		uiReference,
-		softExhaustThreshold,
-		hardExhaustThreshold
-	);
+		healthSystem = new HealthSystem(
+			maxHealth,
+			maxStamina,
+			uiReference,
+			softExhaustThreshold,
+			hardExhaustThreshold
+		);
 
 		movementSystem = new MovementSystem(playerSpeed);
 
@@ -146,6 +147,8 @@ public partial class Player : CharacterBody2D, IDamageable
 		);
 
 		meleeSystem.Initialize();
+
+		respawnPosition = GlobalPosition;
 
 		potionSystem = new PotionSystem(potionHealAmount, healthSystem, uiReference);
 	}
@@ -270,12 +273,30 @@ public partial class Player : CharacterBody2D, IDamageable
 	private void HandleDeath()
 	{
 		GD.Print("Player died!");
+		RespawnAndReset();
+	}
 
-		CanMove = false;
-		Velocity = Vector2.Zero;
+	public void SetRespawnPoint(Vector2 pos)
+	{
+		respawnPosition = pos;
+	}
 
-		if (resetSceneOnDeath)
-			GetTree().CallDeferred("reload_current_scene");
+	public void RespawnAndReset()
+	{
+		GlobalPosition = respawnPosition;
+		healthSystem.HealToFull();
+		potionSystem.RefillPotions();
+		CanMove = true;
+
+		// Reset all enemies
+		var enemies = GetTree().GetNodesInGroup("Enemy");
+		foreach (Node node in enemies)
+		{
+			if (node is BaseEnemy enemy)
+			{
+				enemy.ResetEnemy();
+			}
+		}
 	}
 
 	// If anything uses this to knock you back, block it during i-frames too.
