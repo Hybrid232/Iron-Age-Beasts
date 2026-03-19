@@ -23,7 +23,7 @@ collision_mask = 14
 script = ExtResource("1_ok0wq")
 HitArea = NodePath("HitArea")
 Speed = 100.0
-AttackDamage = 30
+AttackDamage = 10
 AttackRange = 100.0
 
 [node name="DinoEnemy" type="Sprite2D" parent="."]
