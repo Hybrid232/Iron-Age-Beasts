@@ -15,6 +15,9 @@ public partial class TutorialBoss : BaseEnemy
 	[ExportGroup("Boss UI")]
 	[Export] public NodePath BossUIPath;
 
+	// Cached UI CanvasItem so we can show/hide it reliably (including on death)
+	private CanvasItem _bossUIItem;
+
 	[ExportGroup("Phase 2 (<=40% HP)")]
 	[Export] public float Phase2SpeedMultiplier = 1.35f;
 	[Export] public bool UnlockChargeAt40Percent = true;
@@ -126,11 +129,12 @@ public partial class TutorialBoss : BaseEnemy
 
 		GD.Print($"[Boss] BossUIPath='{BossUIPath}' (isEmpty={BossUIPath == null || BossUIPath.IsEmpty})");
 
-		var uiCanvasItem = (BossUIPath != null && !BossUIPath.IsEmpty)
+		// Cache boss UI CanvasItem (so we can show/hide it, including on death)
+		_bossUIItem = (BossUIPath != null && !BossUIPath.IsEmpty)
 			? GetNodeOrNull(BossUIPath) as CanvasItem
 			: null;
 
-		if (uiCanvasItem == null)
+		if (_bossUIItem == null)
 			GD.PushWarning("[Boss] Could not find Boss UI node via BossUIPath (CanvasItem was null).");
 
 		bossUI = (BossUIPath != null && !BossUIPath.IsEmpty)
@@ -146,7 +150,8 @@ public partial class TutorialBoss : BaseEnemy
 			bossUI.InitializeBoss(MaxHealth, _currentHealth);
 		}
 
-		if (uiCanvasItem != null) uiCanvasItem.Visible = false;
+		// Ensure it starts hidden
+		if (_bossUIItem != null) _bossUIItem.Visible = false;
 
 		fightStarted = false;
 		state = BossState.Idle;
@@ -249,7 +254,7 @@ public partial class TutorialBoss : BaseEnemy
 		StartBossFight(player);
 	}
 
-	// FIX: accept Player (not Node2D) so it matches BaseEnemy._player type
+	// accept Player (not Node2D) so it matches BaseEnemy._player type
 	private void StartBossFight(Player player)
 	{
 		fightStarted = true;
@@ -260,8 +265,8 @@ public partial class TutorialBoss : BaseEnemy
 		state = BossState.Chasing;
 		currentAttack = BossAttack.None;
 
-		var uiNode = GetNodeOrNull(BossUIPath) as CanvasItem;
-		if (uiNode != null) uiNode.Visible = true;
+		// Show boss UI at fight start
+		if (_bossUIItem != null) _bossUIItem.Visible = true;
 
 		if (BodyContactDamageArea != null)
 		{
@@ -700,6 +705,10 @@ public partial class TutorialBoss : BaseEnemy
 	{
 		state = BossState.Dead;
 		Velocity = Vector2.Zero;
+
+		// Hide boss health bar/UI when the boss dies
+		if (_bossUIItem != null)
+			_bossUIItem.Visible = false;
 
 		HideAllTelegraphs();
 
