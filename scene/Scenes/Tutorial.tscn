@@ -8,7 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://b6m3oycxmqq7g" path="res://scene/NPC/NPC.tscn" id="5_qjufs"]
 [ext_resource type="Texture2D" uid="uid://cvcqwiun3qwbx" path="res://sprites/test/HealthBG.png" id="6_fkj6s"]
 [ext_resource type="Texture2D" uid="uid://d2x8288fejlu" path="res://sprites/test/staminaBG.png" id="6_pv4dj"]
-[ext_resource type="Script" uid="uid://cwciv12cfe4lg" path="res://scene/scripts/BossUI.cs" id="6_s3mw7"]
+[ext_resource type="Script" uid="uid://cwciv12cfe4lg" path="res://scene/scripts/BossUi.cs" id="6_s3mw7"]
 [ext_resource type="PackedScene" uid="uid://djokcwtj4qkek" path="res://scene/enemy/Dilophosaurus.tscn" id="7_pbiin"]
 [ext_resource type="Texture2D" uid="uid://d08o5yyd2hgd0" path="res://sprites/test/HealthBar.png" id="7_ujhhv"]
 [ext_resource type="Texture2D" uid="uid://byqbdkq2u3mh" path="res://sprites/test/potion.png" id="9_113gb"]
@@ -28,7 +28,7 @@ size = Vector2(2172, 306.91953)
 [node name="Player" parent="." node_paths=PackedStringArray("uiReference", "bulletBars") groups=["enemy_hurtbox"] instance=ExtResource("1_00eeo")]
 light_mask = 2
 visibility_layer = 2
-position = Vector2(6514, 131)
+position = Vector2(1307, 62)
 uiReference = NodePath("../HUD")
 playerSpeed = 150
 dodgeIFrameStartNormalized = 0.45
@@ -192,8 +192,6 @@ position = Vector2(1086, 59)
 light_mask = 15
 visibility_layer = 15
 position = Vector2(8432, -155)
-ArenaTriggerArea = NodePath("../BossStart")
-EntranceGate = NodePath("../StaticBody2D")
 BossUIPath = NodePath("../HUD/BossUI")
 MaxHealth = 400
 PlayerGroup = "player"
