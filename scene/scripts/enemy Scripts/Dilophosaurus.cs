@@ -14,19 +14,21 @@ public partial class Dilophosaurus : BaseEnemy
 	private float _attackAnimationTimer = 0f;
 	private Vector2 _lungeDirection = Vector2.Zero;
 
-	private Vector2 _startPosition;      //  
-	private Vector2 _lastSeenPosition;   // where player was last seen
+	private Vector2 _startPosition;      //  Dino starting point
+	private Vector2 _lastSeenPosition;   // Player last position seen
 	private float _searchTimer = 0f;
 	private float _patrolAngle = 0f;     // current angle around the circle
 
+	
 	public override void _Ready()
 	{
 		base._Ready();
+		
 
 		Speed = 60f;
 		StopDistance = 8f;
 		AttackRange = 60f;
-		AttackDamage = 15;
+		AttackDamage = 10;
 		AttackCooldown = 1.5f;
 		_attackCooldownTimer = 1.5f;
 
