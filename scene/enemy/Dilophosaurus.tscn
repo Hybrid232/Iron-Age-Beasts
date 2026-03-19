@@ -24,7 +24,7 @@ script = ExtResource("1_ok0wq")
 HitArea = NodePath("HitArea")
 PatrolRadius = 800.0
 Speed = 100.0
-AttackDamage = 30
+AttackDamage = 5
 AttackRange = 100.0
 
 [node name="DinoEnemy" type="Sprite2D" parent="."]
