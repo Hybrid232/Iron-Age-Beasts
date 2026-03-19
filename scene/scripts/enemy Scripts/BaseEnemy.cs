@@ -33,7 +33,7 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 		_currentHealth = MaxHealth;
 	}
 
-	public void TakeDamage(int damage)
+	public virtual void TakeDamage(int damage)
 	{
 		_currentHealth -= damage;
 		GD.Print($"{Name} took {damage} damage! Health: {_currentHealth}/{MaxHealth}");
@@ -52,6 +52,8 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 	{
 		GD.Print($"{Name} was hit!");
 	}
+	
+	
 
 	protected virtual void Die()
 	{
