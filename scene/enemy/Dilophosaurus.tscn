@@ -34,6 +34,7 @@ texture = ExtResource("2_qdkvu")
 offset = Vector2(-8, 0)
 
 [node name="CollisionBox" type="CollisionShape2D" parent="." groups=["enemy_hurtbox"]]
+visible = false
 light_mask = 15
 visibility_layer = 15
 z_index = 1
@@ -42,6 +43,7 @@ scale = Vector2(9.999999, 9.999999)
 shape = SubResource("CircleShape2D_jyd3w")
 
 [node name="HurtBox" type="Area2D" parent="." groups=["enemy_hurtbox"]]
+visible = false
 light_mask = 3
 visibility_layer = 3
 position = Vector2(4.9999995, 12)
@@ -53,6 +55,7 @@ shape = SubResource("CircleShape2D_5tfgd")
 debug_color = Color(0.68824255, 0.28912774, 0.39706942, 0.41960785)
 
 [node name="detection_area" type="Area2D" parent="."]
+visible = false
 collision_layer = 2
 collision_mask = 3
 
