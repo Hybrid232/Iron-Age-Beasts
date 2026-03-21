@@ -11,6 +11,9 @@ public partial class Player : CharacterBody2D, IDamageable
 	[Export] private int maxStamina = 100;
 	[Export] private int potionHealAmount = 30;
 
+	[ExportGroup("Starting Consumables")]
+	[Export] private int startingPotions = 1;
+
 	[ExportGroup("Death")]
 	[Export] private bool resetSceneOnDeath = true;
 
@@ -157,7 +160,8 @@ public partial class Player : CharacterBody2D, IDamageable
 
 		respawnPosition = GlobalPosition;
 
-		potionSystem = new PotionSystem(potionHealAmount, healthSystem, uiReference);
+		// Potion system now tracks unlocked potions; starts with 1
+		potionSystem = new PotionSystem(potionHealAmount, healthSystem, uiReference, startingPotions);
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -227,9 +231,10 @@ public partial class Player : CharacterBody2D, IDamageable
 	// ===== SHOP HELPERS (CALLED BY NPC) =====
 	public bool CanBuyPotion() => potionSystem != null && potionSystem.CanBuyPotion();
 
+	// Buying a potion permanently increases refill amount too
 	public bool TryAddPotionFromShop(int amount = 1)
 	{
-		return potionSystem != null && potionSystem.TryAddPotions(amount);
+		return potionSystem != null && potionSystem.TryBuyPotions(amount);
 	}
 
 	public void UpgradeHealthFromShop()
@@ -310,7 +315,10 @@ public partial class Player : CharacterBody2D, IDamageable
 	{
 		GlobalPosition = respawnPosition;
 		healthSystem.HealToFull();
+
+		// Refill only what player has unlocked/bought
 		potionSystem.RefillPotions();
+
 		CanMove = true;
 
 		var enemies = GetTree().GetNodesInGroup("Enemy");

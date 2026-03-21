@@ -6,32 +6,44 @@ public class PotionSystem
 	private int currentPotions;
 	private int healAmount;
 
+	// How many potions the player has permanently unlocked (refill amount)
+	private int unlockedPotions;
+
 	private HealthSystem healthSystem;
 	private UI uiReference;
 
 	public int CurrentPotions => currentPotions;
 	public int MaxPotions => maxPotions;
 
-	public PotionSystem(int healAmount, HealthSystem healthSystem, UI uiReference)
+	// Unlock Potions
+	public int UnlockedPotions => unlockedPotions;
+
+	// StartingPotions defaults to 1, and also sets unlocked amount
+	public PotionSystem(int healAmount, HealthSystem healthSystem, UI uiReference, int startingPotions = 1)
 	{
 		this.healAmount = healAmount;
 		this.healthSystem = healthSystem;
 		this.uiReference = uiReference;
 
-		currentPotions = maxPotions;
+		unlockedPotions = Mathf.Clamp(startingPotions, 0, maxPotions);
+		currentPotions = unlockedPotions;
+
 		uiReference?.UpdatePotionDisplay(currentPotions);
 	}
 
-	public bool CanBuyPotion() => currentPotions < maxPotions;
+	public bool CanBuyPotion() => unlockedPotions < maxPotions;
 
-	public bool TryAddPotions(int amount)
+	// Buying increases unlockedPotions AND currentPotions (capped)
+	public bool TryBuyPotions(int amount)
 	{
 		if (amount <= 0) return true;
-		if (currentPotions >= maxPotions) return false;
+		if (unlockedPotions >= maxPotions) return false;
 
-		currentPotions = Mathf.Min(currentPotions + amount, maxPotions);
+		unlockedPotions = Mathf.Min(unlockedPotions + amount, maxPotions);
+		currentPotions = Mathf.Min(currentPotions + amount, unlockedPotions);
+
 		uiReference?.UpdatePotionDisplay(currentPotions);
-		GD.Print($"Potion added! Current: {currentPotions}/{maxPotions}");
+		GD.Print($"Potion bought! Unlocked: {unlockedPotions}/{maxPotions} | Current: {currentPotions}/{unlockedPotions}");
 		return true;
 	}
 
@@ -39,7 +51,7 @@ public class PotionSystem
 	{
 		if (Input.IsActionJustPressed("use_potion") && currentPotions > 0)
 		{
-			healthSystem.ChangeHealth(healAmount); // Heals the player
+			healthSystem.ChangeHealth(healAmount);
 			currentPotions--;
 
 			uiReference?.UpdatePotionDisplay(currentPotions);
@@ -47,9 +59,18 @@ public class PotionSystem
 		}
 	}
 
+	// Refill to unlocked potions (not max)
 	public void RefillPotions()
 	{
-		currentPotions = maxPotions;
+		currentPotions = unlockedPotions;
+		uiReference?.UpdatePotionDisplay(currentPotions);
+	}
+
+	// Optional helper if you ever want to hard-set unlocked amount (save/load)
+	public void SetUnlockedPotions(int amount)
+	{
+		unlockedPotions = Mathf.Clamp(amount, 0, maxPotions);
+		currentPotions = Mathf.Clamp(currentPotions, 0, unlockedPotions);
 		uiReference?.UpdatePotionDisplay(currentPotions);
 	}
 }
