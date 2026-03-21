@@ -333,7 +333,7 @@ _enemyContainerPath = NodePath(".")
 [node name="TutorialBoss" parent="." node_paths=PackedStringArray("ArenaTriggerArea", "EntranceGate") groups=["Player", "enemy_hurtbox", "player"] instance=ExtResource("10_ujhhv")]
 light_mask = 15
 visibility_layer = 15
-position = Vector2(7488, -1025)
+position = Vector2(7810, -674)
 ArenaTriggerArea = NodePath("../BossStart")
 EntranceGate = NodePath("../StaticBody2D")
 BossUIPath = NodePath("../HUD/BossUI")
