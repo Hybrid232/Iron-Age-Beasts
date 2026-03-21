@@ -85,8 +85,15 @@ public class HealthSystem
 		uiReference?.UpdateStaminaDisplay(currentStamina);
 	}
 
-	public bool IsBelowSoftThreshold() => currentStamina < softExhaustThreshold;
-	public bool CanAct() => currentStamina >= hardExhaustThreshold;
+	public bool IsBelowSoftThreshold()
+	{
+		return currentStamina < softExhaustThreshold;
+	}
+
+	public bool CanAct()
+	{
+		return currentStamina >= hardExhaustThreshold;
+	}
 
 	public void HealToFull()
 	{

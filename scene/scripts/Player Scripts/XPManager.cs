@@ -4,7 +4,8 @@ public partial class XPManager : Node
 {
 	public const string GROUP_NAME = "XPManager";
 
-	[Signal] public delegate void XpChangedEventHandler(int currentXp);
+	[Signal]
+	public delegate void XpChangedEventHandler(int currentXp);
 
 	[Export] public int CurrentXp { get; private set; } = 0;
 
@@ -33,6 +34,7 @@ public partial class XPManager : Node
 
 		CurrentXp += amount;
 		GD.Print($"[XPManager] +{amount} XP (Total: {CurrentXp})");
+
 		EmitSignal(SignalName.XpChanged, CurrentXp);
 	}
 }

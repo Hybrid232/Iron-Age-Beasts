@@ -62,7 +62,7 @@ layer = 2
 script = ExtResource("3_fkj6s")
 healthBar = NodePath("PlayerHealthBar")
 staminaBar = NodePath("PlayerStaminaBar")
-_potionIcons = [NodePath("Inventory/PotionIcon"), NodePath("Inventory/PotionIcon2"), NodePath("Inventory/PotionIcon3"), NodePath("Inventory/PotionIcon4"), NodePath("Inventory/PotionIcon5")]
+_potionIcons = [NodePath("Inventory/PotionIcon")]
 
 [node name="BulletBar0" type="ProgressBar" parent="HUD"]
 offset_left = 25.0
@@ -111,6 +111,7 @@ anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 script = ExtResource("8_y7vs7")
+CurrentPotions = 1
 
 [node name="PotionIcon" type="TextureRect" parent="HUD/Inventory"]
 layout_mode = 0
@@ -197,9 +198,10 @@ text = "VOXSPINE"
 label_settings = SubResource("LabelSettings_pv4dj")
 horizontal_alignment = 1
 
-[node name="Boogins" parent="." node_paths=PackedStringArray("_interactPrompt") instance=ExtResource("5_qjufs")]
+[node name="Boogins" parent="." node_paths=PackedStringArray("_interactPrompt", "_xpManager") instance=ExtResource("5_qjufs")]
 position = Vector2(3908, -524)
 _interactPrompt = NodePath("../HUD/Interact")
+_xpManager = NodePath("../HUD/XPManager")
 
 [node name="Dilophosaurus2" parent="." instance=ExtResource("7_pbiin")]
 light_mask = 9

@@ -1,18 +1,31 @@
-[gd_scene load_steps=5 format=3 uid="uid://b6m3oycxmqq7g"]
+[gd_scene load_steps=6 format=3 uid="uid://b6m3oycxmqq7g"]
 
 [ext_resource type="Script" uid="uid://dt62qwb6ahakj" path="res://scene/scripts/NPC Scripts/NPC.cs" id="1_hqct7"]
 [ext_resource type="Texture2D" uid="uid://bsunr61kjpenk" path="res://sprites/test/NPC_boogins.jpg" id="1_v5spc"]
 [ext_resource type="AudioStream" uid="uid://bi2d5olh13ypn" path="res://Audio/Music/Updated Boogin's theme.mp3" id="2_p5v3q"]
+[ext_resource type="Texture2D" uid="uid://41qneatxble4" path="res://sprites/MC/MC_Final_Sprite.png" id="4_ts6i4"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_hqct7"]
 
-[node name="Boogins" type="Node2D" node_paths=PackedStringArray("_menu", "_dialogueLabel", "_speakButton", "booginsThemeSFX")]
+[node name="Boogins" type="Node2D" node_paths=PackedStringArray("_menu", "_dialoguePanel", "_shopPanel", "_dialogueLabel", "_speakButton", "_purchaseButton", "_exitButton", "_buyPotionButton", "_upgradeDamageButton", "_upgradeHealthButton", "_upgradeStaminaButton", "_shopBackButton", "booginsThemeSFX")]
 script = ExtResource("1_hqct7")
 _menu = NodePath("CanvasLayer/Panel")
+_dialoguePanel = NodePath("CanvasLayer/Panel")
+_shopPanel = NodePath("CanvasLayer/Shop Panel")
 _dialogueLabel = NodePath("CanvasLayer/Panel/DialogueLabel")
 _speakButton = NodePath("CanvasLayer/Panel/SpeakButton")
+_purchaseButton = NodePath("CanvasLayer/Panel/PurchaseButton")
+_exitButton = NodePath("CanvasLayer/Panel/ExitButton")
+_buyPotionButton = NodePath("CanvasLayer/Shop Panel/PotionButton")
+_upgradeDamageButton = NodePath("CanvasLayer/Shop Panel/DamageButton")
+_upgradeHealthButton = NodePath("CanvasLayer/Shop Panel/HealthButton")
+_upgradeStaminaButton = NodePath("CanvasLayer/Shop Panel/StaminaButton")
+_shopBackButton = NodePath("CanvasLayer/Shop Panel/BackButton")
+_booginsPortraitTexture = ExtResource("1_v5spc")
+_playerPortraitTexture = ExtResource("4_ts6i4")
 booginsThemeSFX = NodePath("BooginsTheme")
 booginsThemeFile = ExtResource("2_p5v3q")
+upgradeBaseCostXp = 100
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 scale = Vector2(0.15, 0.15)
@@ -32,39 +45,168 @@ scale = Vector2(70, 70)
 shape = SubResource("CircleShape2D_hqct7")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = 5
 
 [node name="Panel" type="Panel" parent="CanvasLayer"]
-offset_left = 41.0
-offset_top = 101.0
-offset_right = 1125.0
-offset_bottom = 459.0
+anchors_preset = -1
+anchor_top = 0.22993827
+offset_left = 32.0
+offset_top = 135.82684
+offset_right = 1116.0
+offset_bottom = 493.82684
 metadata/_edit_use_anchors_ = true
 
 [node name="DialogueLabel" type="Label" parent="CanvasLayer/Panel"]
-layout_mode = 0
-offset_left = 25.0
-offset_top = 25.0
-offset_right = 65.0
-offset_bottom = 48.0
-metadata/_edit_use_anchors_ = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_top = 43.173157
+offset_right = 20.0
+offset_bottom = 66.17316
+grow_horizontal = 2
 
 [node name="SpeakButton" type="Button" parent="CanvasLayer/Panel"]
-layout_mode = 0
-offset_left = 22.0
-offset_top = 285.0
-offset_right = 96.0
-offset_bottom = 328.0
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 55.0
+offset_top = -163.82684
+offset_right = 129.0
+offset_bottom = -120.82684
+grow_vertical = 0
 text = "Talk"
-metadata/_edit_use_anchors_ = true
 
 [node name="PurchaseButton" type="Button" parent="CanvasLayer/Panel"]
-layout_mode = 0
-offset_left = 109.0
-offset_top = 285.0
-offset_right = 208.0
-offset_bottom = 329.0
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -1039.0
+offset_top = -101.82684
+offset_right = -940.0
+offset_bottom = -57.826843
+grow_horizontal = 0
+grow_vertical = 0
 text = "Purchase"
+
+[node name="ExitButton" type="Button" parent="CanvasLayer/Panel"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -39.826843
+offset_right = 180.0
+offset_bottom = -8.826843
+grow_vertical = 0
+text = "Exit"
+
+[node name="Shop Panel" type="Panel" parent="CanvasLayer"]
+anchors_preset = -1
+anchor_left = 0.6840278
+anchor_top = 0.2317487
+anchor_right = 0.2855903
+offset_left = -300.0
+offset_top = 135.82684
+offset_right = 784.0
+offset_bottom = 493.82684
 metadata/_edit_use_anchors_ = true
+
+[node name="DialogueLabel" type="Label" parent="CanvasLayer/Shop Panel"]
+z_index = 5
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_right = 20.0
+offset_bottom = 23.0
+grow_horizontal = 2
+
+[node name="PotionButton" type="Button" parent="CanvasLayer/Shop Panel"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 43.0
+offset_top = -193.82684
+offset_right = 217.0
+offset_bottom = -150.82684
+grow_vertical = 0
+text = "Health Potion
+150 XP
+"
+
+[node name="HealthButton" type="Button" parent="CanvasLayer/Shop Panel"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 43.0
+offset_top = -138.82684
+offset_right = 217.0
+offset_bottom = -84.82684
+grow_vertical = 0
+text = "Health Increase
+ 500 XP
+"
+
+[node name="StaminaButton" type="Button" parent="CanvasLayer/Shop Panel"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 43.0
+offset_top = -70.82684
+offset_right = 217.0
+offset_bottom = -16.826843
+grow_vertical = 0
+text = "Stamina Increase
+ 500 XP
+"
+
+[node name="DamageButton" type="Button" parent="CanvasLayer/Shop Panel"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 266.0
+offset_top = -137.82684
+offset_right = 440.0
+offset_bottom = -83.82684
+grow_vertical = 0
+text = "Damage Increase
+ 1000 XP
+"
+
+[node name="BackButton" type="Button" parent="CanvasLayer/Shop Panel"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 444.0
+offset_top = -37.826843
+offset_right = 620.0
+offset_bottom = -6.8268433
+grow_vertical = 0
+text = "Back"
+
+[node name="BooginsChatSprite" type="Sprite2D" parent="CanvasLayer"]
+z_index = -1
+position = Vector2(160.00002, 165.82683)
+scale = Vector2(0.37178415, 0.37178415)
+texture = ExtResource("1_v5spc")
+
+[node name="MCChatSprite" type="Sprite2D" parent="CanvasLayer"]
+z_index = -1
+position = Vector2(1006, 182.8268)
+scale = Vector2(6.993585, 6.993585)
+texture = ExtResource("4_ts6i4")
 
 [node name="BooginsTheme" type="AudioStreamPlayer" parent="."]
 
@@ -73,3 +215,9 @@ metadata/_edit_use_anchors_ = true
 [connection signal="body_exited" from="Area2D" to="." method="OnAreaBodyExited"]
 [connection signal="pressed" from="CanvasLayer/Panel/SpeakButton" to="." method="OnSpeakPressed"]
 [connection signal="pressed" from="CanvasLayer/Panel/PurchaseButton" to="." method="OnPurchasePressed"]
+[connection signal="pressed" from="CanvasLayer/Panel/ExitButton" to="." method="OnExitPressed"]
+[connection signal="pressed" from="CanvasLayer/Shop Panel/PotionButton" to="." method="OnBuyPotionPressed"]
+[connection signal="pressed" from="CanvasLayer/Shop Panel/HealthButton" to="." method="OnUpgradeHealthPressed"]
+[connection signal="pressed" from="CanvasLayer/Shop Panel/StaminaButton" to="." method="OnUpgradeStaminaPressed"]
+[connection signal="pressed" from="CanvasLayer/Shop Panel/DamageButton" to="." method="OnUpgradeDamagePressed"]
+[connection signal="pressed" from="CanvasLayer/Shop Panel/BackButton" to="." method="CloseMenu"]

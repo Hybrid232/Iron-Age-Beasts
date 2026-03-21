@@ -32,7 +32,6 @@ public partial class Player : CharacterBody2D, IDamageable
 	[Export] private float dodgeCooldown = 0.7f;
 	[Export] private int dodgeStaminaCost = 20;
 
-	// i-frames tuning (normalized 0..1 within the dodge)
 	[Export(PropertyHint.Range, "0,1,0.01")]
 	private float dodgeIFrameStartNormalized = 0.10f;
 
@@ -77,6 +76,16 @@ public partial class Player : CharacterBody2D, IDamageable
 	[Export] private AudioStreamPlayer swingSFX;
 	[Export] private AudioStream swingSoundFile;
 
+	// ======= UPGRADES =======
+	[ExportGroup("Upgrades")]
+	[Export] private int healthUpgradeAmount = 15;
+	[Export] private int staminaUpgradeAmount = 10;
+	[Export] private int damageUpgradeAmount = 2;
+
+	public int HealthUpgradeLevel { get; private set; } = 1;
+	public int StaminaUpgradeLevel { get; private set; } = 1;
+	public int DamageUpgradeLevel { get; private set; } = 1;
+
 	// System Components (not exported)
 	private HealthSystem healthSystem;
 	private MovementSystem movementSystem;
@@ -89,8 +98,6 @@ public partial class Player : CharacterBody2D, IDamageable
 	public bool CanMove { get; set; } = true;
 	private Vector2 respawnPosition;
 
-	// Single source of truth: can the player be “hit” right now?
-	// (Use this to block damage AND knockback/stagger.)
 	public bool IsInvulnerable => dodgeSystem != null && dodgeSystem.IsInIFrames;
 
 	public override void _Ready()
@@ -163,13 +170,11 @@ public partial class Player : CharacterBody2D, IDamageable
 
 		float dt = (float)delta;
 
-		// Update all systems
 		recoilSystem.Update(dt);
 		healthSystem.Update(dt);
 		dodgeSystem.UpdateCooldown(dt);
 		shootingSystem.UpdateCooldowns(dt);
 
-		// Priority: Recoil > Attacking > Dodging > Normal Movement
 		if (recoilSystem.IsInRecoil())
 		{
 			Velocity = recoilSystem.GetRecoilVelocity();
@@ -198,14 +203,12 @@ public partial class Player : CharacterBody2D, IDamageable
 
 			Velocity = movementSystem.GetVelocity(moveDirection, speedMultiplier);
 
-			// Try actions
 			if (dodgeSystem.TryDodge(moveDirection, healthSystem))
 				Velocity = dodgeSystem.GetDodgeVelocity();
 
 			meleeSystem.TryAttack(moveDirection, recoilSystem);
 			shootingSystem.TryShoot(moveDirection, GlobalPosition);
 
-			// Walk SFX
 			if (moveDirection != Vector2.Zero)
 			{
 				if (walkSFX != null && !walkSFX.Playing) walkSFX.Play();
@@ -221,10 +224,35 @@ public partial class Player : CharacterBody2D, IDamageable
 		potionSystem.TryUsePotion();
 	}
 
-	// Defender recoil (when you take damage) - default strength
+	// ===== SHOP HELPERS (CALLED BY NPC) =====
+	public bool CanBuyPotion() => potionSystem != null && potionSystem.CanBuyPotion();
+
+	public bool TryAddPotionFromShop(int amount = 1)
+	{
+		return potionSystem != null && potionSystem.TryAddPotions(amount);
+	}
+
+	public void UpgradeHealthFromShop()
+	{
+		HealthUpgradeLevel++;
+		healthSystem.SetMaxHealth(healthSystem.MaxHealth + healthUpgradeAmount, healToFull: true);
+	}
+
+	public void UpgradeStaminaFromShop()
+	{
+		StaminaUpgradeLevel++;
+		healthSystem.SetMaxStamina(healthSystem.MaxStamina + staminaUpgradeAmount, refillToFull: true);
+	}
+
+	public void UpgradeDamageFromShop()
+	{
+		DamageUpgradeLevel++;
+		meleeSystem.SetMeleeDamage(meleeSystem.MeleeDamage + damageUpgradeAmount);
+	}
+
+	// Defender recoil
 	public void TriggerHitRecoil(Vector2 pushDirection)
 	{
-		// NEW: no knockback/stagger during successful dodge i-frames
 		if (IsInvulnerable)
 			return;
 
@@ -234,7 +262,6 @@ public partial class Player : CharacterBody2D, IDamageable
 		GD.Print($"Is in recoil now? {recoilSystem.IsInRecoil()}");
 	}
 
-	// Defender recoil with custom strength (boss can override distance/time)
 	public void TriggerHitRecoil(Vector2 pushDirection, float distance, float time)
 	{
 		GD.Print($"[Player] Knockback attempt | Invulnerable={IsInvulnerable}");
@@ -246,11 +273,10 @@ public partial class Player : CharacterBody2D, IDamageable
 		}
 
 		GD.Print("✅ Knockback APPLIED");
-
 		recoilSystem.StartHitRecoil(pushDirection, distance, time);
 	}
 
-	// Attacker recoil (when you successfully hit something)
+	// Attacker recoil
 	public void TriggerAttackerRecoil(Vector2 attackDirectionTowardEnemy)
 	{
 		if (!enableAttackerRecoilOnHit) return;
@@ -259,7 +285,6 @@ public partial class Player : CharacterBody2D, IDamageable
 
 	public void TakeDamage(int damage)
 	{
-		// Still good to keep: ignore damage during i-frames
 		if (IsInvulnerable)
 			return;
 
@@ -288,7 +313,6 @@ public partial class Player : CharacterBody2D, IDamageable
 		potionSystem.RefillPotions();
 		CanMove = true;
 
-		// Reset all enemies
 		var enemies = GetTree().GetNodesInGroup("Enemy");
 		foreach (Node node in enemies)
 		{
@@ -299,10 +323,8 @@ public partial class Player : CharacterBody2D, IDamageable
 		}
 	}
 
-	// If anything uses this to knock you back, block it during i-frames too.
 	public void ApplyKnockback(Vector2 force)
 	{
-		// NEW: no knockback during successful dodge i-frames
 		if (IsInvulnerable)
 			return;
 

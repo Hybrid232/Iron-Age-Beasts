@@ -14,28 +14,21 @@ public class MeleeSystem
 	private int staminaBuffer;
 	private AudioStreamPlayer halberdSFX;
 	private AudioStream halberdSoundFile;
-	
+
 	private HealthSystem healthSystem;
 	private Player player;
-	
-	//private string targetGroup;
-	//private Node2D owner;
 
 	private float attackTimer;
 	private bool isAttacking;
 
-	// Re-used as "once per attack" recoil gate
 	private bool usedHitRecoilThisAttack;
-
-	// Only track which enemies were hit this attack to prevent multi-hits
 	private readonly HashSet<ulong> enemiesHitThisAttack = new();
 
-	// Tunable offsets
 	private float horizontalAttackOffset = 24f;
 	private float verticalAttackOffset = 40f;
 	private float verticalBias = 1.25f;
-	
-	
+
+	public bool IsAttacking => isAttacking;
 
 	public int MeleeDamage => meleeDamage;
 
@@ -43,8 +36,6 @@ public class MeleeSystem
 	{
 		meleeDamage = Mathf.Max(0, newDamage);
 	}
-
-	public bool IsAttacking => isAttacking;
 
 	public MeleeSystem(
 		Node2D pivot,
@@ -67,14 +58,17 @@ public class MeleeSystem
 		attackRange = range;
 		enemyKnockbackDistance = knockbackDist;
 		enemyKnockbackTime = knockbackTime;
-		meleeDamage = damage; 
-		halberdSFX = halberdSFX;
-		halberdSoundFile = halberdSoundFile;
-		
-		if (halberdSFX != null && halberdSoundFile != null)
+		meleeDamage = damage;
+
+		// FIX: assign parameters to fields correctly
+		this.halberdSFX = halberdSFX;
+		this.halberdSoundFile = halberdSoundFile;
+
+		if (this.halberdSFX != null && this.halberdSoundFile != null)
 		{
-			halberdSFX.Stream = halberdSoundFile;
+			this.halberdSFX.Stream = this.halberdSoundFile;
 		}
+
 		this.staminaCost = staminaCost;
 		this.staminaBuffer = staminaBuffer;
 
@@ -162,18 +156,14 @@ public class MeleeSystem
 		Vector2 toEnemy = enemyRoot.GlobalPosition - player.GlobalPosition;
 		Vector2 towardEnemy = toEnemy == Vector2.Zero ? Vector2.Zero : toEnemy.Normalized();
 
-		// NEW: Push player back slightly (attacker recoil), once per attack.
-		// Toggle off in Player inspector via enableAttackerRecoilOnHit.
 		if (!usedHitRecoilThisAttack)
 		{
 			player.TriggerAttackerRecoil(towardEnemy);
 			usedHitRecoilThisAttack = true;
 		}
 
-		// Apply knockback to enemy
 		ApplyEnemyKnockback(enemyRoot, towardEnemy);
 
-		// Deal damage
 		if (enemyRoot is IDamageable damageable)
 		{
 			damageable.TakeDamage(meleeDamage);
