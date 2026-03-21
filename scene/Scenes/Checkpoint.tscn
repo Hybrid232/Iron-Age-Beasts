@@ -1,0 +1,22 @@
+[gd_scene load_steps=5 format=3 uid="uid://cgihg2mukgcgl"]
+
+[ext_resource type="Script" uid="uid://diti8u11jj286" path="res://scene/scripts/Item Scripts/Checkpoint.cs" id="1_v2wh0"]
+[ext_resource type="Texture2D" uid="uid://bhqtxfglepkxa" path="res://sprites/test/checkpoint.png" id="2_v2wh0"]
+[ext_resource type="PackedScene" uid="uid://bdcoq0m6vlp8i" path="res://scene/Scenes/Interact.tscn" id="3_v2wh0"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_vcn3x"]
+
+[node name="Checkpoint" type="Area2D" node_paths=PackedStringArray("_interactPrompt")]
+script = ExtResource("1_v2wh0")
+_interactPrompt = NodePath("CanvasLayer/Interact")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_v2wh0")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+scale = Vector2(1.27, 1.27)
+shape = SubResource("CapsuleShape2D_vcn3x")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Interact" parent="CanvasLayer" instance=ExtResource("3_v2wh0")]

@@ -23,6 +23,7 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 	protected float _attackCooldownTimer = 2f;
 	protected bool _isAttacking = false;
 	protected bool _chasing = false;
+	protected Vector2 _startPosition;
 
 	// CHANGE: store the actual Player (prevents chasing a random node in the "Player" group)
 	protected Player _player = null;
@@ -37,6 +38,8 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 	public override void _Ready()
 	{
 		_currentHealth = MaxHealth;
+		_startPosition = GlobalPosition;
+		AddToGroup("Enemy");
 	}
 
 	public virtual void TakeDamage(int damage)
@@ -221,5 +224,14 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 
 			GD.Print($"Hit Player for {AttackDamage} damage!");
 		}
+	}
+
+	public virtual void ResetEnemy()
+	{
+		GlobalPosition = _startPosition;
+		_currentHealth = MaxHealth;
+		_chasing = false;
+		_player = null;
+		Velocity = Vector2.Zero;
 	}
 }

@@ -71,6 +71,12 @@ public class HealthSystem
 		return currentStamina >= hardExhaustThreshold;
 	}
 
+	public void HealToFull()
+	{
+		currentHealth = maxHealth;
+		uiReference?.UpdateHealthDisplay(currentHealth);
+	}
+
 	public void Update(float dt)
 	{
 		regenTimer += dt;
