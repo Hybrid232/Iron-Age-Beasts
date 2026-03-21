@@ -1,0 +1,48 @@
+[gd_scene load_steps=3 format=3 uid="uid://ct7c6w5tbh3t6"]
+
+[sub_resource type="Animation" id="Animation_qg272"]
+resource_name = "Death_Anim"
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_mub8j"]
+_data = {
+&"Death_Anim": SubResource("Animation_qg272")
+}
+
+[node name="DeathScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="CanvasLayer"]
+libraries = {
+&"": SubResource("AnimationLibrary_mub8j")
+}
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.40392157)
+
+[node name="Label" type="Label" parent="CanvasLayer"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -430.5
+offset_top = 156.0
+offset_right = 430.5
+offset_bottom = 259.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.71735644, 0, 0.066216536, 1)
+theme_override_font_sizes/font_size = 75
+text = "TIME 
+CLAMES ANOTHER"
+horizontal_alignment = 1
+vertical_alignment = 1
