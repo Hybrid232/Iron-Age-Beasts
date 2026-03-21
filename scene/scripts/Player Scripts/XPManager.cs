@@ -15,6 +15,19 @@ public partial class XPManager : Node
 		GD.Print($"[XPManager] Ready. Path={GetPath()} AddedToGroup={GROUP_NAME}");
 	}
 
+	public bool CanAfford(int cost) => cost > 0 && CurrentXp >= cost;
+
+	public bool TrySpendXp(int cost)
+	{
+		if (cost <= 0) return true;
+		if (CurrentXp < cost) return false;
+
+		CurrentXp -= cost;
+		GD.Print($"[XPManager] -{cost} XP (Total: {CurrentXp})");
+		EmitSignal(SignalName.XpChanged, CurrentXp);
+		return true;
+	}
+
 	public void AddXp(int amount)
 	{
 		if (amount <= 0) return;

@@ -15,6 +15,9 @@ public class HealthSystem
 	public int CurrentHealth => currentHealth;
 	public int CurrentStamina => currentStamina;
 
+	public int MaxHealth => maxHealth;
+	public int MaxStamina => maxStamina;
+
 	private float regenTimer = 0f;
 	private float timeBeforeRegenStart = 1.0f;
 	private float regenTickRate = 0.1f;
@@ -39,6 +42,27 @@ public class HealthSystem
 		currentStamina = maxStamina;
 
 		uiReference?.InitializeHealth(maxHealth, currentHealth);
+		uiReference?.InitializeStamina(maxStamina, currentStamina);
+	}
+
+	public void SetMaxHealth(int newMax, bool healToFull = false)
+	{
+		newMax = Math.Max(1, newMax);
+		maxHealth = newMax;
+
+		currentHealth = healToFull ? maxHealth : Math.Clamp(currentHealth, 0, maxHealth);
+
+		// Re-init so MaxValue updates too
+		uiReference?.InitializeHealth(maxHealth, currentHealth);
+	}
+
+	public void SetMaxStamina(int newMax, bool refillToFull = false)
+	{
+		newMax = Math.Max(1, newMax);
+		maxStamina = newMax;
+
+		currentStamina = refillToFull ? maxStamina : Math.Clamp(currentStamina, 0, maxStamina);
+
 		uiReference?.InitializeStamina(maxStamina, currentStamina);
 	}
 
