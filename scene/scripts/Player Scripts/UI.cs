@@ -1,10 +1,12 @@
 using Godot;
-using System;
 
 public partial class UI : CanvasLayer
 {
+	[ExportGroup("Bars")]
 	[Export] private TextureProgressBar healthBar;
 	[Export] private TextureProgressBar staminaBar;
+
+	[ExportGroup("Consumables")]
 	[Export] private TextureRect[] _potionIcons;
 
 	public void InitializeHealth(int maxHealth, int currentHealth)
@@ -13,6 +15,7 @@ public partial class UI : CanvasLayer
 		healthBar.MaxValue = maxHealth;
 		healthBar.Value = currentHealth;
 	}
+
 	public void InitializeStamina(int maxStamina, int currentStamina)
 	{
 		if (staminaBar == null) return;
@@ -39,10 +42,7 @@ public partial class UI : CanvasLayer
 		for (int i = 0; i < _potionIcons.Length; i++)
 		{
 			if (_potionIcons[i] != null)
-			{
-				// Shows the icon if its index is less than the remaining potions
 				_potionIcons[i].Visible = i < currentPotions;
-			}
 		}
-	} 
+	}
 }

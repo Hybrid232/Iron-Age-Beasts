@@ -1,0 +1,41 @@
+[gd_scene load_steps=5 format=3 uid="uid://ci5gb862f7h7b"]
+
+[ext_resource type="Script" uid="uid://bdfe4hejwotna" path="res://scene/scripts/Player Scripts/XPManager.cs" id="1_xnkvx"]
+[ext_resource type="Script" uid="uid://dpruri4uqg8np" path="res://scene/scripts/XPDisplay.cs" id="2_30on0"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_30on0"]
+bg_color = Color(0, 0.30980393, 0.3647059, 0.39215687)
+
+[sub_resource type="LabelSettings" id="LabelSettings_30on0"]
+
+[node name="XPManager" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_xnkvx")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 1037.0
+offset_top = 6.999817
+offset_right = 1077.0
+offset_bottom = 46.999817
+scale = Vector2(2.592064, 0.4780233)
+theme_override_styles/panel = SubResource("StyleBoxFlat_30on0")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 1039.0
+offset_top = 4.9999995
+offset_right = 1126.0
+offset_bottom = 28.0
+scale = Vector2(1.1509591, 0.9655747)
+text = "0"
+label_settings = SubResource("LabelSettings_30on0")
+horizontal_alignment = 1
+vertical_alignment = 1
+script = ExtResource("2_30on0")
+countUpDuration = 4.0
