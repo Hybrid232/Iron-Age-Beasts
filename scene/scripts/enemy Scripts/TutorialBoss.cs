@@ -134,23 +134,17 @@ public partial class TutorialBoss : BaseEnemy
 			? GetNodeOrNull(BossUIPath) as CanvasItem
 			: null;
 
-		if (_bossUIItem == null)
-			GD.PushWarning("[Boss] Could not find Boss UI node via BossUIPath (CanvasItem was null).");
-
-		bossUI = (BossUIPath != null && !BossUIPath.IsEmpty)
-			? GetNodeOrNull(BossUIPath) as IBossUI
-			: null;
-
 		if (bossUI == null)
 		{
 			GD.PushWarning("[Boss] Boss UI node does not implement IBossUI OR was not found.");
 		}
 		else
 		{
+			// Initialize data, but DO NOT rely on the UI to set visibility correctly.
 			bossUI.InitializeBoss(MaxHealth, _currentHealth);
 		}
 
-		// Ensure it starts hidden
+		// Force hidden at start (and after any re-instancing)
 		if (_bossUIItem != null) _bossUIItem.Visible = false;
 
 		fightStarted = false;

@@ -15,7 +15,7 @@ radius = 1.9416487
 radius = 146.02174
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5tfgd"]
-size = Vector2(38.5, 20)
+size = Vector2(31, 16)
 
 [node name="Dilophosaurus" type="CharacterBody2D" node_paths=PackedStringArray("HitArea") groups=["enemy_hurtbox"]]
 collision_layer = 14
@@ -90,10 +90,10 @@ collision_layer = 0
 collision_mask = 3
 monitoring = false
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HitArea"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitArea" groups=["Enemy"]]
 light_mask = 2
 visibility_layer = 2
-position = Vector2(1, 0)
+position = Vector2(0.5, -2)
 shape = SubResource("RectangleShape2D_5tfgd")
 debug_color = Color(0.5531096, 0.4047217, 0.9911578, 0.41960785)
 
