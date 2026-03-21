@@ -34,6 +34,15 @@ public class MeleeSystem
 	private float horizontalAttackOffset = 24f;
 	private float verticalAttackOffset = 40f;
 	private float verticalBias = 1.25f;
+	
+	
+
+	public int MeleeDamage => meleeDamage;
+
+	public void SetMeleeDamage(int newDamage)
+	{
+		meleeDamage = Mathf.Max(0, newDamage);
+	}
 
 	public bool IsAttacking => isAttacking;
 

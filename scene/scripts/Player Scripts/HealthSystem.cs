@@ -15,6 +15,9 @@ public class HealthSystem
 	public int CurrentHealth => currentHealth;
 	public int CurrentStamina => currentStamina;
 
+	public int MaxHealth => maxHealth;
+	public int MaxStamina => maxStamina;
+
 	private float regenTimer = 0f;
 	private float timeBeforeRegenStart = 1.0f;
 	private float regenTickRate = 0.1f;
@@ -42,6 +45,27 @@ public class HealthSystem
 		uiReference?.InitializeStamina(maxStamina, currentStamina);
 	}
 
+	public void SetMaxHealth(int newMax, bool healToFull = false)
+	{
+		newMax = Math.Max(1, newMax);
+		maxHealth = newMax;
+
+		currentHealth = healToFull ? maxHealth : Math.Clamp(currentHealth, 0, maxHealth);
+
+		// Re-init so MaxValue updates too
+		uiReference?.InitializeHealth(maxHealth, currentHealth);
+	}
+
+	public void SetMaxStamina(int newMax, bool refillToFull = false)
+	{
+		newMax = Math.Max(1, newMax);
+		maxStamina = newMax;
+
+		currentStamina = refillToFull ? maxStamina : Math.Clamp(currentStamina, 0, maxStamina);
+
+		uiReference?.InitializeStamina(maxStamina, currentStamina);
+	}
+
 	public void ChangeHealth(int amount)
 	{
 		currentHealth = Math.Clamp(currentHealth + amount, 0, maxHealth);
@@ -61,15 +85,8 @@ public class HealthSystem
 		uiReference?.UpdateStaminaDisplay(currentStamina);
 	}
 
-	public bool IsBelowSoftThreshold()
-	{
-		return currentStamina < softExhaustThreshold;
-	}
-
-	public bool CanAct()
-	{
-		return currentStamina >= hardExhaustThreshold;
-	}
+	public bool IsBelowSoftThreshold() => currentStamina < softExhaustThreshold;
+	public bool CanAct() => currentStamina >= hardExhaustThreshold;
 
 	public void HealToFull()
 	{

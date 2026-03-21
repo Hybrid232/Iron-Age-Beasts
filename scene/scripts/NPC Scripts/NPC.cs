@@ -13,6 +13,18 @@ public partial class NPC : Node2D
 	[Export] private AudioStream booginsThemeFile;
 
 	private Player _activePlayer;
+	
+	private readonly RandomNumberGenerator _rng = new();
+
+	[Export(PropertyHint.MultilineText)]
+	private string[] _randomDialogues =
+	{
+		"Hello! I am CHUNKY boogins!",
+		"I am so FAT, but I love you buddy!",
+		"You got XP? I got deals.",
+		"Pick ONE upgrade. Choose wisely, lil bro.",
+		"Potions capped at 5. Don’t waste my time."
+	};
 
 	public override void _Ready()
 	{
@@ -21,6 +33,7 @@ public partial class NPC : Node2D
 
 		_menu.Visible = false;
 		_interactPrompt.Visible = false;
+		_rng.Randomize();
 	}
 
 	public override void _Input(InputEvent @event)
@@ -68,7 +81,14 @@ public partial class NPC : Node2D
 
 	private void OnSpeakPressed()
 	{
-		_dialogueLabel.Text = "Hello! I am CHUNKY boogins! I am so FAT, but I love you buddy!";
+		if (_randomDialogues == null || _randomDialogues.Length == 0)
+		{
+			_dialogueLabel.Text = "...";
+			return;
+		}
+
+		int i = _rng.RandiRange(0, _randomDialogues.Length - 1);
+		_dialogueLabel.Text = _randomDialogues[i];
 	}
 
 	private void OnPurchasePressed()

@@ -4,7 +4,19 @@
 [ext_resource type="Script" uid="uid://dpruri4uqg8np" path="res://scene/scripts/XPDisplay.cs" id="2_30on0"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_30on0"]
-bg_color = Color(0, 0.30980393, 0.3647059, 0.39215687)
+bg_color = Color(0.5258823, 0, 0.14466536, 0.39215687)
+border_width_left = 1
+border_width_top = 9
+border_width_right = 1
+border_width_bottom = 9
+border_color = Color(0.043039158, 0.04303915, 0.04303915, 1)
+corner_radius_top_left = 15
+corner_radius_top_right = 2
+corner_radius_bottom_right = 15
+corner_radius_bottom_left = 5
+shadow_color = Color(0.65199536, 0.23467413, 0, 0.6)
+shadow_size = 5
+shadow_offset = Vector2(0, 10.16)
 
 [sub_resource type="LabelSettings" id="LabelSettings_30on0"]
 
@@ -19,23 +31,22 @@ script = ExtResource("1_xnkvx")
 
 [node name="Panel" type="Panel" parent="."]
 layout_mode = 0
-offset_left = 1037.0
-offset_top = 6.999817
-offset_right = 1077.0
-offset_bottom = 46.999817
-scale = Vector2(2.592064, 0.4780233)
+offset_left = 5.0
+offset_top = 588.0
+offset_right = 45.0
+offset_bottom = 628.0
+scale = Vector2(3.0474641, 0.7304425)
 theme_override_styles/panel = SubResource("StyleBoxFlat_30on0")
 
 [node name="Label" type="Label" parent="."]
 layout_mode = 0
-offset_left = 1039.0
-offset_top = 4.9999995
-offset_right = 1126.0
-offset_bottom = 28.0
-scale = Vector2(1.1509591, 0.9655747)
+offset_left = 20.0
+offset_top = 591.0
+offset_right = 107.0
+offset_bottom = 614.0
 text = "0"
 label_settings = SubResource("LabelSettings_30on0")
 horizontal_alignment = 1
 vertical_alignment = 1
 script = ExtResource("2_30on0")
-countUpDuration = 4.0
+countUpDuration = 2.0
