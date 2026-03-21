@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=4 uid="uid://6v4cj26pkfbu"]
+[gd_scene load_steps=20 format=4 uid="uid://6v4cj26pkfbu"]
 
 [ext_resource type="PackedScene" uid="uid://d38cvt67w5bgb" path="res://scene/Player/Player.tscn" id="1_00eeo"]
 [ext_resource type="PackedScene" uid="uid://mgdagjh6wa25" path="res://scene/Scenes/PauseMenu.tscn" id="1_w8gwm"]
@@ -8,10 +8,11 @@
 [ext_resource type="PackedScene" uid="uid://b6m3oycxmqq7g" path="res://scene/NPC/NPC.tscn" id="5_qjufs"]
 [ext_resource type="Texture2D" uid="uid://cvcqwiun3qwbx" path="res://sprites/test/HealthBG.png" id="6_fkj6s"]
 [ext_resource type="Texture2D" uid="uid://d2x8288fejlu" path="res://sprites/test/staminaBG.png" id="6_pv4dj"]
-[ext_resource type="Script" uid="uid://cwciv12cfe4lg" path="res://scene/scripts/BossUi.cs" id="6_s3mw7"]
+[ext_resource type="Script" uid="uid://cwciv12cfe4lg" path="res://scene/scripts/BossUI.cs" id="6_s3mw7"]
 [ext_resource type="PackedScene" uid="uid://djokcwtj4qkek" path="res://scene/enemy/Dilophosaurus.tscn" id="7_pbiin"]
 [ext_resource type="Texture2D" uid="uid://d08o5yyd2hgd0" path="res://sprites/test/HealthBar.png" id="7_ujhhv"]
 [ext_resource type="PackedScene" uid="uid://bdcoq0m6vlp8i" path="res://scene/Scenes/Interact.tscn" id="8_ih1j1"]
+[ext_resource type="PackedScene" uid="uid://ci5gb862f7h7b" path="res://scene/Player/XPManager.tscn" id="9_4rr56"]
 [ext_resource type="Texture2D" uid="uid://byqbdkq2u3mh" path="res://sprites/test/potion.png" id="9_113gb"]
 [ext_resource type="PackedScene" uid="uid://d4heq0i17knph" path="res://scene/enemy/TutorialBoss.tscn" id="10_ujhhv"]
 [ext_resource type="AudioStream" uid="uid://dgd7yh4png1ip" path="res://Audio/SFX/Ambient/Forest sounds - Wind, Birds.wav" id="11_s3mw7"]
@@ -104,6 +105,8 @@ texture_progress = ExtResource("5_pbiin")
 
 [node name="Interact" parent="HUD" instance=ExtResource("8_ih1j1")]
 
+[node name="XPManager" parent="HUD" instance=ExtResource("9_4rr56")]
+
 [node name="PauseMenu" parent="HUD" instance=ExtResource("1_w8gwm")]
 
 [node name="BossUI" type="Control" parent="HUD"]
@@ -193,6 +196,11 @@ position = Vector2(1086, 59)
 light_mask = 9
 visibility_layer = 9
 position = Vector2(1503, 104)
+
+[node name="Dilophosaurus4" parent="." instance=ExtResource("7_pbiin")]
+light_mask = 9
+visibility_layer = 9
+position = Vector2(4223, -741)
 
 [node name="TutorialBoss" parent="." node_paths=PackedStringArray("ArenaTriggerArea", "EntranceGate") groups=["Player", "enemy_hurtbox", "player"] instance=ExtResource("10_ujhhv")]
 light_mask = 15

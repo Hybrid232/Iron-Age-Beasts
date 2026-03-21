@@ -15,6 +15,9 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 	public const string PLAYER_GROUP = "Player";
 	[Export] public string PlayerGroup = PLAYER_GROUP;
 
+	[ExportGroup("Rewards")]
+	[Export] public int XpReward = 10;
+
 	// State Variables
 	protected int _currentHealth;
 	protected float _attackCooldownTimer = 2f;
@@ -27,6 +30,9 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 	// Knockback State
 	private float _knockbackTimer = 0f;
 	private Vector2 _knockbackVelocity = Vector2.Zero;
+
+	// NEW: prevents XP being granted multiple times
+	private bool _xpGranted = false;
 
 	public override void _Ready()
 	{
@@ -52,12 +58,28 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 	{
 		GD.Print($"{Name} was hit!");
 	}
-	
-	
 
 	protected virtual void Die()
 	{
+		GrantXpToPlayer();
 		QueueFree();
+	}
+
+	private void GrantXpToPlayer()
+	{
+		if (_xpGranted) return;
+		_xpGranted = true;
+
+		if (XpReward <= 0) return;
+
+		var xpManager = GetTree().GetFirstNodeInGroup(XPManager.GROUP_NAME) as XPManager;
+		if (xpManager == null)
+		{
+			GD.PrintErr("[BaseEnemy] XPManager not found (group lookup). Is the XPManager scene instanced under HUD?");
+			return;
+		}
+
+		xpManager.AddXp(XpReward);
 	}
 
 	public override void _Process(double delta)

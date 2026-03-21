@@ -49,6 +49,7 @@ BodyContactDamageArea = NodePath("CollisionDamage")
 Speed = 70.0
 MaxHealth = 200
 AttackRange = 15.0
+XpReward = 15000
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 light_mask = 5
