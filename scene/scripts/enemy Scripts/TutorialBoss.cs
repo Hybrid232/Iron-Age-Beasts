@@ -17,6 +17,7 @@ public partial class TutorialBoss : BaseEnemy
 
 	// Cached UI CanvasItem so we can show/hide it reliably (including on death)
 	private CanvasItem _bossUIItem;
+	private IBossUI bossUI;
 
 	[ExportGroup("Phase 2 (<=40% HP)")]
 	[Export] public float Phase2SpeedMultiplier = 1.35f;
@@ -86,7 +87,6 @@ public partial class TutorialBoss : BaseEnemy
 	[Export] public float ContactDamageCooldown = 0.40f;
 
 	private readonly Dictionary<ulong, float> _contactDamageCdByTarget = new();
-	private IBossUI bossUI;
 
 	private BossState state = BossState.Idle;
 	private BossAttack currentAttack = BossAttack.None;
@@ -127,25 +127,30 @@ public partial class TutorialBoss : BaseEnemy
 		chargeTelegraph = ResolveTelegraph(ChargeTelegraphPath, "ChargeTelegraphPath");
 		HideAllTelegraphs();
 
+		// ===== FIXED BOSS UI RESOLUTION (THIS WAS THE BUG) =====
 		GD.Print($"[Boss] BossUIPath='{BossUIPath}' (isEmpty={BossUIPath == null || BossUIPath.IsEmpty})");
 
-		// Cache boss UI CanvasItem (so we can show/hide it, including on death)
+		// 1) Resolve for visibility control
 		_bossUIItem = (BossUIPath != null && !BossUIPath.IsEmpty)
 			? GetNodeOrNull(BossUIPath) as CanvasItem
 			: null;
 
-		if (bossUI == null)
-		{
-			GD.PushWarning("[Boss] Boss UI node does not implement IBossUI OR was not found.");
-		}
-		else
-		{
-			// Initialize data, but DO NOT rely on the UI to set visibility correctly.
-			bossUI.InitializeBoss(MaxHealth, _currentHealth);
-		}
+		if (_bossUIItem == null)
+			GD.PushWarning("[Boss] Could not find Boss UI node via BossUIPath (CanvasItem was null).");
 
-		// Force hidden at start (and after any re-instancing)
+		// 2) Resolve for API calls
+		bossUI = (BossUIPath != null && !BossUIPath.IsEmpty)
+			? GetNodeOrNull(BossUIPath) as IBossUI
+			: null;
+
+		if (bossUI == null)
+			GD.PushWarning("[Boss] Boss UI node does not implement IBossUI OR was not found.");
+		else
+			bossUI.InitializeBoss(MaxHealth, _currentHealth);
+
+		// 3) Always start hidden (only show when fight starts)
 		if (_bossUIItem != null) _bossUIItem.Visible = false;
+		// ======================================================
 
 		fightStarted = false;
 		state = BossState.Idle;
@@ -248,7 +253,6 @@ public partial class TutorialBoss : BaseEnemy
 		StartBossFight(player);
 	}
 
-	// accept Player (not Node2D) so it matches BaseEnemy._player type
 	private void StartBossFight(Player player)
 	{
 		fightStarted = true;
@@ -259,7 +263,8 @@ public partial class TutorialBoss : BaseEnemy
 		state = BossState.Chasing;
 		currentAttack = BossAttack.None;
 
-		// Show boss UI at fight start
+		// Refresh values then show UI at fight start
+		bossUI?.InitializeBoss(MaxHealth, _currentHealth);
 		if (_bossUIItem != null) _bossUIItem.Visible = true;
 
 		if (BodyContactDamageArea != null)
@@ -277,7 +282,7 @@ public partial class TutorialBoss : BaseEnemy
 		GD.Print("[Boss] Fight started; gate locked.");
 	}
 
-	// ---- rest of your file unchanged below ----
+	// ==================== rest of your original file ====================
 
 	private void SetEntranceGateLocked(bool locked)
 	{
@@ -700,7 +705,6 @@ public partial class TutorialBoss : BaseEnemy
 		state = BossState.Dead;
 		Velocity = Vector2.Zero;
 
-		// Hide boss health bar/UI when the boss dies
 		if (_bossUIItem != null)
 			_bossUIItem.Visible = false;
 
@@ -716,41 +720,36 @@ public partial class TutorialBoss : BaseEnemy
 		base.Die();
 	}
 
-	public override void ResetEnemy() //Method is called when player dies and respawns at checkpoint
+	public override void ResetEnemy()
 	{
-		base.ResetEnemy(); // Resets position, health, and chasing state
+		base.ResetEnemy();
 
-		// Reset boss-specific states
 		state = BossState.Idle;
 		currentAttack = BossAttack.None;
 		fightStarted = false;
 		phase2 = false;
 		Speed = baseSpeed;
-		
-		// Reset cooldowns
+
 		biteCd = 0f;
 		tailCd = 0f;
 		chargeCd = 0f;
 		hitTargetsThisActive.Clear();
 		_contactDamageCdByTarget.Clear();
 
-		// Reset UI
 		if (_bossUIItem != null) _bossUIItem.Visible = false;
 		bossUI?.InitializeBoss(MaxHealth, _currentHealth);
 
-		// Reset Hitboxes & Visuals
 		HideAllTelegraphs();
 		SetHitboxEnabled(BiteHitbox, false);
 		SetHitboxEnabled(TailHitbox, false);
 		SetHitboxEnabled(ChargeHitbox, false);
 		if (BodyContactDamageArea != null) SetHitboxEnabled(BodyContactDamageArea, false);
 
-		// Reset Arena Gate and Trigger
 		SetEntranceGateLocked(false);
 		if (ArenaTriggerArea != null)
 		{
-			ArenaTriggerArea.Monitoring = false; 
-			CallDeferred(nameof(ArmArenaTriggerNextFrame)); 
+			ArenaTriggerArea.Monitoring = false;
+			CallDeferred(nameof(ArmArenaTriggerNextFrame));
 		}
 	}
 }

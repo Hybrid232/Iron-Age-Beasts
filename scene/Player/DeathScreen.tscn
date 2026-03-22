@@ -1,20 +1,154 @@
-[gd_scene load_steps=3 format=3 uid="uid://ct7c6w5tbh3t6"]
+[gd_scene load_steps=7 format=3 uid="uid://ct7c6w5tbh3t6"]
+
+[ext_resource type="Script" uid="uid://bwp53xwtbukhc" path="res://scene/scripts/DeathScreenUI.cs" id="1_mub8j"]
 
 [sub_resource type="Animation" id="Animation_qg272"]
 resource_name = "Death_Anim"
+length = 8.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Label:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(2.033333, 5.6),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("ColorRect:self_modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(0, 0, 0, 1)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Label/Panel:self_modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(1.8666666, 5.4333334),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_mub8j"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Label:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("ColorRect:self_modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Label/Panel:self_modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_oaxn8"]
+resource_name = "Respawning_Anim"
+length = 1.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Label:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1.0333333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("ColorRect:self_modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(0, 0, 0, 1), Color(1, 1, 1, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Label/Panel:self_modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 1.0333333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_mub8j"]
 _data = {
-&"Death_Anim": SubResource("Animation_qg272")
+&"Death_Anim": SubResource("Animation_qg272"),
+&"RESET": SubResource("Animation_mub8j"),
+&"Respawning_Anim": SubResource("Animation_oaxn8")
 }
 
-[node name="DeathScreen" type="Control"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_oaxn8"]
+bg_color = Color(0, 0, 0, 0.69411767)
+corner_radius_top_left = 40
+corner_radius_top_right = 3545
+corner_radius_bottom_right = 695
+corner_radius_bottom_left = 275
+shadow_color = Color(1, 0.15294118, 0.10980392, 0.2)
+shadow_size = 150
+shadow_offset = Vector2(0, 129.205)
+
+[node name="DeathScreen" type="Control" node_paths=PackedStringArray("_root", "_label", "_animPlayer")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_mub8j")
+_root = NodePath(".")
+_label = NodePath("CanvasLayer/Label")
+_animPlayer = NodePath("CanvasLayer/AnimationPlayer")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
@@ -22,6 +156,7 @@ grow_vertical = 2
 libraries = {
 &"": SubResource("AnimationLibrary_mub8j")
 }
+autoplay = "Death_Anim"
 
 [node name="ColorRect" type="ColorRect" parent="CanvasLayer"]
 anchors_preset = 15
@@ -29,9 +164,10 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 0.40392157)
+color = Color(0, 0, 0, 0.6784314)
 
 [node name="Label" type="Label" parent="CanvasLayer"]
+z_index = 2
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
@@ -43,6 +179,16 @@ grow_horizontal = 2
 theme_override_colors/font_color = Color(0.71735644, 0, 0.066216536, 1)
 theme_override_font_sizes/font_size = 75
 text = "TIME 
-CLAMES ANOTHER"
+CLAIMES ANOTHER"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="Panel" type="Panel" parent="CanvasLayer/Label"]
+z_index = -1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_oaxn8")

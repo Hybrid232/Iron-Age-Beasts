@@ -63,6 +63,7 @@ offset_right = 40.0
 offset_bottom = 40.0
 
 [node name="Panel" type="Panel" parent="CanvasLayer/BooginsShopUI"]
+visible = false
 layout_mode = 1
 anchors_preset = -1
 anchor_top = 0.22993827
@@ -83,6 +84,7 @@ offset_top = 43.173157
 offset_right = 20.0
 offset_bottom = 66.17316
 grow_horizontal = 2
+theme_override_font_sizes/font_size = 30
 
 [node name="SpeakButton" type="Button" parent="CanvasLayer/BooginsShopUI/Panel"]
 layout_mode = 1
@@ -142,10 +144,12 @@ layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -132.0
-offset_right = 178.0
-offset_bottom = 62.0
+offset_left = 62.0
+offset_top = 71.0
+offset_right = 372.0
+offset_bottom = 133.0
 grow_horizontal = 2
+theme_override_font_sizes/font_size = 30
 
 [node name="PotionButton" type="Button" parent="CanvasLayer/BooginsShopUI/Shop Panel"]
 layout_mode = 1
@@ -223,13 +227,13 @@ offset_bottom = 40.0
 
 [node name="BooginsChatSprite" type="Sprite2D" parent="CanvasLayer/CharacterSprites"]
 z_index = -1
-position = Vector2(160.00002, 165.82683)
-scale = Vector2(0.37178415, 0.37178415)
+position = Vector2(146, 219.99998)
+scale = Vector2(0.29123333, 0.29123333)
 texture = ExtResource("1_v5spc")
 
 [node name="MCChatSprite" type="Sprite2D" parent="CanvasLayer/CharacterSprites"]
 z_index = -1
-position = Vector2(1006, 182.8268)
+position = Vector2(1006, 235)
 scale = Vector2(6.993585, 6.993585)
 texture = ExtResource("4_ts6i4")
 
