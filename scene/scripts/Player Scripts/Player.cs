@@ -17,6 +17,12 @@ public partial class Player : CharacterBody2D, IDamageable
 	[ExportGroup("Death")]
 	[Export] private bool resetSceneOnDeath = true;
 
+	// ===== Death Screen=====
+	[ExportGroup("UI Scenes")]
+	[Export] private DeathScreenUI _deathScreenUI;
+
+	private bool _isDying = false;
+
 	[ExportGroup("Combat Feel")]
 	[Export] private bool enableAttackerRecoilOnHit = true;
 
@@ -160,8 +166,21 @@ public partial class Player : CharacterBody2D, IDamageable
 
 		respawnPosition = GlobalPosition;
 
-		// Potion system now tracks unlocked potions; starts with 1
+		// Potion system starts with 1 potion (or whatever startingPotions is)
+		// NOTE: this assumes your PotionSystem constructor signature is:
+		// PotionSystem(int healAmount, HealthSystem healthSystem, UI uiReference, int startingPotions = 1)
 		potionSystem = new PotionSystem(potionHealAmount, healthSystem, uiReference, startingPotions);
+
+		// Ensure potion UI is correct immediately
+		if (uiReference != null)
+			uiReference.UpdatePotionDisplay(potionSystem.CurrentPotions);
+		else
+			GD.PrintErr("[Player] uiReference is null in _Ready() - potion UI can't update.");
+
+		// Ensure death screen starts hidden (in case it was left visible in the editor)
+		// DeathScreenUI._Ready() should also hide itself, but this is extra safety.
+		if (_deathScreenUI == null)
+			GD.PrintErr("[Player] _deathScreenUI is not assigned. Death animation will not play.");
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -231,7 +250,7 @@ public partial class Player : CharacterBody2D, IDamageable
 	// ===== SHOP HELPERS (CALLED BY NPC) =====
 	public bool CanBuyPotion() => potionSystem != null && potionSystem.CanBuyPotion();
 
-	// Buying a potion permanently increases refill amount too
+	// If your PotionSystem uses "TryBuyPotions" (unlocked/refill style), keep this:
 	public bool TryAddPotionFromShop(int amount = 1)
 	{
 		return potionSystem != null && potionSystem.TryBuyPotions(amount);
@@ -261,23 +280,14 @@ public partial class Player : CharacterBody2D, IDamageable
 		if (IsInvulnerable)
 			return;
 
-		GD.Print("========== TriggerHitRecoil called ==========");
-		GD.Print($"Push direction: {pushDirection}");
 		recoilSystem.StartHitRecoil(pushDirection);
-		GD.Print($"Is in recoil now? {recoilSystem.IsInRecoil()}");
 	}
 
 	public void TriggerHitRecoil(Vector2 pushDirection, float distance, float time)
 	{
-		GD.Print($"[Player] Knockback attempt | Invulnerable={IsInvulnerable}");
-
 		if (IsInvulnerable)
-		{
-			GD.Print("❌ Knockback BLOCKED by i-frames");
 			return;
-		}
 
-		GD.Print("✅ Knockback APPLIED");
 		recoilSystem.StartHitRecoil(pushDirection, distance, time);
 	}
 
@@ -294,16 +304,37 @@ public partial class Player : CharacterBody2D, IDamageable
 			return;
 
 		healthSystem.ChangeHealth(-damage);
-		GD.Print($"Ouch! Player health: {healthSystem.CurrentHealth}");
 
 		if (healthSystem.CurrentHealth <= 0)
 			HandleDeath();
 	}
 
-	private void HandleDeath()
+	private async void HandleDeath()
 	{
-		GD.Print("Player died!");
+		if (_isDying) return;
+		_isDying = true;
+
+		CanMove = false;
+		Velocity = Vector2.Zero;
+
+		
+		if (_deathScreenUI != null)
+		{
+			await _deathScreenUI.PlayDeathAndWaitAsync("TIME CLAIMS ANOTHER");
+		}
+		else
+		{
+			await ToSignal(GetTree().CreateTimer(1.5f), SceneTreeTimer.SignalName.Timeout);
+		}
+
 		RespawnAndReset();
+
+		if (_deathScreenUI != null)
+		{
+			await _deathScreenUI.PlayRespawnFadeAndHideAsync();
+		}
+		CanMove = true;
+		_isDying = false;
 	}
 
 	public void SetRespawnPoint(Vector2 pos)
@@ -315,19 +346,16 @@ public partial class Player : CharacterBody2D, IDamageable
 	{
 		GlobalPosition = respawnPosition;
 		healthSystem.HealToFull();
-
-		// Refill only what player has unlocked/bought
 		potionSystem.RefillPotions();
-
 		CanMove = true;
 
+		// NOTE: dead enemies that QueueFree() cannot be "reset" here.
+		// Use EnemySpawner + Checkpoint respawn to bring them back.
 		var enemies = GetTree().GetNodesInGroup("Enemy");
 		foreach (Node node in enemies)
 		{
 			if (node is BaseEnemy enemy)
-			{
 				enemy.ResetEnemy();
-			}
 		}
 	}
 
@@ -340,7 +368,6 @@ public partial class Player : CharacterBody2D, IDamageable
 		{
 			Vector2 direction = force.Normalized();
 			recoilSystem.StartHitRecoil(direction);
-			GD.Print($"Knockback applied via recoil system! Force: {force}");
 		}
 	}
 }
