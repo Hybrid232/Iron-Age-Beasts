@@ -17,7 +17,8 @@ public partial class Player : CharacterBody2D, IDamageable
 	[ExportGroup("Death")]
 	[Export] private bool resetSceneOnDeath = true;
 
-	// ===== Death Screen=====
+	// ===== Death Screen (already placed in scene) =====
+	// Drag the existing DeathScreenUI node (Control with DeathScreenUI.cs) into this slot.
 	[ExportGroup("UI Scenes")]
 	[Export] private DeathScreenUI _deathScreenUI;
 
@@ -166,20 +167,15 @@ public partial class Player : CharacterBody2D, IDamageable
 
 		respawnPosition = GlobalPosition;
 
-		// Potion system starts with 1 potion (or whatever startingPotions is)
-		// NOTE: this assumes your PotionSystem constructor signature is:
-		// PotionSystem(int healAmount, HealthSystem healthSystem, UI uiReference, int startingPotions = 1)
 		potionSystem = new PotionSystem(potionHealAmount, healthSystem, uiReference, startingPotions);
 
-		// Ensure potion UI is correct immediately
 		if (uiReference != null)
 			uiReference.UpdatePotionDisplay(potionSystem.CurrentPotions);
-		else
-			GD.PrintErr("[Player] uiReference is null in _Ready() - potion UI can't update.");
 
-		// Ensure death screen starts hidden (in case it was left visible in the editor)
-		// DeathScreenUI._Ready() should also hide itself, but this is extra safety.
-		if (_deathScreenUI == null)
+		// Hook respawn event from the single combined animation.
+		if (_deathScreenUI != null)
+			_deathScreenUI.RespawnRequested += OnDeathScreenRespawnRequested;
+		else
 			GD.PrintErr("[Player] _deathScreenUI is not assigned. Death animation will not play.");
 	}
 
@@ -247,10 +243,9 @@ public partial class Player : CharacterBody2D, IDamageable
 		potionSystem.TryUsePotion();
 	}
 
-	// ===== SHOP HELPERS (CALLED BY NPC) =====
+	// ===== SHOP HELPERS =====
 	public bool CanBuyPotion() => potionSystem != null && potionSystem.CanBuyPotion();
 
-	// If your PotionSystem uses "TryBuyPotions" (unlocked/refill style), keep this:
 	public bool TryAddPotionFromShop(int amount = 1)
 	{
 		return potionSystem != null && potionSystem.TryBuyPotions(amount);
@@ -317,24 +312,28 @@ public partial class Player : CharacterBody2D, IDamageable
 		CanMove = false;
 		Velocity = Vector2.Zero;
 
-		
 		if (_deathScreenUI != null)
 		{
-			await _deathScreenUI.PlayDeathAndWaitAsync("TIME CLAIMS ANOTHER");
+			// Respawn happens mid-animation when the Call Method Track hits Anim_RequestRespawn()
+			await _deathScreenUI.PlayAndWaitAsync("TIME CLAIMS ANOTHER");
 		}
 		else
 		{
+			// Fallback if UI isn't wired
 			await ToSignal(GetTree().CreateTimer(1.5f), SceneTreeTimer.SignalName.Timeout);
+			RespawnAndReset();
 		}
 
-		RespawnAndReset();
-
-		if (_deathScreenUI != null)
-		{
-			await _deathScreenUI.PlayRespawnFadeAndHideAsync();
-		}
 		CanMove = true;
 		_isDying = false;
+	}
+
+	private void OnDeathScreenRespawnRequested()
+	{
+		// Called at the "black screen" keyframe inside the single animation.
+		if (!_isDying) return;
+
+		RespawnAndReset();
 	}
 
 	public void SetRespawnPoint(Vector2 pos)
@@ -349,8 +348,6 @@ public partial class Player : CharacterBody2D, IDamageable
 		potionSystem.RefillPotions();
 		CanMove = true;
 
-		// NOTE: dead enemies that QueueFree() cannot be "reset" here.
-		// Use EnemySpawner + Checkpoint respawn to bring them back.
 		var enemies = GetTree().GetNodesInGroup("Enemy");
 		foreach (Node node in enemies)
 		{
