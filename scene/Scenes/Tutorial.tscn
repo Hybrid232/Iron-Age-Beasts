@@ -205,7 +205,7 @@ texture = ExtResource("9_113gb")
 [node name="Interact" parent="HUD" instance=ExtResource("8_ih1j1")]
 
 [node name="XPManager" parent="HUD" instance=ExtResource("9_4rr56")]
-CurrentXp = 500000
+CurrentXp = 2000
 
 [node name="PauseMenu" parent="HUD" instance=ExtResource("1_w8gwm")]
 
