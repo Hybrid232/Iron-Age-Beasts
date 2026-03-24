@@ -67,6 +67,9 @@ dodgeIFrameDurationNormalized = 0.85
 bulletBars = [NodePath("../HUD/BulletBar0"), NodePath("../HUD/BulletBar1"), NodePath("../HUD/BulletBar2")]
 walkSoundFile = null
 swingSoundFile = null
+healthUpgradeAmount = 50
+staminaUpgradeAmount = 50
+damageUpgradeAmount = 50
 
 [node name="GameTilemap" type="Node2D" parent="."]
 light_mask = 3
@@ -338,6 +341,39 @@ _enemyContainerPath = NodePath(".")
 
 [node name="DiloSpawns" type="Node2D" parent="EnemySpawnPoints"]
 
+[node name="BossPhase2Spawns" type="Node2D" parent="EnemySpawnPoints"]
+position = Vector2(7697, 93)
+
+[node name="Raptor_1" type="Node2D" parent="EnemySpawnPoints/BossPhase2Spawns"]
+position = Vector2(-821, -451)
+script = ExtResource("16_in1og")
+_enemyScene = ExtResource("7_pbiin")
+_enemyContainerPath = NodePath(".")
+
+[node name="Raptor_2" type="Node2D" parent="EnemySpawnPoints/BossPhase2Spawns"]
+position = Vector2(-48, -343)
+script = ExtResource("16_in1og")
+_enemyScene = ExtResource("7_pbiin")
+_enemyContainerPath = NodePath(".")
+
+[node name="Raptor_3" type="Node2D" parent="EnemySpawnPoints/BossPhase2Spawns"]
+position = Vector2(-673, 516)
+script = ExtResource("16_in1og")
+_enemyScene = ExtResource("7_pbiin")
+_enemyContainerPath = NodePath(".")
+
+[node name="Raptor_4" type="Node2D" parent="EnemySpawnPoints/BossPhase2Spawns"]
+position = Vector2(711, 248)
+script = ExtResource("16_in1og")
+_enemyScene = ExtResource("7_pbiin")
+_enemyContainerPath = NodePath(".")
+
+[node name="Raptor_5" type="Node2D" parent="EnemySpawnPoints/BossPhase2Spawns"]
+position = Vector2(468, -368)
+script = ExtResource("16_in1og")
+_enemyScene = ExtResource("7_pbiin")
+_enemyContainerPath = NodePath(".")
+
 [node name="TutorialBoss" parent="." node_paths=PackedStringArray("ArenaTriggerArea", "EntranceGate") groups=["Player", "enemy_hurtbox", "player"] instance=ExtResource("10_ujhhv")]
 light_mask = 15
 visibility_layer = 15
@@ -345,6 +381,7 @@ position = Vector2(7810, -674)
 ArenaTriggerArea = NodePath("../BossStart")
 EntranceGate = NodePath("../StaticBody2D")
 BossUIPath = NodePath("../HUD/BossUI")
+AddsSpawnerRootPath = NodePath("../EnemySpawnPoints/BossPhase2Spawns")
 MaxHealth = 400
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
