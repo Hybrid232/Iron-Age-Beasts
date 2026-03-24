@@ -160,15 +160,13 @@ bg_color = Color(0, 0, 0, 0.75686276)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_aij3i"]
 bg_color = Color(0.078431375, 0.078431375, 0.078431375, 0.40392157)
 
-[node name="Boogins" type="Node2D" node_paths=PackedStringArray("_menu", "_dialoguePanel", "_shopPanel", "_dialogueLabel", "_speakButton", "_purchaseButton", "_exitButton", "_shopDialogue", "_buyPotionButton", "_upgradeDamageButton", "_upgradeHealthButton", "_upgradeStaminaButton", "_shopBackButton", "_portraitLayer", "_booginsPortrait", "_playerPortrait", "booginsThemeSFX")]
+[node name="Boogins" type="Node2D" node_paths=PackedStringArray("_menu", "_dialoguePanel", "_shopPanel", "_dialogueLabel", "_speakButton", "_shopDialogue", "_buyPotionButton", "_upgradeDamageButton", "_upgradeHealthButton", "_upgradeStaminaButton", "_shopBackButton", "_portraitLayer", "_booginsPortrait", "_playerPortrait", "booginsThemeSFX")]
 script = ExtResource("1_hqct7")
 _menu = NodePath("CanvasLayer/BooginsShopUI")
 _dialoguePanel = NodePath("CanvasLayer/BooginsShopUI/Panel")
 _shopPanel = NodePath("CanvasLayer/BooginsShopUI/ShopPanel")
 _dialogueLabel = NodePath("CanvasLayer/BooginsShopUI/Panel/DialogueLabel")
 _speakButton = NodePath("CanvasLayer/BooginsShopUI/Panel/SpeakButton")
-_purchaseButton = NodePath("")
-_exitButton = NodePath("")
 _shopDialogue = NodePath("CanvasLayer/BooginsShopUI/ShopPanel/Panel/DialogueLabel")
 _buyPotionButton = NodePath("CanvasLayer/BooginsShopUI/ShopPanel/PotionButton")
 _upgradeDamageButton = NodePath("CanvasLayer/BooginsShopUI/ShopPanel/DamageButton")
@@ -218,7 +216,7 @@ offset_bottom = 40.0
 [node name="Panel" type="Panel" parent="CanvasLayer/BooginsShopUI"]
 layout_mode = 1
 anchors_preset = -1
-anchor_top = 2.0092673
+anchor_top = -0.31573334
 anchor_bottom = -0.31573334
 offset_left = 32.0
 offset_top = 275.6293
@@ -297,7 +295,7 @@ text = "Exit"
 layout_mode = 1
 anchors_preset = -1
 anchor_left = -0.8
-anchor_top = -4.6556525
+anchor_top = -4.6556535
 anchor_right = -0.8
 anchor_bottom = -4.6556535
 offset_left = 61.0

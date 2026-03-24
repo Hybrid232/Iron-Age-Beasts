@@ -1,0 +1,61 @@
+[gd_scene load_steps=9 format=3 uid="uid://bbxqrfj52euxc"]
+
+[ext_resource type="Texture2D" uid="uid://cln3rtg4d7hlt" path="res://scene/Particles/kenney-particle-pack-7e801dc538996622a91327bb1dd5879cf977aa09/addons/kenney_particle_pack/fire_02.png" id="1_jlap4"]
+
+[sub_resource type="Gradient" id="Gradient_u53wg"]
+offsets = PackedFloat32Array(0, 0.5614035, 1)
+colors = PackedColorArray(3.85046e-06, 0.76125807, 0.87089616, 1, 0, 0, 0, 1, 0.943723, 0, 0.2672795, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_h8stc"]
+gradient = SubResource("Gradient_u53wg")
+
+[sub_resource type="Curve" id="Curve_uyvje"]
+_limits = [0.0, 100.0, 0.0, 1.0]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.4429348, 96.55356), 0.0, 0.0, 0, 0, Vector2(0.99456525, 100), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_2jodw"]
+curve = SubResource("Curve_uyvje")
+
+[sub_resource type="Curve" id="Curve_i55v6"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.14673914, 1), 0.0, 0.0, 0, 0, Vector2(0.9972826, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_oc6re"]
+curve = SubResource("Curve_i55v6")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_i7w3q"]
+lifetime_randomness = 0.55
+particle_flag_disable_z = true
+particle_flag_damping_as_friction = true
+angle_min = -116.99999
+angle_max = 720.0
+inherit_velocity_ratio = 0.995
+velocity_pivot = Vector3(3.705, 0, 0)
+spread = 180.0
+flatness = 1.0
+initial_velocity_max = 211.81999
+gravity = Vector3(0, 100, 0)
+damping_max = 100.00001
+damping_curve = SubResource("CurveTexture_2jodw")
+scale_min = 0.0
+scale_max = 0.5
+scale_curve = SubResource("CurveTexture_oc6re")
+color_ramp = SubResource("GradientTexture1D_h8stc")
+
+[node name="BulletCollisionVfx" type="Node2D"]
+light_mask = 15
+visibility_layer = 15
+z_index = 100
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="."]
+light_mask = 15
+visibility_layer = 15
+z_index = 100
+amount = 50
+texture = ExtResource("1_jlap4")
+lifetime = 2.47
+speed_scale = 2.78
+explosiveness = 1.0
+randomness = 1.0
+process_material = SubResource("ParticleProcessMaterial_i7w3q")

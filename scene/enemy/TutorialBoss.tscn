@@ -22,6 +22,7 @@ collision_layer = 6
 collision_mask = 6
 script = ExtResource("1_4m671")
 Phase2SpeedMultiplier = 2.0
+AddsToSpawnOnRoar = 5
 BiteRange = 200.0
 TailSweepRange = 240.0
 MinChargeRange = 300.0

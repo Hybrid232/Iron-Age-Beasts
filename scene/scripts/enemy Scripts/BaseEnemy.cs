@@ -1,7 +1,6 @@
-// BaseEnemy.cs
 using Godot;
 
-public partial class BaseEnemy : CharacterBody2D, IDamageable
+public partial class BaseEnemy : CharacterBody2D, IDamageable, IAggroable
 {
 	[ExportGroup("Movement")]
 	[Export] public float Speed = 60f;
@@ -16,23 +15,19 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 	[Export] public string PlayerGroup = PLAYER_GROUP;
 
 	[ExportGroup("Rewards")]
-	[Export] public int XpReward = 10;
+	[Export] public int XpReward = 100;
 
-	// State Variables
 	protected int _currentHealth;
 	protected float _attackCooldownTimer = 2f;
 	protected bool _isAttacking = false;
 	protected bool _chasing = false;
 	protected Vector2 _startPosition;
 
-	// CHANGE: store the actual Player (prevents chasing a random node in the "Player" group)
 	protected Player _player = null;
 
-	// Knockback State
 	private float _knockbackTimer = 0f;
 	private Vector2 _knockbackVelocity = Vector2.Zero;
 
-	// NEW: prevents XP being granted multiple times
 	private bool _xpGranted = false;
 
 	public override void _Ready()
@@ -42,19 +37,23 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 		AddToGroup("Enemy");
 	}
 
+	// ===== NEW: global "aggro" API (boss can call this) =====
+	public virtual void ForceAggro(Player player)
+	{
+		if (player == null || !IsInstanceValid(player)) return;
+		_player = player;
+		_chasing = true;
+	}
+
 	public virtual void TakeDamage(int damage)
 	{
 		_currentHealth -= damage;
 		GD.Print($"{Name} took {damage} damage! Health: {_currentHealth}/{MaxHealth}");
 
 		if (_currentHealth <= 0)
-		{
 			Die();
-		}
 		else
-		{
 			OnDamageTaken(damage);
-		}
 	}
 
 	protected virtual void OnDamageTaken(int damage)
@@ -88,9 +87,7 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 	public override void _Process(double delta)
 	{
 		if (_attackCooldownTimer > 0f)
-		{
 			_attackCooldownTimer -= (float)delta;
-		}
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -194,7 +191,6 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable
 
 	protected virtual void OnPlayerDetected(Node2D player)
 	{
-		// CHANGE: only accept actual Player
 		if (player is not Player p) return;
 
 		_player = p;
