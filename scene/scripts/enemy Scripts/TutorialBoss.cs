@@ -12,7 +12,11 @@ public partial class TutorialBoss : BaseEnemy
 	[Export] public StaticBody2D EntranceGate;
 	[Export] public bool LockEntranceOnStart = true;
 
-	[ExportGroup("Boss UI")]
+	[ExportGroup("Boss UI (Robust Lookup)")]
+	// If true, boss finds BossUI via group "BossUI" (recommended).
+	[Export] public bool UseBossUIGroupLookup = true;
+
+	// Optional fallback if you don't want group lookup:
 	[Export] public NodePath BossUIPath;
 
 	private CanvasItem _bossUIItem;
@@ -144,18 +148,7 @@ public partial class TutorialBoss : BaseEnemy
 		chargeTelegraph = ResolveTelegraph(ChargeTelegraphPath);
 		HideAllTelegraphs();
 
-		_bossUIItem = (BossUIPath != null && !BossUIPath.IsEmpty)
-			? GetNodeOrNull(BossUIPath) as CanvasItem
-			: null;
-
-		bossUI = (BossUIPath != null && !BossUIPath.IsEmpty)
-			? GetNodeOrNull(BossUIPath) as IBossUI
-			: null;
-
-		if (bossUI != null)
-			bossUI.InitializeBoss(MaxHealth, _currentHealth);
-
-		if (_bossUIItem != null) _bossUIItem.Visible = false;
+		ResolveBossUI();
 
 		fightStarted = false;
 		state = BossState.Idle;
@@ -168,9 +161,13 @@ public partial class TutorialBoss : BaseEnemy
 		if (ArenaTriggerArea != null)
 		{
 			ArenaTriggerArea.Monitorable = true;
-			ArenaTriggerArea.Monitoring = false;
+			ArenaTriggerArea.Monitoring = false; // armed next frame
 			ArenaTriggerArea.BodyEntered += OnArenaTriggerBodyEntered;
 			CallDeferred(nameof(ArmArenaTriggerNextFrame));
+		}
+		else
+		{
+			GD.PushWarning("[Boss] ArenaTriggerArea is not assigned.");
 		}
 
 		if (BodyContactDamageArea != null)
@@ -178,6 +175,45 @@ public partial class TutorialBoss : BaseEnemy
 			BodyContactDamageArea.CollisionLayer = 2;
 			BodyContactDamageArea.CollisionMask = 1;
 		}
+	}
+
+	private void ResolveBossUI()
+	{
+		_bossUIItem = null;
+		bossUI = null;
+
+		if (UseBossUIGroupLookup)
+		{
+			var uiNode = GetTree().GetFirstNodeInGroup(BossUI.GROUP_NAME);
+
+			_bossUIItem = uiNode as CanvasItem;
+			bossUI = uiNode as IBossUI;
+
+			if (_bossUIItem == null)
+				GD.PushWarning("[Boss] BossUI not found via group lookup OR is not a CanvasItem (group='BossUI').");
+			if (bossUI == null)
+				GD.PushWarning("[Boss] BossUI found via group lookup but does not implement IBossUI.");
+		}
+		else
+		{
+			_bossUIItem = (BossUIPath != null && !BossUIPath.IsEmpty)
+				? GetNodeOrNull(BossUIPath) as CanvasItem
+				: null;
+
+			bossUI = (BossUIPath != null && !BossUIPath.IsEmpty)
+				? GetNodeOrNull(BossUIPath) as IBossUI
+				: null;
+
+			if (_bossUIItem == null)
+				GD.PushWarning("[Boss] BossUIPath did not resolve to a CanvasItem.");
+			if (bossUI == null)
+				GD.PushWarning("[Boss] BossUIPath did not resolve to an IBossUI.");
+		}
+
+		bossUI?.InitializeBoss(MaxHealth, _currentHealth);
+
+		// Always start hidden; show when fight starts
+		if (_bossUIItem != null) _bossUIItem.Visible = false;
 	}
 
 	private async void ArmArenaTriggerNextFrame()
@@ -188,6 +224,7 @@ public partial class TutorialBoss : BaseEnemy
 		if (ArenaTriggerArea == null) return;
 
 		ArenaTriggerArea.Monitoring = true;
+		GD.Print("[Boss] Arena trigger armed.");
 	}
 
 	public override void _Process(double delta)
@@ -241,9 +278,14 @@ public partial class TutorialBoss : BaseEnemy
 	private void OnArenaTriggerBodyEntered(Node body)
 	{
 		if (fightStarted) return;
-		if (body is not Player player) return;
-		if (!player.IsInGroup(PlayerGroup)) return;
 
+		if (body is not Player player)
+			return;
+
+		if (!player.IsInGroup(PlayerGroup))
+			return;
+
+		GD.Print($"[Boss] Arena triggered by Player '{player.Name}'. Starting fight.");
 		StartBossFight(player);
 	}
 
@@ -257,6 +299,7 @@ public partial class TutorialBoss : BaseEnemy
 		state = BossState.Chasing;
 		currentAttack = BossAttack.None;
 
+		// Refresh values then show UI at fight start
 		bossUI?.InitializeBoss(MaxHealth, _currentHealth);
 		if (_bossUIItem != null) _bossUIItem.Visible = true;
 
@@ -275,7 +318,11 @@ public partial class TutorialBoss : BaseEnemy
 
 	private void SetEntranceGateLocked(bool locked)
 	{
-		if (EntranceGate == null) return;
+		if (EntranceGate == null)
+		{
+			GD.PushWarning("[Boss] EntranceGate is not assigned.");
+			return;
+		}
 
 		foreach (var node in EntranceGate.GetChildren())
 		{
@@ -340,7 +387,7 @@ public partial class TutorialBoss : BaseEnemy
 				break;
 
 			case BossState.Chasing:
-				Chase(dt);
+				Chase();
 				TryPickAttack();
 				break;
 
@@ -426,8 +473,10 @@ public partial class TutorialBoss : BaseEnemy
 		return results;
 	}
 
-	private void Chase(float dt)
+	private void Chase()
 	{
+		if (_player == null) return;
+
 		Vector2 toPlayer = _player.GlobalPosition - GlobalPosition;
 		float dist = toPlayer.Length();
 		if (dist < 1f)
@@ -443,7 +492,6 @@ public partial class TutorialBoss : BaseEnemy
 	private void TryPickAttack()
 	{
 		if (_player == null) return;
-		if (state != BossState.Chasing) return;
 
 		float dist = GlobalPosition.DistanceTo(_player.GlobalPosition);
 		bool chargeUnlocked = phase2 && UnlockChargeAt40Percent;
@@ -494,9 +542,11 @@ public partial class TutorialBoss : BaseEnemy
 			stateTimer = GetActiveTime(currentAttack);
 
 			hitTargetsThisActive.Clear();
+
 			PrepareHitboxForAttack(currentAttack);
 
 			ShowTelegraph(currentAttack, false);
+
 			EnableAttackHitbox(currentAttack, true);
 
 			if (currentAttack == BossAttack.Charge)
@@ -635,6 +685,7 @@ public partial class TutorialBoss : BaseEnemy
 
 			damageable.TakeDamage(dmgToApply);
 
+			// knockback only player
 			if (isPlayer && body is Player p)
 			{
 				(float kbDist, float kbTime) = a switch
@@ -654,7 +705,11 @@ public partial class TutorialBoss : BaseEnemy
 		}
 	}
 
-	private void OnBodyContactEntered(Node2D body) => TryApplyContactDamage(body);
+	private void OnBodyContactEntered(Node2D body)
+	{
+		TryApplyContactDamage(body);
+	}
+
 	private void OnBodyContactExited(Node2D body) { }
 
 	private void TryApplyContactDamage(Node2D body)
