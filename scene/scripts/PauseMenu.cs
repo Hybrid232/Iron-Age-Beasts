@@ -3,10 +3,10 @@ using System;
 
 public partial class PauseMenu : Control
 {
-	private Control _armoryPanel;
-	private Control _inventoryPanel;
-	private Control _settingsPanel;
-	private Control _pauseBar;
+	[Export] private Control _armoryPanel;
+	[Export] private Control _inventoryPanel;
+	[Export] private Control _settingsPanel;
+	[Export] private Control _pauseBar;
 
 	private bool _menuOpen = false;
 	private Player _player;

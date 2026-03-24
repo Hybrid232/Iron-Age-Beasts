@@ -208,6 +208,7 @@ texture = ExtResource("9_113gb")
 CurrentXp = 2000
 
 [node name="PauseMenu" parent="HUD" instance=ExtResource("1_w8gwm")]
+z_index = 5
 
 [node name="BossUI" type="Control" parent="HUD"]
 layout_mode = 3
