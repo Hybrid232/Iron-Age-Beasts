@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=4 uid="uid://6v4cj26pkfbu"]
+[gd_scene load_steps=27 format=4 uid="uid://6v4cj26pkfbu"]
 
 [ext_resource type="PackedScene" uid="uid://d38cvt67w5bgb" path="res://scene/Player/Player.tscn" id="1_00eeo"]
 [ext_resource type="PackedScene" uid="uid://mgdagjh6wa25" path="res://scene/Scenes/PauseMenu.tscn" id="1_w8gwm"]
@@ -14,12 +14,13 @@
 [ext_resource type="Script" uid="uid://b6u4b4f8a5nns" path="res://scene/scripts/Player Scripts/Inventory.cs" id="8_y7vs7"]
 [ext_resource type="PackedScene" uid="uid://ci5gb862f7h7b" path="res://scene/Player/XPManager.tscn" id="9_4rr56"]
 [ext_resource type="Texture2D" uid="uid://byqbdkq2u3mh" path="res://sprites/test/potion.png" id="9_113gb"]
-[ext_resource type="Script" uid="uid://biwy5tji5gpye" path="res://scene/scripts/BossUI.cs" id="10_4rr56"]
+[ext_resource type="Script" uid="uid://biwy5tji5gpye" path="res://scene/scripts/BossUi.cs" id="10_4rr56"]
 [ext_resource type="PackedScene" uid="uid://d4heq0i17knph" path="res://scene/enemy/TutorialBoss.tscn" id="10_ujhhv"]
 [ext_resource type="AudioStream" uid="uid://dgd7yh4png1ip" path="res://Audio/SFX/Ambient/Forest sounds - Wind, Birds.wav" id="11_s3mw7"]
 [ext_resource type="PackedScene" uid="uid://ct7c6w5tbh3t6" path="res://scene/Player/DeathScreen.tscn" id="14_xvhfl"]
 [ext_resource type="PackedScene" uid="uid://cgihg2mukgcgl" path="res://scene/Scenes/Checkpoint.tscn" id="16_4rr56"]
 [ext_resource type="Script" uid="uid://cdniyvmkxnghi" path="res://scene/scripts/enemy Scripts/EnemySpawner.cs" id="16_in1og"]
+[ext_resource type="PackedScene" uid="uid://cvhh0xi2cb8ee" path="res://scene/enemy/RangeEnemy.tscn" id="21_wajd3"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_y7vs7"]
 bg_color = Color(0.79607844, 0.11372549, 0, 0.7294118)
@@ -55,12 +56,11 @@ size = Vector2(2172, 306.91953)
 
 [node name="Tutorial" type="Node2D"]
 
-[node name="Player" parent="." node_paths=PackedStringArray("uiReference", "_deathScreenUI", "bulletBars") groups=["enemy_hurtbox"] instance=ExtResource("1_00eeo")]
+[node name="Player" parent="." node_paths=PackedStringArray("uiReference", "bulletBars") groups=["enemy_hurtbox"] instance=ExtResource("1_00eeo")]
 light_mask = 2
 visibility_layer = 2
 position = Vector2(4206, -1631)
 uiReference = NodePath("../HUD")
-_deathScreenUI = NodePath("../HUD/DeathScreen")
 playerSpeed = 150
 dodgeIFrameStartNormalized = 0.45
 dodgeIFrameDurationNormalized = 0.85
@@ -250,8 +250,10 @@ horizontal_alignment = 1
 
 [node name="DeathScreen" parent="HUD" instance=ExtResource("14_xvhfl")]
 
-[node name="Boogins" parent="." node_paths=PackedStringArray("_interactPrompt", "_xpManager") instance=ExtResource("5_qjufs")]
+[node name="Boogins" parent="." instance=ExtResource("5_qjufs")]
 position = Vector2(3908, -1649)
+_booginsPortraitTexture = null
+_playerPortraitTexture = null
 _interactPrompt = NodePath("../HUD/Interact")
 _booginsPortraitTexture = null
 _playerPortraitTexture = null
@@ -420,6 +422,7 @@ Phase2SpawnerRootPath = NodePath("../EnemySpawnPoints/BossPhase2Spawns")
 Phase2SpawnersToActivate = 8
 ChargeActive = 2.5
 MaxHealth = 400
+XpReward = 10
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 position = Vector2(6694.0005, -1005)
@@ -463,3 +466,6 @@ position = Vector2(4017, -1423)
 
 [node name="Checkpoint2" parent="." instance=ExtResource("16_4rr56")]
 position = Vector2(460, -879)
+
+[node name="RangeEnemy" parent="." instance=ExtResource("21_wajd3")]
+position = Vector2(4471, -1615)
