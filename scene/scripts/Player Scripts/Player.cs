@@ -2,7 +2,7 @@ using System.Numerics;
 using Godot;
 using Vector2 = Godot.Vector2;
 
-public partial class Player : CharacterBody2D, IDamageable
+public partial class Player : CharacterBody2D, IDamageable, IStunnable
 {
 	// ===== HEALTH/STAMINA EXPORTS =====
 	[ExportGroup("Health System")]
@@ -18,7 +18,6 @@ public partial class Player : CharacterBody2D, IDamageable
 	[Export] private bool resetSceneOnDeath = true;
 
 	// ===== Death Screen (already placed in scene) =====
-	// Drag the existing DeathScreenUI node (Control with DeathScreenUI.cs) into this slot.
 	[ExportGroup("UI Scenes")]
 	[Export] private DeathScreenUI _deathScreenUI;
 
@@ -110,6 +109,10 @@ public partial class Player : CharacterBody2D, IDamageable
 
 	public bool IsInvulnerable => dodgeSystem != null && dodgeSystem.IsInIFrames;
 
+	// ===== STUN STATE =====
+	private float _stunTimer = 0f;
+	public bool IsStunned => _stunTimer > 0f;
+
 	public override void _Ready()
 	{
 		AddToGroup(BaseEnemy.PLAYER_GROUP);
@@ -172,7 +175,6 @@ public partial class Player : CharacterBody2D, IDamageable
 		if (uiReference != null)
 			uiReference.UpdatePotionDisplay(potionSystem.CurrentPotions);
 
-		// Hook respawn event from the single combined animation.
 		if (_deathScreenUI != null)
 			_deathScreenUI.RespawnRequested += OnDeathScreenRespawnRequested;
 		else
@@ -181,19 +183,48 @@ public partial class Player : CharacterBody2D, IDamageable
 
 	public override void _PhysicsProcess(double delta)
 	{
+		float dt = (float)delta;
+
+		// Always tick these
+		recoilSystem.Update(dt);
+		healthSystem.Update(dt);
+		dodgeSystem.UpdateCooldown(dt);
+		shootingSystem.UpdateCooldowns(dt);
+
+		if (_stunTimer > 0f)
+			_stunTimer = Mathf.Max(0f, _stunTimer - dt);
+
+		if (_isDying)
+		{
+			Velocity = Vector2.Zero;
+			return;
+		}
+
+		// ===== STUNNED: block input/attacks/dodge/shooting, but ALLOW recoil motion =====
+		if (IsStunned)
+		{
+			// If recoil is active, let it move the player (knockback will work)
+			if (recoilSystem.IsInRecoil())
+			{
+				Velocity = recoilSystem.GetRecoilVelocity();
+				MoveAndSlide();
+				return;
+			}
+
+			// Otherwise: "stunned freeze" (no input)
+			Velocity = Vector2.Zero;
+			MoveAndSlide();
+			return;
+		}
+
+		// Existing external freeze
 		if (!CanMove)
 		{
 			Velocity = Vector2.Zero;
 			return;
 		}
 
-		float dt = (float)delta;
-
-		recoilSystem.Update(dt);
-		healthSystem.Update(dt);
-		dodgeSystem.UpdateCooldown(dt);
-		shootingSystem.UpdateCooldowns(dt);
-
+		// Recoil overrides everything
 		if (recoilSystem.IsInRecoil())
 		{
 			Velocity = recoilSystem.GetRecoilVelocity();
@@ -241,6 +272,18 @@ public partial class Player : CharacterBody2D, IDamageable
 		MoveAndSlide();
 
 		potionSystem.TryUsePotion();
+	}
+
+	// ===== STUN API =====
+	public void ApplyStun(float seconds)
+	{
+		if (seconds <= 0f) return;
+
+		// extend stun (doesn't mess with CanMove anymore)
+		_stunTimer = Mathf.Max(_stunTimer, seconds);
+
+		// optional: you may want to cancel melee attack immediately if you have a method for it.
+		// If you want, paste MeleeSystem and I can add a CancelAttack() hook.
 	}
 
 	// ===== SHOP HELPERS =====
@@ -309,17 +352,17 @@ public partial class Player : CharacterBody2D, IDamageable
 		if (_isDying) return;
 		_isDying = true;
 
+		_stunTimer = 0f;
+
 		CanMove = false;
 		Velocity = Vector2.Zero;
 
 		if (_deathScreenUI != null)
 		{
-			// Respawn happens mid-animation when the Call Method Track hits Anim_RequestRespawn()
 			await _deathScreenUI.PlayAndWaitAsync("TIME CLAIMS ANOTHER");
 		}
 		else
 		{
-			// Fallback if UI isn't wired
 			await ToSignal(GetTree().CreateTimer(1.5f), SceneTreeTimer.SignalName.Timeout);
 			RespawnAndReset();
 		}
@@ -330,9 +373,7 @@ public partial class Player : CharacterBody2D, IDamageable
 
 	private void OnDeathScreenRespawnRequested()
 	{
-		// Called at the "black screen" keyframe inside the single animation.
 		if (!_isDying) return;
-
 		RespawnAndReset();
 	}
 
@@ -346,6 +387,9 @@ public partial class Player : CharacterBody2D, IDamageable
 		GlobalPosition = respawnPosition;
 		healthSystem.HealToFull();
 		potionSystem.RefillPotions();
+
+		_stunTimer = 0f;
+
 		CanMove = true;
 
 		var enemies = GetTree().GetNodesInGroup("Enemy");

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public partial class TutorialBoss : BaseEnemy
 {
-	private enum BossState { Idle, Chasing, Telegraph, Active, Recover, Dead }
+	private enum BossState { Idle, Chasing, Telegraph, Active, Recover, Roaring, Dead }
 	private enum BossAttack { None, Bite, TailSweep, Charge }
 
 	[ExportGroup("Arena Activation")]
@@ -15,13 +15,28 @@ public partial class TutorialBoss : BaseEnemy
 	[ExportGroup("Boss UI")]
 	[Export] public NodePath BossUIPath;
 
-	// Cached UI CanvasItem so we can show/hide it reliably (including on death)
 	private CanvasItem _bossUIItem;
 	private IBossUI bossUI;
 
 	[ExportGroup("Phase 2 (<=40% HP)")]
 	[Export] public float Phase2SpeedMultiplier = 1.35f;
 	[Export] public bool UnlockChargeAt40Percent = true;
+
+	[ExportGroup("Phase 2 Roar (on enter)")]
+	[Export] public float Phase2RoarTelegraph = 0.6f;
+	[Export] public float Phase2RoarRecover = 0.7f;
+	[Export] public float RoarKnockbackDistance = 420f;
+	[Export] public float RoarKnockbackTime = 0.25f;
+	[Export] public float RoarStunSeconds = 2.5f;
+
+	[ExportGroup("Phase 2 Adds")]
+	[Export] public int AddsToSpawnOnRoar = 3;
+
+	// NEW: if group lookup fails, search under this node for EnemySpawner children
+	[Export] public NodePath AddsSpawnerRootPath;
+
+	public const string ADD_SPAWNER_GROUP = "ArenaAddSpawner";
+	private const string ENEMY_GROUP = "Enemy";
 
 	[ExportGroup("Ranges")]
 	[Export] public float BiteRange = 40f;
@@ -95,6 +110,7 @@ public partial class TutorialBoss : BaseEnemy
 	private float biteCd, tailCd, chargeCd;
 
 	private bool phase2;
+	private bool _phase2RoarDone = false;
 	private float baseSpeed;
 
 	private Vector2 chargeDir = Vector2.Zero;
@@ -127,10 +143,8 @@ public partial class TutorialBoss : BaseEnemy
 		chargeTelegraph = ResolveTelegraph(ChargeTelegraphPath, "ChargeTelegraphPath");
 		HideAllTelegraphs();
 
-		// ===== FIXED BOSS UI RESOLUTION (THIS WAS THE BUG) =====
 		GD.Print($"[Boss] BossUIPath='{BossUIPath}' (isEmpty={BossUIPath == null || BossUIPath.IsEmpty})");
 
-		// 1) Resolve for visibility control
 		_bossUIItem = (BossUIPath != null && !BossUIPath.IsEmpty)
 			? GetNodeOrNull(BossUIPath) as CanvasItem
 			: null;
@@ -138,7 +152,6 @@ public partial class TutorialBoss : BaseEnemy
 		if (_bossUIItem == null)
 			GD.PushWarning("[Boss] Could not find Boss UI node via BossUIPath (CanvasItem was null).");
 
-		// 2) Resolve for API calls
 		bossUI = (BossUIPath != null && !BossUIPath.IsEmpty)
 			? GetNodeOrNull(BossUIPath) as IBossUI
 			: null;
@@ -148,9 +161,7 @@ public partial class TutorialBoss : BaseEnemy
 		else
 			bossUI.InitializeBoss(MaxHealth, _currentHealth);
 
-		// 3) Always start hidden (only show when fight starts)
 		if (_bossUIItem != null) _bossUIItem.Visible = false;
-		// ======================================================
 
 		fightStarted = false;
 		state = BossState.Idle;
@@ -163,9 +174,8 @@ public partial class TutorialBoss : BaseEnemy
 		if (ArenaTriggerArea != null)
 		{
 			ArenaTriggerArea.Monitorable = true;
-			ArenaTriggerArea.Monitoring = false; // off at start
+			ArenaTriggerArea.Monitoring = false;
 			ArenaTriggerArea.BodyEntered += OnArenaTriggerBodyEntered;
-
 			CallDeferred(nameof(ArmArenaTriggerNextFrame));
 		}
 		else
@@ -242,12 +252,8 @@ public partial class TutorialBoss : BaseEnemy
 	private void OnArenaTriggerBodyEntered(Node body)
 	{
 		if (fightStarted) return;
-
-		if (body is not Player player)
-			return;
-
-		if (!player.IsInGroup(PlayerGroup))
-			return;
+		if (body is not Player player) return;
+		if (!player.IsInGroup(PlayerGroup)) return;
 
 		GD.Print($"[Boss] Arena triggered by Player '{player.Name}'. Starting fight.");
 		StartBossFight(player);
@@ -263,15 +269,11 @@ public partial class TutorialBoss : BaseEnemy
 		state = BossState.Chasing;
 		currentAttack = BossAttack.None;
 
-		// Refresh values then show UI at fight start
 		bossUI?.InitializeBoss(MaxHealth, _currentHealth);
 		if (_bossUIItem != null) _bossUIItem.Visible = true;
 
 		if (BodyContactDamageArea != null)
-		{
 			SetHitboxEnabled(BodyContactDamageArea, true);
-			GD.Print($"[Boss] Contact Area Enabled: Monitoring={BodyContactDamageArea.Monitoring}, Monitorable={BodyContactDamageArea.Monitorable}");
-		}
 
 		if (LockEntranceOnStart)
 			SetEntranceGateLocked(true);
@@ -282,8 +284,6 @@ public partial class TutorialBoss : BaseEnemy
 		GD.Print("[Boss] Fight started; gate locked.");
 	}
 
-	// ==================== rest of your original file ====================
-
 	private void SetEntranceGateLocked(bool locked)
 	{
 		if (EntranceGate == null)
@@ -292,25 +292,11 @@ public partial class TutorialBoss : BaseEnemy
 			return;
 		}
 
-		int shapeCount = 0;
-
 		foreach (var node in EntranceGate.GetChildren())
 		{
-			if (node is CollisionShape2D cs)
-			{
-				shapeCount++;
-				cs.Disabled = !locked;
-				GD.Print($"[Boss] Gate shape '{cs.Name}' Disabled={cs.Disabled} (locked={locked})");
-			}
-			else if (node is CollisionPolygon2D cp)
-			{
-				shapeCount++;
-				cp.Disabled = !locked;
-				GD.Print($"[Boss] Gate polygon '{cp.Name}' Disabled={cp.Disabled} (locked={locked})");
-			}
+			if (node is CollisionShape2D cs) cs.Disabled = !locked;
+			else if (node is CollisionPolygon2D cp) cp.Disabled = !locked;
 		}
-
-		GD.Print($"[Boss] EntranceGateLocked={locked}, gatePath={EntranceGate.GetPath()}, shapesFound={shapeCount}");
 	}
 
 	private void HandlePhase2()
@@ -325,7 +311,30 @@ public partial class TutorialBoss : BaseEnemy
 
 			BiteCooldown *= 0.85f;
 			TailCooldown *= 0.85f;
+
+			if (!_phase2RoarDone && state != BossState.Dead)
+				StartPhase2Roar();
 		}
+	}
+
+	private void StartPhase2Roar()
+	{
+		_phase2RoarDone = true;
+
+		currentAttack = BossAttack.None;
+
+		SetHitboxEnabled(BiteHitbox, false);
+		SetHitboxEnabled(TailHitbox, false);
+		SetHitboxEnabled(ChargeHitbox, false);
+
+		HideAllTelegraphs();
+
+		Velocity = Vector2.Zero;
+
+		state = BossState.Roaring;
+		stateTimer = Phase2RoarTelegraph;
+
+		GD.Print("[Boss] PHASE 2 ROAR starting...");
 	}
 
 	private void UpdateState(float dt)
@@ -338,6 +347,13 @@ public partial class TutorialBoss : BaseEnemy
 
 		switch (state)
 		{
+			case BossState.Roaring:
+				Velocity = Vector2.Zero;
+				stateTimer -= dt;
+				if (stateTimer <= 0f)
+					DoRoarPulseAndSpawnAdds();
+				break;
+
 			case BossState.Chasing:
 				Chase(dt);
 				TryPickAttack();
@@ -354,6 +370,88 @@ public partial class TutorialBoss : BaseEnemy
 					AdvanceAttackPhase();
 				break;
 		}
+	}
+
+	private void DoRoarPulseAndSpawnAdds()
+	{
+		GD.Print("[Boss] ROAR pulse (global knockback + stun + adds).");
+
+		if (_player != null && IsInstanceValid(_player))
+		{
+			Vector2 pushDir = (_player.GlobalPosition - GlobalPosition);
+			if (pushDir == Vector2.Zero) pushDir = Vector2.Right;
+			pushDir = pushDir.Normalized();
+
+			_player.TriggerHitRecoil(pushDir, RoarKnockbackDistance, RoarKnockbackTime);
+
+			if (_player is IStunnable stunnable)
+				stunnable.ApplyStun(RoarStunSeconds);
+			else
+				GD.PushWarning("[Boss] Player does not implement IStunnable; stun was skipped.");
+		}
+
+		SpawnArenaAdds(AddsToSpawnOnRoar);
+
+		state = BossState.Recover;
+		stateTimer = Phase2RoarRecover;
+	}
+
+	private List<EnemySpawner> ResolveAddSpawners()
+	{
+		var results = new List<EnemySpawner>();
+
+		// 1) Group lookup
+		var groupNodes = GetTree().GetNodesInGroup(ADD_SPAWNER_GROUP);
+		if (groupNodes != null)
+		{
+			foreach (var n in groupNodes)
+				if (n is EnemySpawner sp) results.Add(sp);
+		}
+
+		// 2) Fallback: explicit root search
+		if (results.Count == 0 && AddsSpawnerRootPath != null && !AddsSpawnerRootPath.IsEmpty)
+		{
+			var root = GetNodeOrNull(AddsSpawnerRootPath);
+			if (root != null)
+			{
+				foreach (var child in root.FindChildren("*", "EnemySpawner", true, false))
+					if (child is EnemySpawner sp) results.Add(sp);
+			}
+		}
+
+		return results;
+	}
+
+	private void SpawnArenaAdds(int count)
+	{
+		if (count <= 0)
+		{
+			GD.Print("[Boss] AddsToSpawnOnRoar <= 0; skipping add spawns.");
+			return;
+		}
+
+		var spawners = ResolveAddSpawners();
+		GD.Print($"[Boss] Add spawners found: {spawners.Count} (group='{ADD_SPAWNER_GROUP}', rootPath='{AddsSpawnerRootPath}')");
+
+		if (spawners.Count == 0)
+		{
+			GD.PushWarning("[Boss] No EnemySpawner found for adds. Put spawners in group 'ArenaAddSpawner' OR assign AddsSpawnerRootPath.");
+			return;
+		}
+
+		int spawned = 0;
+		foreach (var spawner in spawners)
+		{
+			if (spawned >= count) break;
+			if (spawner == null || !IsInstanceValid(spawner)) continue;
+			if (spawner.IsBossSpawner) continue;
+
+			GD.Print($"[Boss] Spawning add via spawner '{spawner.Name}' at {spawner.GlobalPosition}");
+			spawner.ForceRespawn();
+			spawned++;
+		}
+
+		GD.Print($"[Boss] Spawned adds: {spawned}/{count}");
 	}
 
 	private void Chase(float dt)
@@ -373,6 +471,7 @@ public partial class TutorialBoss : BaseEnemy
 	private void TryPickAttack()
 	{
 		if (_player == null) return;
+		if (state != BossState.Chasing) return;
 
 		float dist = GlobalPosition.DistanceTo(_player.GlobalPosition);
 		bool chargeUnlocked = phase2 && UnlockChargeAt40Percent;
@@ -539,22 +638,25 @@ public partial class TutorialBoss : BaseEnemy
 		if (!hitbox.Monitoring) return;
 
 		var bodies = hitbox.GetOverlappingBodies();
-
 		foreach (var obj in bodies)
 		{
 			if (obj is not Node2D body) continue;
 			if (body == this || IsAncestorOf(body)) continue;
-			if (!body.IsInGroup(PlayerGroup)) continue;
+
+			bool isPlayer = body.IsInGroup(PlayerGroup);
+			bool isEnemy = body.IsInGroup(ENEMY_GROUP);
+
+			if (!isPlayer && !isEnemy) continue;
+			if (isEnemy && body is TutorialBoss) continue;
 			if (body is not IDamageable damageable) continue;
 
 			ulong id = body.GetInstanceId();
 			if (hitTargetsThisActive.Contains(id)) continue;
 
 			hitTargetsThisActive.Add(id);
-
 			damageable.TakeDamage(dmg);
 
-			if (body is Player p)
+			if (isPlayer && body is Player p)
 			{
 				(float kbDist, float kbTime) = a switch
 				{
@@ -573,11 +675,7 @@ public partial class TutorialBoss : BaseEnemy
 		}
 	}
 
-	private void OnBodyContactEntered(Node2D body)
-	{
-		GD.Print($"[Boss] Body entered: {body.Name}");
-		TryApplyContactDamage(body);
-	}
+	private void OnBodyContactEntered(Node2D body) => TryApplyContactDamage(body);
 	private void OnBodyContactExited(Node2D body) { }
 
 	private void TryApplyContactDamage(Node2D body)
@@ -591,7 +689,6 @@ public partial class TutorialBoss : BaseEnemy
 			return;
 
 		_contactDamageCdByTarget[id] = ContactDamageCooldown;
-
 		dmgable.TakeDamage(ContactDamage);
 
 		if (body is Player p)
@@ -728,6 +825,7 @@ public partial class TutorialBoss : BaseEnemy
 		currentAttack = BossAttack.None;
 		fightStarted = false;
 		phase2 = false;
+		_phase2RoarDone = false;
 		Speed = baseSpeed;
 
 		biteCd = 0f;
