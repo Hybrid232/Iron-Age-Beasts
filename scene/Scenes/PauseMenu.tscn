@@ -1,11 +1,11 @@
-[gd_scene format=3 uid="uid://mgdagjh6wa25"]
+[gd_scene load_steps=3 format=3 uid="uid://mgdagjh6wa25"]
 
 [ext_resource type="Script" uid="uid://buruvl20uirst" path="res://scene/scripts/PauseMenu.cs" id="1_5dxmw"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3wh6n"]
 bg_color = Color(0, 0, 0, 0.7764706)
 
-[node name="PauseMenu" type="Control"]
+[node name="PauseMenu" type="Control" node_paths=PackedStringArray("_armoryPanel", "_inventoryPanel", "_settingsPanel", "_pauseBar")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -13,6 +13,10 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_5dxmw")
+_armoryPanel = NodePath("PauseBar/Armory/ArmoryBar")
+_inventoryPanel = NodePath("PauseBar/Inventory/InventoryBar")
+_settingsPanel = NodePath("PauseBar/Menu/SystemBar")
+_pauseBar = NodePath("PauseBar")
 
 [node name="PauseBar" type="Panel" parent="."]
 modulate = Color(1.4329308, 6.834405e-06, 2.7337621e-06, 1)
