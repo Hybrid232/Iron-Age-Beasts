@@ -1,11 +1,11 @@
-// Dilophosaurus.cs
 using Godot;
+
 public partial class Dilophosaurus : BaseEnemy
 {
 	[Export] public Area2D HitArea;
 	[Export] public float AttackAnimationDuration = 0.5f;
-	[Export] public float PatrolRadius = 300f;    // how big the circle is
-	[Export] public float SearchTime = 3.0f;     // how long to wait before returning
+	[Export] public float PatrolRadius = 300f;
+	[Export] public float SearchTime = 3.0f;
 
 	private enum State { Patrol, Chase, Search, Return }
 	private State _currentState = State.Patrol;
@@ -14,16 +14,13 @@ public partial class Dilophosaurus : BaseEnemy
 	private float _attackAnimationTimer = 0f;
 	private Vector2 _lungeDirection = Vector2.Zero;
 
-	//private Vector2 _startPosition;      //  Dino starting point
-	private Vector2 _lastSeenPosition;   // Player last position seen
+	private Vector2 _lastSeenPosition;
 	private float _searchTimer = 0f;
-	private float _patrolAngle = 0f;     // current angle around the circle
+	private float _patrolAngle = 0f;
 
-	
 	public override void _Ready()
 	{
 		base._Ready();
-		
 
 		Speed = 60f;
 		StopDistance = 8f;
@@ -32,7 +29,6 @@ public partial class Dilophosaurus : BaseEnemy
 		AttackCooldown = 1.5f;
 		_attackCooldownTimer = 1.5f;
 
-		// Each dino saves its own starting position
 		_startPosition = GlobalPosition;
 
 		if (HitArea != null)
@@ -42,6 +38,13 @@ public partial class Dilophosaurus : BaseEnemy
 			HitArea.Monitorable = false;
 			HitArea.BodyEntered += OnHitAreaBodyEntered;
 		}
+	}
+
+	// ===== IMPORTANT: let boss force this enemy to chase immediately =====
+	public override void ForceAggro(Player player)
+	{
+		base.ForceAggro(player);
+		_currentState = State.Chase;
 	}
 
 	public override void _Process(double delta)
@@ -72,15 +75,12 @@ public partial class Dilophosaurus : BaseEnemy
 			case State.Patrol:
 				PatrolCircle(dt);
 				break;
-
 			case State.Chase:
-				base._PhysicsProcess(delta); // use BaseEnemy chase + attack logic
+				base._PhysicsProcess(delta);
 				break;
-
 			case State.Search:
 				Search(dt);
 				break;
-
 			case State.Return:
 				ReturnToStart(dt);
 				break;
@@ -89,32 +89,26 @@ public partial class Dilophosaurus : BaseEnemy
 
 	private void PatrolCircle(float dt)
 	{
-		// Increase angle over time to walk in a circle
-		_patrolAngle += dt * 0.8f; // controls patrol speed, adjust to taste
+		_patrolAngle += dt * 0.8f;
 
-		// Calculate target point on the circle
 		Vector2 target = _startPosition + new Vector2(
 			Mathf.Cos(_patrolAngle) * PatrolRadius,
 			Mathf.Sin(_patrolAngle) * PatrolRadius
 		);
 
-		// Walk toward that point
 		Vector2 direction = (target - GlobalPosition).Normalized();
-		Velocity = direction * (Speed * 0.5f); // patrol slower than chase
+		Velocity = direction * (Speed * 0.5f);
 		MoveAndSlide();
 	}
 
 	private void Search(float dt)
 	{
-		// Stand at last seen position and wait
 		Velocity = Vector2.Zero;
 		MoveAndSlide();
 
 		_searchTimer -= dt;
 		if (_searchTimer <= 0f)
-		{
 			_currentState = State.Return;
-		}
 	}
 
 	private void ReturnToStart(float dt)
@@ -123,12 +117,10 @@ public partial class Dilophosaurus : BaseEnemy
 
 		if (distToStart <= 10f)
 		{
-			// Close enough — resume patrol
 			_currentState = State.Patrol;
 			return;
 		}
 
-		// Walk back to start position
 		Vector2 direction = (_startPosition - GlobalPosition).Normalized();
 		Velocity = direction * Speed;
 		MoveAndSlide();
@@ -143,7 +135,7 @@ public partial class Dilophosaurus : BaseEnemy
 	protected override void OnPlayerLost(Node2D player)
 	{
 		base.OnPlayerLost(player);
-		GD.Print("🦖 Lost player! Searching...");
+
 		_lastSeenPosition = player.GlobalPosition;
 		_searchTimer = SearchTime;
 		_currentState = State.Search;
@@ -156,7 +148,6 @@ public partial class Dilophosaurus : BaseEnemy
 
 	protected override void OnAttackStart()
 	{
-		GD.Print("🦖 Dilophosaurus claw swipe!");
 		_isPerformingAttack = true;
 		_attackAnimationTimer = AttackAnimationDuration;
 
@@ -199,13 +190,6 @@ public partial class Dilophosaurus : BaseEnemy
 
 		if (HitArea != null)
 			HitArea.Monitoring = false;
-	}
-
-	protected override void MoveTowardsTarget(Node2D target, double delta)
-	{
-		Vector2 direction = (target.GlobalPosition - GlobalPosition).Normalized();
-		Velocity = direction * Speed;
-		MoveAndSlide();
 	}
 
 	public void _on_detection_area_body_entered(Node2D body)

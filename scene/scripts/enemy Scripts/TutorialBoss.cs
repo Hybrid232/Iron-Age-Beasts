@@ -29,13 +29,13 @@ public partial class TutorialBoss : BaseEnemy
 	[Export] public float RoarKnockbackTime = 0.25f;
 	[Export] public float RoarStunSeconds = 2.5f;
 
-	[ExportGroup("Phase 2 Adds")]
-	[Export] public int AddsToSpawnOnRoar = 3;
+	[ExportGroup("Phase 2 Adds (Spawners)")]
+	// Set this to: EnemySpawnPoints/BossPhase2Spawns
+	[Export] public NodePath Phase2SpawnerRootPath;
 
-	// NEW: if group lookup fails, search under this node for EnemySpawner children
-	[Export] public NodePath AddsSpawnerRootPath;
+	// How many spawners to activate on Phase 2 roar
+	[Export] public int Phase2SpawnersToActivate = 3;
 
-	public const string ADD_SPAWNER_GROUP = "ArenaAddSpawner";
 	private const string ENEMY_GROUP = "Enemy";
 
 	[ExportGroup("Ranges")]
@@ -43,10 +43,14 @@ public partial class TutorialBoss : BaseEnemy
 	[Export] public float TailSweepRange = 85f;
 	[Export] public float MinChargeRange = 120f;
 
-	[ExportGroup("Damages")]
+	[ExportGroup("Damages (vs Player)")]
 	[Export] public int BiteDamage = 20;
 	[Export] public int TailDamage = 15;
 	[Export] public int ChargeDamage = 30;
+
+	[ExportGroup("Damage Tuning (vs Little Dinos)")]
+	[Export] public float DamageToEnemiesMultiplier = 0.35f;
+	[Export] public int DamageToEnemiesFlatOverride = 0;
 
 	[ExportGroup("Cooldowns")]
 	[Export] public float BiteCooldown = 1.2f;
@@ -80,16 +84,13 @@ public partial class TutorialBoss : BaseEnemy
 	private CanvasItem tailTelegraph;
 	private CanvasItem chargeTelegraph;
 
-	[ExportGroup("Knockback Attacks")]
+	[ExportGroup("Knockback Attacks (vs Player)")]
 	[Export] public float BiteKnockbackDistance = 100f;
 	[Export] public float BiteKnockbackTime = 0.20f;
 	[Export] public float TailKnockbackDistance = 180f;
 	[Export] public float TailKnockbackTime = 0.18f;
 	[Export] public float ChargeKnockbackDistance = 250f;
 	[Export] public float ChargeKnockbackTime = 2.0f;
-
-	[ExportGroup("Debug")]
-	[Export] public bool DebugPrintHitboxOverlaps = false;
 
 	[ExportGroup("Facing / Orientation")]
 	[Export] public bool FlipAttackDirection = true;
@@ -138,27 +139,20 @@ public partial class TutorialBoss : BaseEnemy
 			BodyContactDamageArea.BodyExited += OnBodyContactExited;
 		}
 
-		biteTelegraph = ResolveTelegraph(BiteTelegraphPath, "BiteTelegraphPath");
-		tailTelegraph = ResolveTelegraph(TailTelegraphPath, "TailTelegraphPath");
-		chargeTelegraph = ResolveTelegraph(ChargeTelegraphPath, "ChargeTelegraphPath");
+		biteTelegraph = ResolveTelegraph(BiteTelegraphPath);
+		tailTelegraph = ResolveTelegraph(TailTelegraphPath);
+		chargeTelegraph = ResolveTelegraph(ChargeTelegraphPath);
 		HideAllTelegraphs();
-
-		GD.Print($"[Boss] BossUIPath='{BossUIPath}' (isEmpty={BossUIPath == null || BossUIPath.IsEmpty})");
 
 		_bossUIItem = (BossUIPath != null && !BossUIPath.IsEmpty)
 			? GetNodeOrNull(BossUIPath) as CanvasItem
 			: null;
 
-		if (_bossUIItem == null)
-			GD.PushWarning("[Boss] Could not find Boss UI node via BossUIPath (CanvasItem was null).");
-
 		bossUI = (BossUIPath != null && !BossUIPath.IsEmpty)
 			? GetNodeOrNull(BossUIPath) as IBossUI
 			: null;
 
-		if (bossUI == null)
-			GD.PushWarning("[Boss] Boss UI node does not implement IBossUI OR was not found.");
-		else
+		if (bossUI != null)
 			bossUI.InitializeBoss(MaxHealth, _currentHealth);
 
 		if (_bossUIItem != null) _bossUIItem.Visible = false;
@@ -178,10 +172,6 @@ public partial class TutorialBoss : BaseEnemy
 			ArenaTriggerArea.BodyEntered += OnArenaTriggerBodyEntered;
 			CallDeferred(nameof(ArmArenaTriggerNextFrame));
 		}
-		else
-		{
-			GD.PushWarning("[Boss] ArenaTriggerArea is not assigned.");
-		}
 
 		if (BodyContactDamageArea != null)
 		{
@@ -198,7 +188,6 @@ public partial class TutorialBoss : BaseEnemy
 		if (ArenaTriggerArea == null) return;
 
 		ArenaTriggerArea.Monitoring = true;
-		GD.Print("[Boss] Arena trigger armed.");
 	}
 
 	public override void _Process(double delta)
@@ -255,7 +244,6 @@ public partial class TutorialBoss : BaseEnemy
 		if (body is not Player player) return;
 		if (!player.IsInGroup(PlayerGroup)) return;
 
-		GD.Print($"[Boss] Arena triggered by Player '{player.Name}'. Starting fight.");
 		StartBossFight(player);
 	}
 
@@ -281,16 +269,13 @@ public partial class TutorialBoss : BaseEnemy
 		if (ArenaTriggerArea != null)
 			ArenaTriggerArea.Monitoring = false;
 
-		GD.Print("[Boss] Fight started; gate locked.");
+		// Fail-safe so Phase 2 adds never appear at fight start
+		DisableAndDespawnPhase2Spawners();
 	}
 
 	private void SetEntranceGateLocked(bool locked)
 	{
-		if (EntranceGate == null)
-		{
-			GD.PushWarning("[Boss] EntranceGate is not assigned.");
-			return;
-		}
+		if (EntranceGate == null) return;
 
 		foreach (var node in EntranceGate.GetChildren())
 		{
@@ -351,7 +336,7 @@ public partial class TutorialBoss : BaseEnemy
 				Velocity = Vector2.Zero;
 				stateTimer -= dt;
 				if (stateTimer <= 0f)
-					DoRoarPulseAndSpawnAdds();
+					DoRoarPulseAndStartPhase2Adds();
 				break;
 
 			case BossState.Chasing:
@@ -372,9 +357,9 @@ public partial class TutorialBoss : BaseEnemy
 		}
 	}
 
-	private void DoRoarPulseAndSpawnAdds()
+	private void DoRoarPulseAndStartPhase2Adds()
 	{
-		GD.Print("[Boss] ROAR pulse (global knockback + stun + adds).");
+		GD.Print("[Boss] ROAR pulse (global knockback + stun + phase2 adds).");
 
 		if (_player != null && IsInstanceValid(_player))
 		{
@@ -386,72 +371,59 @@ public partial class TutorialBoss : BaseEnemy
 
 			if (_player is IStunnable stunnable)
 				stunnable.ApplyStun(RoarStunSeconds);
-			else
-				GD.PushWarning("[Boss] Player does not implement IStunnable; stun was skipped.");
 		}
 
-		SpawnArenaAdds(AddsToSpawnOnRoar);
+		ActivatePhase2SpawnersAndForceHunt(Phase2SpawnersToActivate);
 
 		state = BossState.Recover;
 		stateTimer = Phase2RoarRecover;
 	}
 
-	private List<EnemySpawner> ResolveAddSpawners()
+	private void ActivatePhase2SpawnersAndForceHunt(int count)
+	{
+		var spawners = GetPhase2Spawners();
+		GD.Print($"[Boss] Phase2 spawners available: {spawners.Count}");
+
+		if (spawners.Count == 0) return;
+
+		int activated = 0;
+		foreach (var sp in spawners)
+		{
+			if (activated >= count) break;
+			if (sp == null || !IsInstanceValid(sp)) continue;
+			if (sp.IsBossSpawner) continue;
+
+			// spawner will spawn and then call enemy.ForceAggro(_player)
+			sp.EnableAndSpawn(_player);
+			activated++;
+		}
+
+		GD.Print($"[Boss] Phase2 spawners activated: {activated}/{count}");
+	}
+
+	private void DisableAndDespawnPhase2Spawners()
+	{
+		var spawners = GetPhase2Spawners();
+		foreach (var sp in spawners)
+			sp.DisableAndDespawn();
+	}
+
+	private List<EnemySpawner> GetPhase2Spawners()
 	{
 		var results = new List<EnemySpawner>();
 
-		// 1) Group lookup
-		var groupNodes = GetTree().GetNodesInGroup(ADD_SPAWNER_GROUP);
-		if (groupNodes != null)
-		{
-			foreach (var n in groupNodes)
-				if (n is EnemySpawner sp) results.Add(sp);
-		}
+		if (Phase2SpawnerRootPath == null || Phase2SpawnerRootPath.IsEmpty)
+			return results;
 
-		// 2) Fallback: explicit root search
-		if (results.Count == 0 && AddsSpawnerRootPath != null && !AddsSpawnerRootPath.IsEmpty)
-		{
-			var root = GetNodeOrNull(AddsSpawnerRootPath);
-			if (root != null)
-			{
-				foreach (var child in root.FindChildren("*", "EnemySpawner", true, false))
-					if (child is EnemySpawner sp) results.Add(sp);
-			}
-		}
+		var root = GetNodeOrNull(Phase2SpawnerRootPath);
+		if (root == null)
+			return results;
 
+		foreach (var child in root.GetChildren())
+			if (child is EnemySpawner sp) results.Add(sp);
+
+		results.Sort((a, b) => string.Compare(a.Name, b.Name, StringComparison.OrdinalIgnoreCase));
 		return results;
-	}
-
-	private void SpawnArenaAdds(int count)
-	{
-		if (count <= 0)
-		{
-			GD.Print("[Boss] AddsToSpawnOnRoar <= 0; skipping add spawns.");
-			return;
-		}
-
-		var spawners = ResolveAddSpawners();
-		GD.Print($"[Boss] Add spawners found: {spawners.Count} (group='{ADD_SPAWNER_GROUP}', rootPath='{AddsSpawnerRootPath}')");
-
-		if (spawners.Count == 0)
-		{
-			GD.PushWarning("[Boss] No EnemySpawner found for adds. Put spawners in group 'ArenaAddSpawner' OR assign AddsSpawnerRootPath.");
-			return;
-		}
-
-		int spawned = 0;
-		foreach (var spawner in spawners)
-		{
-			if (spawned >= count) break;
-			if (spawner == null || !IsInstanceValid(spawner)) continue;
-			if (spawner.IsBossSpawner) continue;
-
-			GD.Print($"[Boss] Spawning add via spawner '{spawner.Name}' at {spawner.GlobalPosition}");
-			spawner.ForceRespawn();
-			spawned++;
-		}
-
-		GD.Print($"[Boss] Spawned adds: {spawned}/{count}");
 	}
 
 	private void Chase(float dt)
@@ -511,7 +483,6 @@ public partial class TutorialBoss : BaseEnemy
 		SetHitboxEnabled(ChargeHitbox, false);
 
 		ShowTelegraph(attack, true);
-
 		stateTimer = GetTelegraphTime(attack);
 	}
 
@@ -523,11 +494,9 @@ public partial class TutorialBoss : BaseEnemy
 			stateTimer = GetActiveTime(currentAttack);
 
 			hitTargetsThisActive.Clear();
-
 			PrepareHitboxForAttack(currentAttack);
 
 			ShowTelegraph(currentAttack, false);
-
 			EnableAttackHitbox(currentAttack, true);
 
 			if (currentAttack == BossAttack.Charge)
@@ -626,7 +595,7 @@ public partial class TutorialBoss : BaseEnemy
 			_ => null
 		};
 
-		int dmg = a switch
+		int baseDmg = a switch
 		{
 			BossAttack.Bite => BiteDamage,
 			BossAttack.TailSweep => TailDamage,
@@ -634,7 +603,7 @@ public partial class TutorialBoss : BaseEnemy
 			_ => 0
 		};
 
-		if (hitbox == null || dmg <= 0) return;
+		if (hitbox == null || baseDmg <= 0) return;
 		if (!hitbox.Monitoring) return;
 
 		var bodies = hitbox.GetOverlappingBodies();
@@ -654,7 +623,17 @@ public partial class TutorialBoss : BaseEnemy
 			if (hitTargetsThisActive.Contains(id)) continue;
 
 			hitTargetsThisActive.Add(id);
-			damageable.TakeDamage(dmg);
+
+			int dmgToApply = baseDmg;
+			if (isEnemy)
+			{
+				if (DamageToEnemiesFlatOverride > 0)
+					dmgToApply = DamageToEnemiesFlatOverride;
+				else
+					dmgToApply = Mathf.Max(1, Mathf.RoundToInt(baseDmg * DamageToEnemiesMultiplier));
+			}
+
+			damageable.TakeDamage(dmgToApply);
 
 			if (isPlayer && body is Player p)
 			{
@@ -751,7 +730,7 @@ public partial class TutorialBoss : BaseEnemy
 			((CollisionPolygon2D)node).Disabled = !enabled;
 	}
 
-	private CanvasItem ResolveTelegraph(NodePath path, string label)
+	private CanvasItem ResolveTelegraph(NodePath path)
 	{
 		if (path == null || path.IsEmpty) return null;
 		return GetNodeOrNull(path) as CanvasItem;
@@ -849,5 +828,7 @@ public partial class TutorialBoss : BaseEnemy
 			ArenaTriggerArea.Monitoring = false;
 			CallDeferred(nameof(ArmArenaTriggerNextFrame));
 		}
+
+		DisableAndDespawnPhase2Spawners();
 	}
 }

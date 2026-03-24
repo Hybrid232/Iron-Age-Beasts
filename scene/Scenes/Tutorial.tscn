@@ -250,11 +250,12 @@ horizontal_alignment = 1
 
 [node name="DeathScreen" parent="HUD" instance=ExtResource("14_xvhfl")]
 
-[node name="Boogins" parent="." node_paths=PackedStringArray("_interactPrompt") instance=ExtResource("5_qjufs")]
+[node name="Boogins" parent="." node_paths=PackedStringArray("_interactPrompt", "_xpManager") instance=ExtResource("5_qjufs")]
 position = Vector2(3908, -1649)
 _interactPrompt = NodePath("../HUD/Interact")
 _booginsPortraitTexture = null
 _playerPortraitTexture = null
+_xpManager = NodePath("../HUD/XPManager")
 _itemCosts = {
 0: 10,
 1: 25,
@@ -349,30 +350,64 @@ position = Vector2(-821, -451)
 script = ExtResource("16_in1og")
 _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
+StartDisabled = true
+SpawnOnReady = false
 
 [node name="Raptor_2" type="Node2D" parent="EnemySpawnPoints/BossPhase2Spawns"]
 position = Vector2(-48, -343)
 script = ExtResource("16_in1og")
 _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
+StartDisabled = true
+SpawnOnReady = false
 
 [node name="Raptor_3" type="Node2D" parent="EnemySpawnPoints/BossPhase2Spawns"]
 position = Vector2(-673, 516)
 script = ExtResource("16_in1og")
 _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
+StartDisabled = true
+SpawnOnReady = false
 
 [node name="Raptor_4" type="Node2D" parent="EnemySpawnPoints/BossPhase2Spawns"]
 position = Vector2(711, 248)
 script = ExtResource("16_in1og")
 _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
+StartDisabled = true
+SpawnOnReady = false
 
 [node name="Raptor_5" type="Node2D" parent="EnemySpawnPoints/BossPhase2Spawns"]
 position = Vector2(468, -368)
 script = ExtResource("16_in1og")
 _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
+StartDisabled = true
+SpawnOnReady = false
+
+[node name="Raptor_6" type="Node2D" parent="EnemySpawnPoints/BossPhase2Spawns"]
+position = Vector2(932, -294)
+script = ExtResource("16_in1og")
+_enemyScene = ExtResource("7_pbiin")
+_enemyContainerPath = NodePath(".")
+StartDisabled = true
+SpawnOnReady = false
+
+[node name="Raptor_7" type="Node2D" parent="EnemySpawnPoints/BossPhase2Spawns"]
+position = Vector2(-842, 220)
+script = ExtResource("16_in1og")
+_enemyScene = ExtResource("7_pbiin")
+_enemyContainerPath = NodePath(".")
+StartDisabled = true
+SpawnOnReady = false
+
+[node name="Raptor_8" type="Node2D" parent="EnemySpawnPoints/BossPhase2Spawns"]
+position = Vector2(-1002, -327)
+script = ExtResource("16_in1og")
+_enemyScene = ExtResource("7_pbiin")
+_enemyContainerPath = NodePath(".")
+StartDisabled = true
+SpawnOnReady = false
 
 [node name="TutorialBoss" parent="." node_paths=PackedStringArray("ArenaTriggerArea", "EntranceGate") groups=["Player", "enemy_hurtbox", "player"] instance=ExtResource("10_ujhhv")]
 light_mask = 15
@@ -381,7 +416,9 @@ position = Vector2(7810, -674)
 ArenaTriggerArea = NodePath("../BossStart")
 EntranceGate = NodePath("../StaticBody2D")
 BossUIPath = NodePath("../HUD/BossUI")
-AddsSpawnerRootPath = NodePath("../EnemySpawnPoints/BossPhase2Spawns")
+Phase2SpawnerRootPath = NodePath("../EnemySpawnPoints/BossPhase2Spawns")
+Phase2SpawnersToActivate = 8
+ChargeActive = 2.5
 MaxHealth = 400
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]

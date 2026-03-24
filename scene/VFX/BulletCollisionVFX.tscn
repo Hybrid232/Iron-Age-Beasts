@@ -1,9 +1,10 @@
 [gd_scene load_steps=9 format=3 uid="uid://bbxqrfj52euxc"]
 
-[ext_resource type="Texture2D" uid="uid://gy3401dvgcvb" path="res://scene/Particles/kenney-particle-pack-7e801dc538996622a91327bb1dd5879cf977aa09/addons/kenney_particle_pack/spark_04.png" id="1_jlap4"]
+[ext_resource type="Texture2D" uid="uid://cln3rtg4d7hlt" path="res://scene/Particles/kenney-particle-pack-7e801dc538996622a91327bb1dd5879cf977aa09/addons/kenney_particle_pack/fire_02.png" id="1_jlap4"]
 
 [sub_resource type="Gradient" id="Gradient_u53wg"]
-colors = PackedColorArray(0.7412149, 0.40121895, 0, 1, 0.943723, 0, 0.2672795, 1)
+offsets = PackedFloat32Array(0, 0.5614035, 1)
+colors = PackedColorArray(3.85046e-06, 0.76125807, 0.87089616, 1, 0, 0, 0, 1, 0.943723, 0, 0.2672795, 1)
 
 [sub_resource type="GradientTexture1D" id="GradientTexture1D_h8stc"]
 gradient = SubResource("Gradient_u53wg")
@@ -53,8 +54,8 @@ visibility_layer = 15
 z_index = 100
 amount = 50
 texture = ExtResource("1_jlap4")
-lifetime = 2.4699999999999998
-speed_scale = 2.7800000000000002
+lifetime = 2.47
+speed_scale = 2.78
 explosiveness = 1.0
 randomness = 1.0
 process_material = SubResource("ParticleProcessMaterial_i7w3q")
