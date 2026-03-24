@@ -12,12 +12,12 @@
 [ext_resource type="Texture2D" uid="uid://d08o5yyd2hgd0" path="res://sprites/test/HealthBar.png" id="7_ujhhv"]
 [ext_resource type="PackedScene" uid="uid://bdcoq0m6vlp8i" path="res://scene/Scenes/Interact.tscn" id="8_ih1j1"]
 [ext_resource type="Script" uid="uid://b6u4b4f8a5nns" path="res://scene/scripts/Player Scripts/Inventory.cs" id="8_y7vs7"]
-[ext_resource type="PackedScene" uid="uid://ci5gb862f7h7b" path="res://scene/Player/XPManager.tscn" id="9_4rr56"]
+[ext_resource type="PackedScene" path="res://scene/Player/XPManager.tscn" id="9_4rr56"]
 [ext_resource type="Texture2D" uid="uid://byqbdkq2u3mh" path="res://sprites/test/potion.png" id="9_113gb"]
-[ext_resource type="Script" uid="uid://biwy5tji5gpye" path="res://scene/scripts/BossUi.cs" id="10_4rr56"]
+[ext_resource type="Script" path="res://scene/scripts/BossUI.cs" id="10_4rr56"]
 [ext_resource type="PackedScene" uid="uid://d4heq0i17knph" path="res://scene/enemy/TutorialBoss.tscn" id="10_ujhhv"]
 [ext_resource type="AudioStream" uid="uid://dgd7yh4png1ip" path="res://Audio/SFX/Ambient/Forest sounds - Wind, Birds.wav" id="11_s3mw7"]
-[ext_resource type="PackedScene" uid="uid://ct7c6w5tbh3t6" path="res://scene/Player/DeathScreen.tscn" id="14_xvhfl"]
+[ext_resource type="PackedScene" path="res://scene/Player/DeathScreen.tscn" id="14_xvhfl"]
 [ext_resource type="PackedScene" uid="uid://cgihg2mukgcgl" path="res://scene/Scenes/Checkpoint.tscn" id="16_4rr56"]
 [ext_resource type="Script" uid="uid://cdniyvmkxnghi" path="res://scene/scripts/enemy Scripts/EnemySpawner.cs" id="16_in1og"]
 [ext_resource type="PackedScene" uid="uid://cvhh0xi2cb8ee" path="res://scene/enemy/RangeEnemy.tscn" id="21_wajd3"]
@@ -251,14 +251,11 @@ horizontal_alignment = 1
 
 [node name="DeathScreen" parent="HUD" instance=ExtResource("14_xvhfl")]
 
-[node name="Boogins" parent="." instance=ExtResource("5_qjufs")]
+[node name="Boogins" parent="." node_paths=PackedStringArray("_interactPrompt") instance=ExtResource("5_qjufs")]
 position = Vector2(3908, -1649)
-_booginsPortraitTexture = null
-_playerPortraitTexture = null
 _interactPrompt = NodePath("../HUD/Interact")
 _booginsPortraitTexture = null
 _playerPortraitTexture = null
-_xpManager = NodePath("../HUD/XPManager")
 _itemCosts = {
 0: 10,
 1: 25,
