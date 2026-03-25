@@ -1,64 +1,44 @@
 [gd_scene load_steps=8 format=3 uid="uid://cvhh0xi2cb8ee"]
 
+[ext_resource type="Script" uid="uid://cs85o3idxs5ft" path="res://scene/scripts/enemy Scripts/RangeEnemy.cs" id="1_44mn6"]
 [ext_resource type="Texture2D" uid="uid://c7kqv4j25x0ms" path="res://sprites/test/dino enemy.png" id="1_yhiml"]
 [ext_resource type="Texture2D" uid="uid://cvcqwiun3qwbx" path="res://sprites/test/HealthBG.png" id="2_44mn6"]
 [ext_resource type="Texture2D" uid="uid://d08o5yyd2hgd0" path="res://sprites/test/HealthBar.png" id="3_wrxxg"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_dgp13"]
-radius = 4.3185654
+radius = 1.7029387
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_0y17p"]
 radius = 1.9416487
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_apcrj"]
-radius = 146.02174
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_7y421"]
-size = Vector2(48, 20)
+radius = 192.58353
 
 [node name="RangeEnemy" type="CharacterBody2D"]
+collision_layer = 14
+collision_mask = 14
+motion_mode = 1
+wall_min_slide_angle = 0.0
+script = ExtResource("1_44mn6")
 
 [node name="RangeEnemy" type="Sprite2D" parent="."]
-position = Vector2(29, -30.000002)
+position = Vector2(3, -10)
 scale = Vector2(0.16348319, 0.16670553)
 texture = ExtResource("1_yhiml")
 
 [node name="CollisionBox" type="CollisionShape2D" parent="." groups=["enemy_hurtbox"]]
-visible = false
+light_mask = 15
+visibility_layer = 15
 z_index = 1
-position = Vector2(6, -55)
+rotation = -1.5049067
 scale = Vector2(9.999999, 9.999999)
 shape = SubResource("CircleShape2D_dgp13")
 
-[node name="HurtBox" type="Area2D" parent="." groups=["enemy_hurtbox"]]
-visible = false
-position = Vector2(11.000015, -44.999977)
-scale = Vector2(10, 10)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox"]
-visible = false
-z_index = 7
-position = Vector2(-0.40000176, -0.4000026)
-shape = SubResource("CircleShape2D_0y17p")
-debug_color = Color(0.68824255, 0.28912774, 0.39706942, 0.41960785)
-
-[node name="detection_area" type="Area2D" parent="."]
-visible = false
-collision_layer = 64
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="detection_area"]
-position = Vector2(5.0000005, 11.000002)
-rotation = -0.11664813
-scale = Vector2(0.7789615, 0.7722881)
-shape = SubResource("CircleShape2D_apcrj")
-debug_color = Color(0.6890767, 0, 0.114161395, 0.41960785)
-
 [node name="HealthBar" type="TextureProgressBar" parent="."]
-visible = false
-offset_left = -7.0
-offset_top = -10.0
-offset_right = 1145.0
-offset_bottom = 638.0
+offset_left = -135.0
+offset_top = -26.999998
+offset_right = 1017.0
+offset_bottom = 621.0
 scale = Vector2(0.01952623, 0.0015463252)
 value = 100.0
 rounded = true
@@ -67,15 +47,47 @@ texture_progress = ExtResource("3_wrxxg")
 tint_under = Color(0.82090443, 0.2227655, 0.13294452, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="AttackArea" type="Area2D" parent="."]
-visible = false
-position = Vector2(-22, 11)
-collision_layer = 2
+[node name="HurtBox" type="Area2D" parent="." groups=["enemy_hurtbox"]]
+position = Vector2(-3.0517578e-05, -1)
+rotation = -1.5049067
+scale = Vector2(10, 10)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
-visible = false
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox"]
+z_index = 7
+position = Vector2(-0.099782944, 0.0065841675)
+shape = SubResource("CircleShape2D_0y17p")
+debug_color = Color(0.68824255, 0.28912774, 0.39706942, 0.41960785)
+
+[node name="detection_area" type="Area2D" parent="."]
 light_mask = 2
-visibility_layer = 2
-position = Vector2(220, -76)
-shape = SubResource("RectangleShape2D_7y421")
-debug_color = Color(0.6217127, 0.53408116, 0, 0.41960785)
+visibility_layer = 3
+position = Vector2(0, -1)
+collision_layer = 64
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="detection_area"]
+light_mask = 3
+visibility_layer = 3
+position = Vector2(0, 1.0000002)
+rotation = -1.6215547
+scale = Vector2(0.7789615, 0.7722881)
+shape = SubResource("CircleShape2D_apcrj")
+debug_color = Color(0.6890767, 0, 0.114161395, 0.41960785)
+
+[node name="RayCastOrigin" type="Node2D" parent="."]
+
+[node name="RayCast2D" type="RayCast2D" parent="RayCastOrigin"]
+rotation = 1.5770562
+target_position = Vector2(200, 0)
+
+[node name="RayCast2D2" type="RayCast2D" parent="RayCastOrigin"]
+target_position = Vector2(200, -70)
+
+[node name="RayCast2D3" type="RayCast2D" parent="RayCastOrigin"]
+target_position = Vector2(200, 70)
+
+[node name="RayCast2D4" type="RayCast2D" parent="RayCastOrigin"]
+target_position = Vector2(200, -140)
+
+[node name="RayCast2D5" type="RayCast2D" parent="RayCastOrigin"]
+rotation = -0.00812386
+target_position = Vector2(200, 140)
