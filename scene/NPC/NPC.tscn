@@ -1,10 +1,11 @@
-[gd_scene load_steps=28 format=3 uid="uid://b6m3oycxmqq7g"]
+[gd_scene load_steps=29 format=3 uid="uid://b6m3oycxmqq7g"]
 
 [ext_resource type="Script" uid="uid://dt62qwb6ahakj" path="res://scene/scripts/NPC Scripts/NPC.cs" id="1_hqct7"]
 [ext_resource type="Texture2D" uid="uid://bsunr61kjpenk" path="res://sprites/test/NPC_boogins.jpg" id="1_v5spc"]
 [ext_resource type="AudioStream" uid="uid://bi2d5olh13ypn" path="res://Audio/Music/Updated Boogin's theme.mp3" id="2_p5v3q"]
 [ext_resource type="Texture2D" uid="uid://41qneatxble4" path="res://sprites/MC/MC_Final_Sprite.png" id="4_ts6i4"]
 [ext_resource type="Texture2D" uid="uid://byqbdkq2u3mh" path="res://sprites/test/potion.png" id="5_kevq5"]
+[ext_resource type="Texture2D" uid="uid://d1gvcmoya65ne" path="res://sprites/Boogins/BooginsG.png" id="5_v0yar"]
 [ext_resource type="Texture2D" uid="uid://8wovptkau74u" path="res://sprites/test/knight.png" id="6_6m5po"]
 [ext_resource type="PackedScene" uid="uid://bdcoq0m6vlp8i" path="res://scene/Scenes/Interact.tscn" id="7_jjcxd"]
 
@@ -182,22 +183,17 @@ _booginsPortraitTexture = ExtResource("1_v5spc")
 _playerPortraitTexture = ExtResource("4_ts6i4")
 booginsThemeSFX = NodePath("BooginsTheme")
 booginsThemeFile = ExtResource("2_p5v3q")
-_themeFadeInSeconds = null
-_themeFadeOutSeconds = null
-_themeVolumeDb = null
-_themeSilentDb = null
 _itemCosts = {
 0: 150,
 1: 1000,
 2: 500,
 3: 500
 }
-_scaleUpgradeCostsByLevel = null
-_randomDialogues = null
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-scale = Vector2(0.15, 0.15)
-texture = ExtResource("1_v5spc")
+position = Vector2(4.8999987, 5.4)
+scale = Vector2(0.08613282, 0.08553383)
+texture = ExtResource("5_v0yar")
 
 [node name="Area2D" type="Area2D" parent="."]
 light_mask = 3
@@ -426,9 +422,9 @@ offset_bottom = 40.0
 
 [node name="BooginsChatSprite" type="Sprite2D" parent="CanvasLayer/CharacterSprites"]
 z_index = -1
-position = Vector2(146, 192)
-scale = Vector2(0.29123333, 0.29123333)
-texture = ExtResource("1_v5spc")
+position = Vector2(231.00002, 155.00002)
+scale = Vector2(0.56226075, 0.56226075)
+texture = ExtResource("5_v0yar")
 
 [node name="MCChatSprite" type="Sprite2D" parent="CanvasLayer/CharacterSprites"]
 z_index = -1
@@ -441,8 +437,6 @@ offset_left = 786.0
 offset_top = 584.0
 offset_right = 786.0
 offset_bottom = 584.0
-ActionName = null
-VerbText = null
 
 [node name="BooginsTheme" type="AudioStreamPlayer" parent="."]
 
