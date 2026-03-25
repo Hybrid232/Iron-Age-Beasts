@@ -12,16 +12,12 @@
 [ext_resource type="Texture2D" uid="uid://d08o5yyd2hgd0" path="res://sprites/test/HealthBar.png" id="7_ujhhv"]
 [ext_resource type="PackedScene" uid="uid://bdcoq0m6vlp8i" path="res://scene/Scenes/Interact.tscn" id="8_ih1j1"]
 [ext_resource type="Script" uid="uid://b6u4b4f8a5nns" path="res://scene/scripts/Player Scripts/Inventory.cs" id="8_y7vs7"]
-[ext_resource type="PackedScene" path="res://scene/Player/XPManager.tscn" id="9_4rr56"]
+[ext_resource type="PackedScene" uid="uid://ci5gb862f7h7b" path="res://scene/Player/XPManager.tscn" id="9_4rr56"]
 [ext_resource type="Texture2D" uid="uid://byqbdkq2u3mh" path="res://sprites/test/potion.png" id="9_113gb"]
 [ext_resource type="PackedScene" uid="uid://d4heq0i17knph" path="res://scene/enemy/TutorialBoss.tscn" id="10_ujhhv"]
 [ext_resource type="AudioStream" uid="uid://dgd7yh4png1ip" path="res://Audio/SFX/Ambient/Forest sounds - Wind, Birds.wav" id="11_s3mw7"]
 [ext_resource type="Script" uid="uid://dubyn5ramgvjq" path="res://scene/scripts/enemy Scripts/BossUI.cs" id="13_xvhfl"]
 [ext_resource type="PackedScene" uid="uid://ct7c6w5tbh3t6" path="res://scene/Player/DeathScreen.tscn" id="14_xvhfl"]
-[ext_resource type="Script" path="res://scene/scripts/BossUI.cs" id="10_4rr56"]
-[ext_resource type="PackedScene" uid="uid://d4heq0i17knph" path="res://scene/enemy/TutorialBoss.tscn" id="10_ujhhv"]
-[ext_resource type="AudioStream" uid="uid://dgd7yh4png1ip" path="res://Audio/SFX/Ambient/Forest sounds - Wind, Birds.wav" id="11_s3mw7"]
-[ext_resource type="PackedScene" path="res://scene/Player/DeathScreen.tscn" id="14_xvhfl"]
 [ext_resource type="PackedScene" uid="uid://cgihg2mukgcgl" path="res://scene/Scenes/Checkpoint.tscn" id="16_4rr56"]
 [ext_resource type="Script" uid="uid://cdniyvmkxnghi" path="res://scene/scripts/enemy Scripts/EnemySpawner.cs" id="16_in1og"]
 [ext_resource type="PackedScene" uid="uid://cvhh0xi2cb8ee" path="res://scene/enemy/RangeEnemy.tscn" id="21_wajd3"]
@@ -60,11 +56,12 @@ size = Vector2(2172, 306.91953)
 
 [node name="Tutorial" type="Node2D"]
 
-[node name="Player" parent="." node_paths=PackedStringArray("uiReference", "bulletBars") groups=["enemy_hurtbox"] instance=ExtResource("1_00eeo")]
+[node name="Player" parent="." node_paths=PackedStringArray("uiReference", "_deathScreenUI", "bulletBars") groups=["enemy_hurtbox"] instance=ExtResource("1_00eeo")]
 light_mask = 2
 visibility_layer = 2
 position = Vector2(6361, -992)
 uiReference = NodePath("../HUD")
+_deathScreenUI = NodePath("../HUD/DeathScreen")
 playerSpeed = 150
 dodgeIFrameStartNormalized = 0.45
 dodgeIFrameDurationNormalized = 0.85
@@ -260,12 +257,18 @@ position = Vector2(3908, -1649)
 _interactPrompt = NodePath("../HUD/Interact")
 _booginsPortraitTexture = null
 _playerPortraitTexture = null
+_themeFadeInSeconds = 0.25
+_themeFadeOutSeconds = 1.25
+_themeVolumeDb = 0.0
+_themeSilentDb = -40.0
 _itemCosts = {
 0: 10,
 1: 25,
 2: 25,
 3: 25
 }
+_scaleUpgradeCostsByLevel = true
+_randomDialogues = PackedStringArray("Hello! I am CHUNKY boogins!", "I am so FAT, but I love you buddy!", "Pick an upgrade, lil bro.", "Potions max at 5. Don’t be greedy.", "Spend that XP. I know you got it.")
 
 [node name="EnemySpawnPoints" type="Node2D" parent="."]
 position = Vector2(0, -1125)
@@ -471,3 +474,4 @@ position = Vector2(460, -879)
 
 [node name="RangeEnemy" parent="." instance=ExtResource("21_wajd3")]
 position = Vector2(4471, -1615)
+script = null
