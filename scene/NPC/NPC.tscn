@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://b6m3oycxmqq7g"]
+[gd_scene load_steps=28 format=3 uid="uid://b6m3oycxmqq7g"]
 
 [ext_resource type="Script" uid="uid://dt62qwb6ahakj" path="res://scene/scripts/NPC Scripts/NPC.cs" id="1_hqct7"]
 [ext_resource type="Texture2D" uid="uid://bsunr61kjpenk" path="res://sprites/test/NPC_boogins.jpg" id="1_v5spc"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://41qneatxble4" path="res://sprites/MC/MC_Final_Sprite.png" id="4_ts6i4"]
 [ext_resource type="Texture2D" uid="uid://byqbdkq2u3mh" path="res://sprites/test/potion.png" id="5_kevq5"]
 [ext_resource type="Texture2D" uid="uid://8wovptkau74u" path="res://sprites/test/knight.png" id="6_6m5po"]
+[ext_resource type="PackedScene" uid="uid://bdcoq0m6vlp8i" path="res://scene/Scenes/Interact.tscn" id="7_jjcxd"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_hqct7"]
 
@@ -160,7 +161,7 @@ bg_color = Color(0, 0, 0, 0.75686276)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_aij3i"]
 bg_color = Color(0.078431375, 0.078431375, 0.078431375, 0.40392157)
 
-[node name="Boogins" type="Node2D" node_paths=PackedStringArray("_menu", "_dialoguePanel", "_shopPanel", "_dialogueLabel", "_speakButton", "_shopDialogue", "_buyPotionButton", "_upgradeDamageButton", "_upgradeHealthButton", "_upgradeStaminaButton", "_shopBackButton", "_portraitLayer", "_booginsPortrait", "_playerPortrait", "booginsThemeSFX")]
+[node name="Boogins" type="Node2D" node_paths=PackedStringArray("_menu", "_dialoguePanel", "_shopPanel", "_dialogueLabel", "_speakButton", "_shopDialogue", "_buyPotionButton", "_upgradeDamageButton", "_upgradeHealthButton", "_upgradeStaminaButton", "_shopBackButton", "_interactPrompt", "_portraitLayer", "_booginsPortrait", "_playerPortrait", "booginsThemeSFX")]
 script = ExtResource("1_hqct7")
 _menu = NodePath("CanvasLayer/BooginsShopUI")
 _dialoguePanel = NodePath("CanvasLayer/BooginsShopUI/Panel")
@@ -173,6 +174,7 @@ _upgradeDamageButton = NodePath("CanvasLayer/BooginsShopUI/ShopPanel/DamageButto
 _upgradeHealthButton = NodePath("CanvasLayer/BooginsShopUI/ShopPanel/HealthButton")
 _upgradeStaminaButton = NodePath("CanvasLayer/BooginsShopUI/ShopPanel/StaminaButton")
 _shopBackButton = NodePath("CanvasLayer/BooginsShopUI/ShopPanel/BackButton")
+_interactPrompt = NodePath("CanvasLayer/Interact")
 _portraitLayer = NodePath("CanvasLayer/CharacterSprites")
 _booginsPortrait = NodePath("CanvasLayer/CharacterSprites/BooginsChatSprite")
 _playerPortrait = NodePath("CanvasLayer/CharacterSprites/MCChatSprite")
@@ -180,12 +182,18 @@ _booginsPortraitTexture = ExtResource("1_v5spc")
 _playerPortraitTexture = ExtResource("4_ts6i4")
 booginsThemeSFX = NodePath("BooginsTheme")
 booginsThemeFile = ExtResource("2_p5v3q")
+_themeFadeInSeconds = null
+_themeFadeOutSeconds = null
+_themeVolumeDb = null
+_themeSilentDb = null
 _itemCosts = {
 0: 150,
 1: 1000,
 2: 500,
 3: 500
 }
+_scaleUpgradeCostsByLevel = null
+_randomDialogues = null
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 scale = Vector2(0.15, 0.15)
@@ -427,6 +435,14 @@ z_index = -1
 position = Vector2(1006, 235)
 scale = Vector2(6.993585, 6.993585)
 texture = ExtResource("4_ts6i4")
+
+[node name="Interact" parent="CanvasLayer" instance=ExtResource("7_jjcxd")]
+offset_left = 786.0
+offset_top = 584.0
+offset_right = 786.0
+offset_bottom = 584.0
+ActionName = null
+VerbText = null
 
 [node name="BooginsTheme" type="AudioStreamPlayer" parent="."]
 
