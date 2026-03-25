@@ -13,14 +13,40 @@ public partial class TutorialBoss : BaseEnemy
 	[Export] public bool LockEntranceOnStart = true;
 
 	[ExportGroup("Boss UI (Robust Lookup)")]
-	// If true, boss finds BossUI via group "BossUI" (recommended).
 	[Export] public bool UseBossUIGroupLookup = true;
-
-	// Optional fallback if you don't want group lookup:
 	[Export] public NodePath BossUIPath;
 
 	private CanvasItem _bossUIItem;
 	private IBossUI bossUI;
+
+	// -----------------------------
+	// Animation + Facing (AnimatedSprite2D)
+	// -----------------------------
+	[ExportGroup("Animation")]
+	[Export] public AnimatedSprite2D Sprite; // assign in inspector (recommended)
+	[Export] public string IdleAnimName = "idle";
+	[Export] public string ChaseAnimName = "chase";
+	[Export] public bool DefaultFacesRight = true;
+	[Export] public float FaceDeadzonePx = 2f;
+
+	private string _currentAnim = "";
+	private bool _facingRight = true;
+
+	// -----------------------------
+	// Collision + Hurtbox flipping (LEFT/RIGHT only)
+	// -----------------------------
+	[ExportGroup("Collision / Hurtbox Facing (Flip X)")]
+	// This is the boss's *solid* collision with the player.
+	// Assign a Node2D parent that contains the CollisionShape2D/CollisionPolygon2D used for body collision.
+	// (Often a CharacterBody2D child like "Collision" or a Node2D like "BodyCollision".)
+	[Export] public Node2D BodyCollisionRoot;
+
+	// This is your hurtbox area (the area where the player hits the boss), if you have one.
+	// Assign the Area2D node (or a Node2D parent of it).
+	[Export] public Node2D HurtboxRoot;
+
+	// If the collision/hurtbox is authored facing RIGHT by default, leave true.
+	[Export] public bool CollisionDefaultFacesRight = true;
 
 	[ExportGroup("Phase 2 (<=40% HP)")]
 	[Export] public float Phase2SpeedMultiplier = 1.35f;
@@ -34,10 +60,7 @@ public partial class TutorialBoss : BaseEnemy
 	[Export] public float RoarStunSeconds = 2.5f;
 
 	[ExportGroup("Phase 2 Adds (Spawners)")]
-	// Set this to: EnemySpawnPoints/BossPhase2Spawns
 	[Export] public NodePath Phase2SpawnerRootPath;
-
-	// How many spawners to activate on Phase 2 roar
 	[Export] public int Phase2SpawnersToActivate = 3;
 
 	private const string ENEMY_GROUP = "Enemy";
@@ -175,6 +198,100 @@ public partial class TutorialBoss : BaseEnemy
 			BodyContactDamageArea.CollisionLayer = 2;
 			BodyContactDamageArea.CollisionMask = 1;
 		}
+
+		// Fallback lookups (optional)
+		if (Sprite == null)
+			Sprite = GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite2D");
+
+		// If you want, rename your nodes to match these and it will auto-find them:
+		if (BodyCollisionRoot == null)
+			BodyCollisionRoot = GetNodeOrNull<Node2D>("BodyCollision");
+
+		if (HurtboxRoot == null)
+			HurtboxRoot = GetNodeOrNull<Node2D>("HurtboxArea");
+
+		UpdateFacingAndAnimation(force: true);
+	}
+
+	public override void _Process(double delta)
+	{
+		base._Process(delta);
+		if (!fightStarted) return;
+
+		float dt = (float)delta;
+		biteCd = Math.Max(0, biteCd - dt);
+		tailCd = Math.Max(0, tailCd - dt);
+		chargeCd = Math.Max(0, chargeCd - dt);
+
+		if (_contactDamageCdByTarget.Count > 0)
+		{
+			var keys = new List<ulong>(_contactDamageCdByTarget.Keys);
+			foreach (var k in keys)
+				_contactDamageCdByTarget[k] = Math.Max(0f, _contactDamageCdByTarget[k] - dt);
+		}
+
+		HandlePhase2();
+
+		UpdateFacingAndAnimation(force: false);
+	}
+
+	private void UpdateFacingAndAnimation(bool force)
+	{
+		// Determine facing from player X
+		if (_player != null && IsInstanceValid(_player))
+		{
+			float dx = _player.GlobalPosition.X - GlobalPosition.X;
+			if (Mathf.Abs(dx) > FaceDeadzonePx)
+				_facingRight = dx > 0f;
+		}
+
+		// Flip sprite (visual)
+		if (Sprite != null)
+		{
+			bool flipSprite = DefaultFacesRight ? !_facingRight : _facingRight;
+			Sprite.FlipH = flipSprite;
+		}
+
+		// Flip ONLY the boss's body collision + hurtbox by mirroring Scale.X on their roots
+		ApplyLeftRightScaleFlip(BodyCollisionRoot, _facingRight, CollisionDefaultFacesRight);
+		ApplyLeftRightScaleFlip(HurtboxRoot, _facingRight, CollisionDefaultFacesRight);
+
+		// Pick animation
+		string desiredAnim = state switch
+		{
+			BossState.Chasing => ChaseAnimName,
+			BossState.Telegraph => IdleAnimName,
+			BossState.Recover => IdleAnimName,
+			BossState.Roaring => IdleAnimName,
+			_ => IdleAnimName
+		};
+
+		if (Sprite == null) return;
+
+		if (force || _currentAnim != desiredAnim)
+		{
+			_currentAnim = desiredAnim;
+
+			if (Sprite.SpriteFrames != null && Sprite.SpriteFrames.HasAnimation(desiredAnim))
+				Sprite.Play(desiredAnim);
+			else
+				GD.PushWarning($"[Boss] AnimatedSprite2D missing animation '{desiredAnim}'.");
+		}
+	}
+
+	private static void ApplyLeftRightScaleFlip(Node2D root, bool facingRight, bool defaultFacesRight)
+	{
+		if (root == null) return;
+
+		// We mirror along X using Scale.X sign.
+		// Keep magnitude intact (so you can scale in editor without breaking).
+		float absX = Mathf.Abs(root.Scale.X);
+		if (absX < 0.0001f) absX = 1f;
+
+		bool facingMatchesDefault = (facingRight == defaultFacesRight);
+		float sx = facingMatchesDefault ? absX : -absX;
+
+		root.Scale = new Vector2(sx, root.Scale.Y);
 	}
 
 	private void ResolveBossUI()
@@ -212,7 +329,6 @@ public partial class TutorialBoss : BaseEnemy
 
 		bossUI?.InitializeBoss(MaxHealth, _currentHealth);
 
-		// Always start hidden; show when fight starts
 		if (_bossUIItem != null) _bossUIItem.Visible = false;
 	}
 
@@ -225,26 +341,6 @@ public partial class TutorialBoss : BaseEnemy
 
 		ArenaTriggerArea.Monitoring = true;
 		GD.Print("[Boss] Arena trigger armed.");
-	}
-
-	public override void _Process(double delta)
-	{
-		base._Process(delta);
-		if (!fightStarted) return;
-
-		float dt = (float)delta;
-		biteCd = Math.Max(0, biteCd - dt);
-		tailCd = Math.Max(0, tailCd - dt);
-		chargeCd = Math.Max(0, chargeCd - dt);
-
-		if (_contactDamageCdByTarget.Count > 0)
-		{
-			var keys = new List<ulong>(_contactDamageCdByTarget.Keys);
-			foreach (var k in keys)
-				_contactDamageCdByTarget[k] = Math.Max(0f, _contactDamageCdByTarget[k] - dt);
-		}
-
-		HandlePhase2();
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -299,7 +395,6 @@ public partial class TutorialBoss : BaseEnemy
 		state = BossState.Chasing;
 		currentAttack = BossAttack.None;
 
-		// Refresh values then show UI at fight start
 		bossUI?.InitializeBoss(MaxHealth, _currentHealth);
 		if (_bossUIItem != null) _bossUIItem.Visible = true;
 
@@ -312,9 +407,14 @@ public partial class TutorialBoss : BaseEnemy
 		if (ArenaTriggerArea != null)
 			ArenaTriggerArea.Monitoring = false;
 
-		// Fail-safe so Phase 2 adds never appear at fight start
 		DisableAndDespawnPhase2Spawners();
+
+		UpdateFacingAndAnimation(force: true);
 	}
+
+	// -----------------------------
+	// Everything below here is your original script (unchanged)
+	// -----------------------------
 
 	private void SetEntranceGateLocked(bool locked)
 	{
@@ -440,7 +540,6 @@ public partial class TutorialBoss : BaseEnemy
 			if (sp == null || !IsInstanceValid(sp)) continue;
 			if (sp.IsBossSpawner) continue;
 
-			// spawner will spawn and then call enemy.ForceAggro(_player)
 			sp.EnableAndSpawn(_player);
 			activated++;
 		}
@@ -685,7 +784,6 @@ public partial class TutorialBoss : BaseEnemy
 
 			damageable.TakeDamage(dmgToApply);
 
-			// knockback only player
 			if (isPlayer && body is Player p)
 			{
 				(float kbDist, float kbTime) = a switch
@@ -885,5 +983,7 @@ public partial class TutorialBoss : BaseEnemy
 		}
 
 		DisableAndDespawnPhase2Spawners();
+
+		UpdateFacingAndAnimation(force: true);
 	}
 }

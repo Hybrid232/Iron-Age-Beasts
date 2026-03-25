@@ -14,6 +14,10 @@
 [ext_resource type="Script" uid="uid://b6u4b4f8a5nns" path="res://scene/scripts/Player Scripts/Inventory.cs" id="8_y7vs7"]
 [ext_resource type="PackedScene" path="res://scene/Player/XPManager.tscn" id="9_4rr56"]
 [ext_resource type="Texture2D" uid="uid://byqbdkq2u3mh" path="res://sprites/test/potion.png" id="9_113gb"]
+[ext_resource type="PackedScene" uid="uid://d4heq0i17knph" path="res://scene/enemy/TutorialBoss.tscn" id="10_ujhhv"]
+[ext_resource type="AudioStream" uid="uid://dgd7yh4png1ip" path="res://Audio/SFX/Ambient/Forest sounds - Wind, Birds.wav" id="11_s3mw7"]
+[ext_resource type="Script" uid="uid://dubyn5ramgvjq" path="res://scene/scripts/enemy Scripts/BossUI.cs" id="13_xvhfl"]
+[ext_resource type="PackedScene" uid="uid://ct7c6w5tbh3t6" path="res://scene/Player/DeathScreen.tscn" id="14_xvhfl"]
 [ext_resource type="Script" path="res://scene/scripts/BossUI.cs" id="10_4rr56"]
 [ext_resource type="PackedScene" uid="uid://d4heq0i17knph" path="res://scene/enemy/TutorialBoss.tscn" id="10_ujhhv"]
 [ext_resource type="AudioStream" uid="uid://dgd7yh4png1ip" path="res://Audio/SFX/Ambient/Forest sounds - Wind, Birds.wav" id="11_s3mw7"]
@@ -59,7 +63,7 @@ size = Vector2(2172, 306.91953)
 [node name="Player" parent="." node_paths=PackedStringArray("uiReference", "bulletBars") groups=["enemy_hurtbox"] instance=ExtResource("1_00eeo")]
 light_mask = 2
 visibility_layer = 2
-position = Vector2(4206, -1631)
+position = Vector2(6361, -992)
 uiReference = NodePath("../HUD")
 playerSpeed = 150
 dodgeIFrameStartNormalized = 0.45
@@ -223,7 +227,7 @@ offset_right = 454.0
 offset_bottom = -7.0
 grow_horizontal = 2
 grow_vertical = 0
-script = ExtResource("10_4rr56")
+script = ExtResource("13_xvhfl")
 bossHealthBarPath = NodePath("TextureProgressBar")
 
 [node name="TextureProgressBar" type="TextureProgressBar" parent="HUD/BossUI"]
