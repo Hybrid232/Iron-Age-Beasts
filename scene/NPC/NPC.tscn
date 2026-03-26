@@ -422,13 +422,13 @@ offset_bottom = 40.0
 
 [node name="BooginsChatSprite" type="Sprite2D" parent="CanvasLayer/CharacterSprites"]
 z_index = -1
-position = Vector2(231.00002, 155.00002)
-scale = Vector2(0.56226075, 0.56226075)
+position = Vector2(221, 170)
+scale = Vector2(0.41384915, 0.41384915)
 texture = ExtResource("5_v0yar")
 
 [node name="MCChatSprite" type="Sprite2D" parent="CanvasLayer/CharacterSprites"]
 z_index = -1
-position = Vector2(1006, 235)
+position = Vector2(1006, 197)
 scale = Vector2(6.993585, 6.993585)
 texture = ExtResource("4_ts6i4")
 
