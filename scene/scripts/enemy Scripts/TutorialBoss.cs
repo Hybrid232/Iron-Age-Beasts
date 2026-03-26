@@ -19,7 +19,7 @@ public partial class TutorialBoss : BaseEnemy
 	private CanvasItem _bossUIItem;
 	private IBossUI bossUI;
 
-	// -----------------------------d
+	// -----------------------------
 	// Animation
 	// -----------------------------
 	[ExportGroup("Animation")]
@@ -27,9 +27,7 @@ public partial class TutorialBoss : BaseEnemy
 	[Export] public string IdleAnimName = "idle";
 	[Export] public string ChaseAnimName = "chase";
 
-	// NEW: Bite attack animation config
 	[Export] public string BiteAnimName = "bite";
-	// You said your frames are 0, 1, 2 and the bite happens on frame 2 (third frame).
 	[Export] public int BiteDamageFrameIndex = 2;
 
 	[Export] public bool DefaultFacesRight = true;
@@ -42,16 +40,8 @@ public partial class TutorialBoss : BaseEnemy
 	// Collision + Hurtbox flipping (LEFT/RIGHT only)
 	// -----------------------------
 	[ExportGroup("Collision / Hurtbox Facing (Flip X)")]
-	// This is the boss's *solid* collision with the player.
-	// Assign a Node2D parent that contains the CollisionShape2D/CollisionPolygon2D used for body collision.
-	// (Often a CharacterBody2D child like "Collision" or a Node2D like "BodyCollision".)
 	[Export] public Node2D BodyCollisionRoot;
-
-	// This is your hurtbox area (the area where the player hits the boss), if you have one.
-	// Assign the Area2D node (or a Node2D parent of it).
 	[Export] public Node2D HurtboxRoot;
-
-	// If the collision/hurtbox is authored facing RIGHT by default, leave true.
 	[Export] public bool CollisionDefaultFacesRight = true;
 
 	[ExportGroup("Phase 2 (<=40% HP)")]
@@ -137,6 +127,25 @@ public partial class TutorialBoss : BaseEnemy
 
 	private readonly Dictionary<ulong, float> _contactDamageCdByTarget = new();
 
+	// -----------------------------
+	// NEW: Phase 2 enemy knockback + anti-stuck collision config
+	// -----------------------------
+	[ExportGroup("Phase 2: Knockback Little Enemies")]
+	[Export] public bool Phase2RoarAffectsEnemies = true;
+	[Export] public float EnemyRoarKnockbackDistance = 320f;
+	[Export] public float EnemyRoarKnockbackTime = 0.25f;
+	[Export] public float EnemyRoarStunSeconds = 1.0f;
+
+	// To prevent the boss getting caught on adds, remove "Enemy" from the boss collision mask during phase 2 (or fight).
+	// Set these to match your project physics layers.
+	[ExportGroup("Phase 2: Prevent Boss Getting Stuck On Adds")]
+	[Export] public bool IgnoreEnemyBodyCollisionsInPhase2 = true;
+
+	// Default Godot layer indices are 1..32 in the UI. We'll store them as "layer numbers".
+	[Export(PropertyHint.Range, "1,32,1")] public int EnemyPhysicsLayerNumber = 3; // set in inspector to your Enemy layer
+	private uint _cachedPreFightCollisionMask = 0;
+	private bool _cachedMask = false;
+
 	private BossState state = BossState.Idle;
 	private BossAttack currentAttack = BossAttack.None;
 
@@ -152,7 +161,6 @@ public partial class TutorialBoss : BaseEnemy
 
 	private bool fightStarted = false;
 
-	// NEW: animation-driven bite state
 	private bool _biteHitboxEnabledThisBite = false;
 
 	public override void _Ready()
@@ -208,18 +216,15 @@ public partial class TutorialBoss : BaseEnemy
 			BodyContactDamageArea.CollisionMask = 1;
 		}
 
-		// Fallback lookups (optional)
 		if (Sprite == null)
 			Sprite = GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite2D");
 
-		// NEW: hook animation signals so bite damage can happen on frame 2
 		if (Sprite != null)
 		{
 			Sprite.FrameChanged += OnSpriteFrameChanged;
 			Sprite.AnimationFinished += OnSpriteAnimationFinished;
 		}
 
-		// If you want, rename your nodes to match these and it will auto-find them:
 		if (BodyCollisionRoot == null)
 			BodyCollisionRoot = GetNodeOrNull<Node2D>("BodyCollision");
 
@@ -253,7 +258,6 @@ public partial class TutorialBoss : BaseEnemy
 
 	private void UpdateFacingAndAnimation(bool force)
 	{
-		// Determine facing from player X
 		if (_player != null && IsInstanceValid(_player))
 		{
 			float dx = _player.GlobalPosition.X - GlobalPosition.X;
@@ -261,18 +265,15 @@ public partial class TutorialBoss : BaseEnemy
 				_facingRight = dx > 0f;
 		}
 
-		// Flip sprite (visual)
 		if (Sprite != null)
 		{
 			bool flipSprite = DefaultFacesRight ? !_facingRight : _facingRight;
 			Sprite.FlipH = flipSprite;
 		}
 
-		// Flip ONLY the boss's body collision + hurtbox by mirroring Scale.X on their roots
 		ApplyLeftRightScaleFlip(BodyCollisionRoot, _facingRight, CollisionDefaultFacesRight);
 		ApplyLeftRightScaleFlip(HurtboxRoot, _facingRight, CollisionDefaultFacesRight);
 
-		// Pick animation
 		string desiredAnim =
 			(state == BossState.Active && currentAttack == BossAttack.Bite)
 				? BiteAnimName
@@ -302,8 +303,6 @@ public partial class TutorialBoss : BaseEnemy
 	{
 		if (root == null) return;
 
-		// We mirror along X using Scale.X sign.
-		// Keep magnitude intact (so you can scale in editor without breaking).
 		float absX = Mathf.Abs(root.Scale.X);
 		if (absX < 0.0001f) absX = 1f;
 
@@ -408,6 +407,13 @@ public partial class TutorialBoss : BaseEnemy
 	{
 		fightStarted = true;
 
+		// Cache collision mask for restoration on reset
+		if (!_cachedMask)
+		{
+			_cachedPreFightCollisionMask = CollisionMask;
+			_cachedMask = true;
+		}
+
 		_player = player;
 		_chasing = true;
 
@@ -430,10 +436,6 @@ public partial class TutorialBoss : BaseEnemy
 
 		UpdateFacingAndAnimation(force: true);
 	}
-
-	// -----------------------------
-	// Everything below here is your original script (with bite animation integration)
-	// -----------------------------
 
 	private void SetEntranceGateLocked(bool locked)
 	{
@@ -463,9 +465,23 @@ public partial class TutorialBoss : BaseEnemy
 			BiteCooldown *= 0.85f;
 			TailCooldown *= 0.85f;
 
+			// NEW: prevent boss body collision with adds so it doesn't get stuck on them
+			if (IgnoreEnemyBodyCollisionsInPhase2)
+				RemoveEnemyFromBossCollisionMask();
+
 			if (!_phase2RoarDone && state != BossState.Dead)
 				StartPhase2Roar();
 		}
+	}
+
+	private void RemoveEnemyFromBossCollisionMask()
+	{
+		// Godot physics layer bit: layerNumber 1 => bit 0.
+		int bitIndex = Mathf.Clamp(EnemyPhysicsLayerNumber, 1, 32) - 1;
+		uint enemyBit = 1u << bitIndex;
+
+		// CollisionMask is "what I collide with". Remove enemy bit.
+		CollisionMask &= ~enemyBit;
 	}
 
 	private void StartPhase2Roar()
@@ -516,8 +532,6 @@ public partial class TutorialBoss : BaseEnemy
 				if (!(state == BossState.Active && currentAttack == BossAttack.Charge))
 					Velocity = Vector2.Zero;
 
-				// Bite Active is animation-driven (ends via AnimationFinished).
-				// Telegraph and Recover remain timer-driven, and Active for other attacks remains timer-driven.
 				if (!(state == BossState.Active && currentAttack == BossAttack.Bite))
 				{
 					stateTimer -= dt;
@@ -532,6 +546,7 @@ public partial class TutorialBoss : BaseEnemy
 	{
 		GD.Print("[Boss] ROAR pulse (global knockback + stun + phase2 adds).");
 
+		// Player knockback + stun (existing)
 		if (_player != null && IsInstanceValid(_player))
 		{
 			Vector2 pushDir = (_player.GlobalPosition - GlobalPosition);
@@ -544,10 +559,61 @@ public partial class TutorialBoss : BaseEnemy
 				stunnable.ApplyStun(RoarStunSeconds);
 		}
 
+		// NEW: knockback + optional stun for little enemies during phase 2
+		if (phase2 && Phase2RoarAffectsEnemies)
+			KnockbackNearbyEnemiesFromRoar();
+
 		ActivatePhase2SpawnersAndForceHunt(Phase2SpawnersToActivate);
 
 		state = BossState.Recover;
 		stateTimer = Phase2RoarRecover;
+	}
+
+	private void KnockbackNearbyEnemiesFromRoar()
+	{
+		// We don't have a dedicated roar hitbox, so we use a radius check around the boss.
+		// We'll use RoarKnockbackDistance as a gameplay number, but search radius should be something reasonable.
+		// Use TailSweepRange * 2 as a simple, tunable default (can be changed if you want it exported).
+		float radius = Math.Max(120f, TailSweepRange * 2f);
+		float radiusSq = radius * radius;
+
+		var enemies = GetTree().GetNodesInGroup(ENEMY_GROUP);
+		foreach (var n in enemies)
+		{
+			if (n is not Node2D e) continue;
+			if (e == this || IsAncestorOf(e)) continue;
+			if (!IsInstanceValid(e)) continue;
+
+			// Don't knock back the boss (if something else is in Enemy group)
+			if (e is TutorialBoss) continue;
+
+			Vector2 delta = e.GlobalPosition - GlobalPosition;
+			if (delta.LengthSquared() > radiusSq) continue;
+
+			Vector2 dir = delta;
+			if (dir == Vector2.Zero) dir = Vector2.Right;
+			dir = dir.Normalized();
+
+			// If they support recoil, use it. Otherwise, if they are CharacterBody2D,
+			// apply a simple velocity impulse.
+			if (e is Player maybePlayerLike) // unlikely, but safe
+			{
+				maybePlayerLike.TriggerHitRecoil(dir, EnemyRoarKnockbackDistance, EnemyRoarKnockbackTime);
+			}
+			else if (e.HasMethod("TriggerHitRecoil"))
+			{
+				// duck-typing fallback if your small enemies share the same method name
+				e.Call("TriggerHitRecoil", dir, EnemyRoarKnockbackDistance, EnemyRoarKnockbackTime);
+			}
+			else if (e is CharacterBody2D cb)
+			{
+				// simple fallback shove; requires their own movement code to respect Velocity
+				cb.Velocity = dir * (EnemyRoarKnockbackDistance / Math.Max(0.001f, EnemyRoarKnockbackTime));
+			}
+
+			if (e is IStunnable stunnable)
+				stunnable.ApplyStun(EnemyRoarStunSeconds);
+		}
 	}
 
 	private void ActivatePhase2SpawnersAndForceHunt(int count)
@@ -664,7 +730,7 @@ public partial class TutorialBoss : BaseEnemy
 		if (state == BossState.Telegraph)
 		{
 			state = BossState.Active;
-			stateTimer = GetActiveTime(currentAttack); // used for non-bite attacks
+			stateTimer = GetActiveTime(currentAttack);
 
 			hitTargetsThisActive.Clear();
 
@@ -672,7 +738,6 @@ public partial class TutorialBoss : BaseEnemy
 
 			ShowTelegraph(currentAttack, false);
 
-			// Bite: enable hitbox on animation frame 2 (index 2), not immediately.
 			if (currentAttack != BossAttack.Bite)
 				EnableAttackHitbox(currentAttack, true);
 			else
@@ -681,7 +746,6 @@ public partial class TutorialBoss : BaseEnemy
 			if (currentAttack == BossAttack.Charge)
 				Velocity = chargeDir * (Speed * 2.2f);
 
-			// Start bite animation at the beginning of the Active phase
 			if (currentAttack == BossAttack.Bite && Sprite != null)
 			{
 				if (Sprite.SpriteFrames != null && Sprite.SpriteFrames.HasAnimation(BiteAnimName))
@@ -695,7 +759,6 @@ public partial class TutorialBoss : BaseEnemy
 
 		if (state == BossState.Active)
 		{
-			// Bite Active ends via animation finished (OnSpriteAnimationFinished).
 			if (currentAttack == BossAttack.Bite) return;
 
 			EnableAttackHitbox(currentAttack, false);
@@ -965,7 +1028,6 @@ public partial class TutorialBoss : BaseEnemy
 			n2d.GlobalRotation = angle;
 	}
 
-	// NEW: Bite damage timing driven by bite animation frame + animation finished
 	private void OnSpriteFrameChanged()
 	{
 		if (state != BossState.Active) return;
@@ -988,15 +1050,12 @@ public partial class TutorialBoss : BaseEnemy
 		if (Sprite == null) return;
 		if (Sprite.Animation != BiteAnimName) return;
 
-		// End bite on animation end
 		EnableAttackHitbox(BossAttack.Bite, false);
 		ShowTelegraph(BossAttack.Bite, false);
 
 		Velocity = Vector2.Zero;
 		state = BossState.Recover;
 		stateTimer = BiteRecover;
-
-		// Recover will finish via timer and return to chasing
 	}
 
 	protected override void OnDamageTaken(int damage)
@@ -1028,6 +1087,10 @@ public partial class TutorialBoss : BaseEnemy
 	public override void ResetEnemy()
 	{
 		base.ResetEnemy();
+
+		// Restore collision mask if we changed it
+		if (_cachedMask)
+			CollisionMask = _cachedPreFightCollisionMask;
 
 		state = BossState.Idle;
 		currentAttack = BossAttack.None;
