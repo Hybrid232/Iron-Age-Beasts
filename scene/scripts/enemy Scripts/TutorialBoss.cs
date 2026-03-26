@@ -102,6 +102,10 @@ public partial class TutorialBoss : BaseEnemy
 	[Export] public NodePath BiteTelegraphPath;
 	[Export] public NodePath TailTelegraphPath;
 	[Export] public NodePath ChargeTelegraphPath;
+	
+	[ExportGroup("Boss Fight Audio")]
+	[Export] public AudioStreamPlayer bossMusic;
+	[Export] public AudioStream bossMusicFile;
 
 	private CanvasItem biteTelegraph;
 	private CanvasItem tailTelegraph;
@@ -406,7 +410,12 @@ public partial class TutorialBoss : BaseEnemy
 	private void StartBossFight(Player player)
 	{
 		fightStarted = true;
-
+		if (fightStarted == true && bossMusic != null && !bossMusic.Playing)
+		{
+			bossMusic.Stream = bossMusicFile;
+			GD.Print("Boss Music started!");
+			bossMusic.Play();
+		}
 		// Cache collision mask for restoration on reset
 		if (!_cachedMask)
 		{
