@@ -19,8 +19,8 @@ public class HealthSystem
 	public int MaxStamina => maxStamina;
 
 	private float regenTimer = 0f;
-	private float timeBeforeRegenStart = 1.0f;
-	private float regenTickRate = 0.1f;
+	private float timeBeforeRegenStart = 0.8f;
+	private float regenTickRate = 0.05f;
 	private float currentRegenTick = 0f;
 	private int regenAmount = 1;
 
