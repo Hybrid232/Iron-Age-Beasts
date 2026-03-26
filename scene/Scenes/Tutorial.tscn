@@ -257,18 +257,12 @@ position = Vector2(3908, -1649)
 _interactPrompt = NodePath("../HUD/Interact")
 _booginsPortraitTexture = null
 _playerPortraitTexture = null
-_themeFadeInSeconds = 0.25
-_themeFadeOutSeconds = 1.25
-_themeVolumeDb = 0.0
-_themeSilentDb = -40.0
 _itemCosts = {
 0: 10,
 1: 25,
 2: 25,
 3: 25
 }
-_scaleUpgradeCostsByLevel = true
-_randomDialogues = PackedStringArray("Hello! I am CHUNKY boogins!", "I am so FAT, but I love you buddy!", "Pick an upgrade, lil bro.", "Potions max at 5. Don’t be greedy.", "Spend that XP. I know you got it.")
 
 [node name="EnemySpawnPoints" type="Node2D" parent="."]
 position = Vector2(0, -1125)
@@ -400,22 +394,6 @@ _enemyContainerPath = NodePath(".")
 StartDisabled = true
 SpawnOnReady = false
 
-[node name="Raptor_7" type="Node2D" parent="EnemySpawnPoints/BossPhase2Spawns"]
-position = Vector2(-842, 220)
-script = ExtResource("16_in1og")
-_enemyScene = ExtResource("7_pbiin")
-_enemyContainerPath = NodePath(".")
-StartDisabled = true
-SpawnOnReady = false
-
-[node name="Raptor_8" type="Node2D" parent="EnemySpawnPoints/BossPhase2Spawns"]
-position = Vector2(-1002, -327)
-script = ExtResource("16_in1og")
-_enemyScene = ExtResource("7_pbiin")
-_enemyContainerPath = NodePath(".")
-StartDisabled = true
-SpawnOnReady = false
-
 [node name="TutorialBoss" parent="." node_paths=PackedStringArray("ArenaTriggerArea", "EntranceGate") groups=["Player", "enemy_hurtbox", "player"] instance=ExtResource("10_ujhhv")]
 light_mask = 15
 visibility_layer = 15
@@ -424,10 +402,10 @@ ArenaTriggerArea = NodePath("../BossStart")
 EntranceGate = NodePath("../StaticBody2D")
 BossUIPath = NodePath("../HUD/BossUI")
 Phase2SpawnerRootPath = NodePath("../EnemySpawnPoints/BossPhase2Spawns")
-Phase2SpawnersToActivate = 8
+Phase2SpawnersToActivate = 6
+ChargeDamage = 40
 ChargeActive = 2.5
-MaxHealth = 400
-XpReward = 10
+MaxHealth = 500
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 position = Vector2(6694.0005, -1005)

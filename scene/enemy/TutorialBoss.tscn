@@ -204,7 +204,6 @@ shape = SubResource("CircleShape2D_aaiw8")
 debug_color = Color(0.77254903, 0.50980395, 0.043137256, 0.7254902)
 
 [node name="Charge" type="Area2D" parent="Attackboxes"]
-visible = false
 light_mask = 3
 visibility_layer = 3
 collision_layer = 3
