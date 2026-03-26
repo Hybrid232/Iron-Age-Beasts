@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://be1mqihrbhwi4"
-path="res://.godot/imported/PlayerLaser.png-a093f105ab5b244a64f3b4dcb10e8cdf.ctex"
+uid="uid://cqk43s7jwqf5h"
+path="res://.godot/imported/VoxSpineIdle4.png-d750dcf35f86340e52c0eff4ee3512e3.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/MC/PlayerLaser.png"
-dest_files=["res://.godot/imported/PlayerLaser.png-a093f105ab5b244a64f3b4dcb10e8cdf.ctex"]
+source_file="res://sprites/VoxSpine/Idle/VoxSpineIdle4.png"
+dest_files=["res://.godot/imported/VoxSpineIdle4.png-d750dcf35f86340e52c0eff4ee3512e3.ctex"]
 
 [params]
 

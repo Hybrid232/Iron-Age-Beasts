@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://be1mqihrbhwi4"
-path="res://.godot/imported/PlayerLaser.png-a093f105ab5b244a64f3b4dcb10e8cdf.ctex"
+uid="uid://j7bspm3fmg3q"
+path="res://.godot/imported/MC_Runs.png-60276f5f79cf20dbec24769f9752338e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/MC/PlayerLaser.png"
-dest_files=["res://.godot/imported/PlayerLaser.png-a093f105ab5b244a64f3b4dcb10e8cdf.ctex"]
+source_file="res://sprites/MC/MC_Runs.png"
+dest_files=["res://.godot/imported/MC_Runs.png-60276f5f79cf20dbec24769f9752338e.ctex"]
 
 [params]
 

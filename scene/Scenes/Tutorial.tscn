@@ -12,12 +12,12 @@
 [ext_resource type="Texture2D" uid="uid://d08o5yyd2hgd0" path="res://sprites/test/HealthBar.png" id="7_ujhhv"]
 [ext_resource type="PackedScene" uid="uid://bdcoq0m6vlp8i" path="res://scene/Scenes/Interact.tscn" id="8_ih1j1"]
 [ext_resource type="Script" uid="uid://b6u4b4f8a5nns" path="res://scene/scripts/Player Scripts/Inventory.cs" id="8_y7vs7"]
-[ext_resource type="PackedScene" path="res://scene/Player/XPManager.tscn" id="9_4rr56"]
+[ext_resource type="PackedScene" uid="uid://ci5gb862f7h7b" path="res://scene/Player/XPManager.tscn" id="9_4rr56"]
 [ext_resource type="Texture2D" uid="uid://byqbdkq2u3mh" path="res://sprites/test/potion.png" id="9_113gb"]
-[ext_resource type="Script" path="res://scene/scripts/BossUI.cs" id="10_4rr56"]
 [ext_resource type="PackedScene" uid="uid://d4heq0i17knph" path="res://scene/enemy/TutorialBoss.tscn" id="10_ujhhv"]
 [ext_resource type="AudioStream" uid="uid://dgd7yh4png1ip" path="res://Audio/SFX/Ambient/Forest sounds - Wind, Birds.wav" id="11_s3mw7"]
-[ext_resource type="PackedScene" path="res://scene/Player/DeathScreen.tscn" id="14_xvhfl"]
+[ext_resource type="Script" uid="uid://dubyn5ramgvjq" path="res://scene/scripts/enemy Scripts/BossUI.cs" id="13_xvhfl"]
+[ext_resource type="PackedScene" uid="uid://ct7c6w5tbh3t6" path="res://scene/Player/DeathScreen.tscn" id="14_xvhfl"]
 [ext_resource type="PackedScene" uid="uid://cgihg2mukgcgl" path="res://scene/Scenes/Checkpoint.tscn" id="16_4rr56"]
 [ext_resource type="Script" uid="uid://cdniyvmkxnghi" path="res://scene/scripts/enemy Scripts/EnemySpawner.cs" id="16_in1og"]
 [ext_resource type="PackedScene" uid="uid://cvhh0xi2cb8ee" path="res://scene/enemy/RangeEnemy.tscn" id="21_wajd3"]
@@ -56,11 +56,12 @@ size = Vector2(2172, 306.91953)
 
 [node name="Tutorial" type="Node2D"]
 
-[node name="Player" parent="." node_paths=PackedStringArray("uiReference", "bulletBars") groups=["enemy_hurtbox"] instance=ExtResource("1_00eeo")]
+[node name="Player" parent="." node_paths=PackedStringArray("uiReference", "_deathScreenUI", "bulletBars") groups=["enemy_hurtbox"] instance=ExtResource("1_00eeo")]
 light_mask = 2
 visibility_layer = 2
-position = Vector2(4206, -1631)
+position = Vector2(6361, -992)
 uiReference = NodePath("../HUD")
+_deathScreenUI = NodePath("../HUD/DeathScreen")
 playerSpeed = 150
 dodgeIFrameStartNormalized = 0.45
 dodgeIFrameDurationNormalized = 0.85
@@ -69,7 +70,7 @@ walkSoundFile = null
 swingSoundFile = null
 healthUpgradeAmount = 50
 staminaUpgradeAmount = 50
-damageUpgradeAmount = 50
+damageUpgradeAmount = 30
 
 [node name="GameTilemap" type="Node2D" parent="."]
 light_mask = 3
@@ -223,7 +224,7 @@ offset_right = 454.0
 offset_bottom = -7.0
 grow_horizontal = 2
 grow_vertical = 0
-script = ExtResource("10_4rr56")
+script = ExtResource("13_xvhfl")
 bossHealthBarPath = NodePath("TextureProgressBar")
 
 [node name="TextureProgressBar" type="TextureProgressBar" parent="HUD/BossUI"]
@@ -251,17 +252,12 @@ horizontal_alignment = 1
 
 [node name="DeathScreen" parent="HUD" instance=ExtResource("14_xvhfl")]
 
-[node name="Boogins" parent="." node_paths=PackedStringArray("_interactPrompt") instance=ExtResource("5_qjufs")]
+[node name="Boogins" parent="." node_paths=PackedStringArray("_interactPrompt", "_xpManager") instance=ExtResource("5_qjufs")]
 position = Vector2(3908, -1649)
 _interactPrompt = NodePath("../HUD/Interact")
 _booginsPortraitTexture = null
 _playerPortraitTexture = null
-_itemCosts = {
-0: 10,
-1: 25,
-2: 25,
-3: 25
-}
+_xpManager = NodePath("../HUD/XPManager")
 
 [node name="EnemySpawnPoints" type="Node2D" parent="."]
 position = Vector2(0, -1125)
@@ -393,22 +389,6 @@ _enemyContainerPath = NodePath(".")
 StartDisabled = true
 SpawnOnReady = false
 
-[node name="Raptor_7" type="Node2D" parent="EnemySpawnPoints/BossPhase2Spawns"]
-position = Vector2(-842, 220)
-script = ExtResource("16_in1og")
-_enemyScene = ExtResource("7_pbiin")
-_enemyContainerPath = NodePath(".")
-StartDisabled = true
-SpawnOnReady = false
-
-[node name="Raptor_8" type="Node2D" parent="EnemySpawnPoints/BossPhase2Spawns"]
-position = Vector2(-1002, -327)
-script = ExtResource("16_in1og")
-_enemyScene = ExtResource("7_pbiin")
-_enemyContainerPath = NodePath(".")
-StartDisabled = true
-SpawnOnReady = false
-
 [node name="TutorialBoss" parent="." node_paths=PackedStringArray("ArenaTriggerArea", "EntranceGate") groups=["Player", "enemy_hurtbox", "player"] instance=ExtResource("10_ujhhv")]
 light_mask = 15
 visibility_layer = 15
@@ -417,10 +397,10 @@ ArenaTriggerArea = NodePath("../BossStart")
 EntranceGate = NodePath("../StaticBody2D")
 BossUIPath = NodePath("../HUD/BossUI")
 Phase2SpawnerRootPath = NodePath("../EnemySpawnPoints/BossPhase2Spawns")
-Phase2SpawnersToActivate = 8
+Phase2SpawnersToActivate = 6
+ChargeDamage = 40
 ChargeActive = 2.5
-MaxHealth = 400
-XpReward = 10
+MaxHealth = 500
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 position = Vector2(6694.0005, -1005)
@@ -467,3 +447,4 @@ position = Vector2(460, -879)
 
 [node name="RangeEnemy" parent="." instance=ExtResource("21_wajd3")]
 position = Vector2(4471, -1615)
+script = null

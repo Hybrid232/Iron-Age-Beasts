@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://be1mqihrbhwi4"
-path="res://.godot/imported/PlayerLaser.png-a093f105ab5b244a64f3b4dcb10e8cdf.ctex"
+uid="uid://7oguujid3hau"
+path="res://.godot/imported/BooginsTestBG.png-c9d8edd68f7e233b389344f0fdfc82a4.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/MC/PlayerLaser.png"
-dest_files=["res://.godot/imported/PlayerLaser.png-a093f105ab5b244a64f3b4dcb10e8cdf.ctex"]
+source_file="res://sprites/test/BooginsTestBG.png"
+dest_files=["res://.godot/imported/BooginsTestBG.png-c9d8edd68f7e233b389344f0fdfc82a4.ctex"]
 
 [params]
 

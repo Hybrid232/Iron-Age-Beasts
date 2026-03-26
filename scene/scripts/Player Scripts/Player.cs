@@ -1,4 +1,3 @@
-using System.Numerics;
 using Godot;
 using Vector2 = Godot.Vector2;
 
@@ -95,6 +94,10 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 	public int StaminaUpgradeLevel { get; private set; } = 1;
 	public int DamageUpgradeLevel { get; private set; } = 1;
 
+	// ===== ANIMATION =====
+	[ExportGroup("Animation")]
+	[Export] private PlayerAnimationDriver animationDriver;
+
 	// System Components (not exported)
 	private HealthSystem healthSystem;
 	private MovementSystem movementSystem;
@@ -179,6 +182,9 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 			_deathScreenUI.RespawnRequested += OnDeathScreenRespawnRequested;
 		else
 			GD.PrintErr("[Player] _deathScreenUI is not assigned. Death animation will not play.");
+
+		if (animationDriver == null)
+			GD.PrintErr("[Player] animationDriver is not assigned. Movement animations will not play.");
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -200,10 +206,19 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 			return;
 		}
 
+		// ===== ANIMATION (input-driven, once per frame) =====
+		bool allowRunAnim =
+			CanMove &&
+			!IsStunned &&
+			!recoilSystem.IsInRecoil() &&
+			!meleeSystem.IsAttacking &&
+			!dodgeSystem.IsDodging;
+
+		animationDriver?.UpdateFromInput(allowRunAnim);
+
 		// ===== STUNNED: block input/attacks/dodge/shooting, but ALLOW recoil motion =====
 		if (IsStunned)
 		{
-			// If recoil is active, let it move the player (knockback will work)
 			if (recoilSystem.IsInRecoil())
 			{
 				Velocity = recoilSystem.GetRecoilVelocity();
@@ -211,13 +226,12 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 				return;
 			}
 
-			// Otherwise: "stunned freeze" (no input)
 			Velocity = Vector2.Zero;
 			MoveAndSlide();
 			return;
 		}
 
-		// Existing external freeze
+		// External freeze
 		if (!CanMove)
 		{
 			Velocity = Vector2.Zero;
@@ -237,7 +251,8 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 			meleeSystem.UpdateAttack(dt);
 			Velocity = Vector2.Zero;
 
-			if (swingSFX != null && !swingSFX.Playing) swingSFX.Play();
+			if (swingSFX != null && !swingSFX.Playing)
+				swingSFX.Play();
 		}
 		else if (dodgeSystem.IsDodging)
 		{
@@ -261,7 +276,8 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 
 			if (moveDirection != Vector2.Zero)
 			{
-				if (walkSFX != null && !walkSFX.Playing) walkSFX.Play();
+				if (walkSFX != null && !walkSFX.Playing)
+					walkSFX.Play();
 			}
 			else
 			{
@@ -278,12 +294,7 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 	public void ApplyStun(float seconds)
 	{
 		if (seconds <= 0f) return;
-
-		// extend stun (doesn't mess with CanMove anymore)
 		_stunTimer = Mathf.Max(_stunTimer, seconds);
-
-		// optional: you may want to cancel melee attack immediately if you have a method for it.
-		// If you want, paste MeleeSystem and I can add a CancelAttack() hook.
 	}
 
 	// ===== SHOP HELPERS =====
