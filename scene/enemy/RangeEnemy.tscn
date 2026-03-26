@@ -12,7 +12,7 @@ radius = 1.7029387
 radius = 1.9416487
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_apcrj"]
-radius = 234.96214
+radius = 276.04538
 
 [node name="RangeEnemy" type="CharacterBody2D"]
 collision_layer = 14
@@ -76,19 +76,23 @@ debug_color = Color(0.6890767, 0, 0.114161395, 0.41960785)
 [node name="RayCastOrigin" type="Node2D" parent="."]
 
 [node name="RayCast2D" type="RayCast2D" parent="RayCastOrigin"]
-rotation = 1.5770562
-target_position = Vector2(200, 0)
+rotation = -0.0026180744
+target_position = Vector2(213.99927, 0.56026727)
 collision_mask = 3
 
 [node name="RayCast2D2" type="RayCast2D" parent="RayCastOrigin"]
+rotation = 0.20047003
 target_position = Vector2(200, -70)
 
 [node name="RayCast2D3" type="RayCast2D" parent="RayCastOrigin"]
+rotation = -0.22694443
 target_position = Vector2(200, 70)
 
 [node name="RayCast2D4" type="RayCast2D" parent="RayCastOrigin"]
-target_position = Vector2(200, -140)
+rotation = 0.41209644
+target_position = Vector2(169.58371, -118.87544)
 
 [node name="RayCast2D5" type="RayCast2D" parent="RayCastOrigin"]
-rotation = -0.00812386
+rotation = -0.4200145
+scale = Vector2(0.85941535, 0.8947297)
 target_position = Vector2(200, 140)
