@@ -70,7 +70,7 @@ walkSoundFile = null
 swingSoundFile = null
 healthUpgradeAmount = 50
 staminaUpgradeAmount = 50
-damageUpgradeAmount = 50
+damageUpgradeAmount = 30
 
 [node name="GameTilemap" type="Node2D" parent="."]
 light_mask = 3
@@ -252,17 +252,12 @@ horizontal_alignment = 1
 
 [node name="DeathScreen" parent="HUD" instance=ExtResource("14_xvhfl")]
 
-[node name="Boogins" parent="." node_paths=PackedStringArray("_interactPrompt") instance=ExtResource("5_qjufs")]
+[node name="Boogins" parent="." node_paths=PackedStringArray("_interactPrompt", "_xpManager") instance=ExtResource("5_qjufs")]
 position = Vector2(3908, -1649)
 _interactPrompt = NodePath("../HUD/Interact")
 _booginsPortraitTexture = null
 _playerPortraitTexture = null
-_itemCosts = {
-0: 10,
-1: 25,
-2: 25,
-3: 25
-}
+_xpManager = NodePath("../HUD/XPManager")
 
 [node name="EnemySpawnPoints" type="Node2D" parent="."]
 position = Vector2(0, -1125)
