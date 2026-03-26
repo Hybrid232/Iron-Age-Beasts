@@ -1104,6 +1104,8 @@ public partial class TutorialBoss : BaseEnemy
 		state = BossState.Idle;
 		currentAttack = BossAttack.None;
 		fightStarted = false;
+		bossMusic.Stop();
+		GD.Print("Boss Music Stopped");
 		phase2 = false;
 		_phase2RoarDone = false;
 		Speed = baseSpeed;
