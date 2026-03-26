@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://41qneatxble4"
-path="res://.godot/imported/MC_Final_Sprite.png-cc18d81da4525880ac2df8bea427bd44.ctex"
+uid="uid://d1gvcmoya65ne"
+path="res://.godot/imported/BooginsG.png-d8d66975d48ec8563d928cdfc074f3c0.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/mc/MC_Final_Sprite.png"
-dest_files=["res://.godot/imported/MC_Final_Sprite.png-cc18d81da4525880ac2df8bea427bd44.ctex"]
+source_file="res://sprites/Boogins/BooginsG.png"
+dest_files=["res://.godot/imported/BooginsG.png-d8d66975d48ec8563d928cdfc074f3c0.ctex"]
 
 [params]
 

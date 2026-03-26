@@ -1,8 +1,10 @@
-[gd_scene format=3 uid="uid://cl43r3q2hw3hh"]
+[gd_scene load_steps=15 format=3 uid="uid://cl43r3q2hw3hh"]
 
 [ext_resource type="Script" uid="uid://6bn28qiwm8k4" path="res://scene/scripts/MainMenu.cs" id="1_aufxo"]
 [ext_resource type="Texture2D" uid="uid://bp1ad2kmgkaxj" path="res://sprites/test/MenuBGTest.jpg" id="1_ri2lj"]
 [ext_resource type="AudioStream" uid="uid://dkx68rf36ydf0" path="res://Audio/Music/Main Theme - IAG.mp3" id="3_vj3e8"]
+[ext_resource type="FontFile" uid="uid://cjhha6sdhxp87" path="res://scene/Fonts/FuturisticFont/Wallpoet-Regular.ttf" id="3_ycyae"]
+[ext_resource type="FontFile" uid="uid://b6gecg6ywmtyj" path="res://scene/Fonts/PrimalFont/Bahiana-Regular.ttf" id="4_fufy3"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_aufxo"]
 texture = ExtResource("1_ri2lj")
@@ -70,7 +72,7 @@ thickness = 10
 color = Color(0.58695936, 0.10834391, 0.20244285, 1)
 thickness = 10
 
-[node name="MainMenu" type="Control" unique_id=229163693]
+[node name="MainMenu" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -79,7 +81,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_aufxo")
 
-[node name="Panel" type="Panel" parent="." unique_id=126255608]
+[node name="Panel" type="Panel" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -88,14 +90,15 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_aufxo")
 
-[node name="MenuContainer" type="VBoxContainer" parent="." unique_id=1131344864]
+[node name="MenuContainer" type="VBoxContainer" parent="."]
 layout_mode = 0
-offset_left = -66.0
-offset_top = 317.0
-offset_right = 333.0
-offset_bottom = 502.0
+offset_left = -79.0
+offset_top = 385.0
+offset_right = 320.0
+offset_bottom = 641.0
+theme_override_constants/separation = 34
 
-[node name="StartButton" type="Button" parent="MenuContainer" unique_id=1562373600]
+[node name="StartButton" type="Button" parent="MenuContainer"]
 layout_mode = 2
 theme_override_colors/font_pressed_color = Color(0.29324415, 0.2453025, 0.15559536, 1)
 theme_override_colors/font_hover_color = Color(0.7058236, 0.303274, 0.2497719, 1)
@@ -105,7 +108,7 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_aufxo")
 theme_override_styles/hover = SubResource("StyleBoxFlat_ri2lj")
 text = "Start"
 
-[node name="OptionsButton" type="Button" parent="MenuContainer" unique_id=548756639]
+[node name="OptionsButton" type="Button" parent="MenuContainer"]
 layout_mode = 2
 theme_override_colors/font_pressed_color = Color(0.29324415, 0.2453025, 0.15559536, 1)
 theme_override_colors/font_hover_color = Color(0.7058236, 0.303274, 0.2497719, 1)
@@ -115,7 +118,7 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_aufxo")
 theme_override_styles/hover = SubResource("StyleBoxFlat_ri2lj")
 text = "Options"
 
-[node name="QuitButton" type="Button" parent="MenuContainer" unique_id=399939637]
+[node name="QuitButton" type="Button" parent="MenuContainer"]
 layout_mode = 2
 theme_override_colors/font_pressed_color = Color(0.29324415, 0.2453025, 0.15559536, 1)
 theme_override_colors/font_hover_color = Color(0.7058236, 0.303274, 0.2497719, 1)
@@ -125,21 +128,38 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_aufxo")
 theme_override_styles/hover = SubResource("StyleBoxFlat_ri2lj")
 text = "Quit"
 
-[node name="Label" type="Label" parent="." unique_id=1436362458]
+[node name="IronAge" type="Label" parent="."]
 layout_mode = 0
-offset_left = 623.0
-offset_top = -5.0
-offset_right = 1151.0
-offset_bottom = 99.0
-theme_override_colors/font_color = Color(0.552044, 0.26993445, 0.075655065, 1)
-theme_override_colors/font_shadow_color = Color(0.5678142, 0, 0.121097215, 1)
-theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 50
-text = "Iron Age Beasts"
+offset_left = 624.0
+offset_right = 1152.0
+offset_bottom = 104.0
+theme_override_colors/font_color = Color(0.7315904, 0.70224166, 0.68139046, 1)
+theme_override_colors/font_shadow_color = Color(0, 0.8399902, 0.7338868, 0.99607843)
+theme_override_colors/font_outline_color = Color(0.65421736, 0, 0.27344424, 1)
+theme_override_fonts/font = ExtResource("3_ycyae")
+theme_override_font_sizes/font_size = 70
+text = "Iron Age"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="OptionsBG" type="Panel" parent="." unique_id=1990210414]
+[node name="Label" type="Label" parent="IronAge"]
+layout_mode = 0
+offset_left = 228.0
+offset_top = 71.0
+offset_right = 497.0
+offset_bottom = 244.0
+theme_override_colors/font_color = Color(0.59128594, 0.0062953215, 3.85046e-07, 1)
+theme_override_colors/font_shadow_color = Color(0, 0.40392157, 0.03529412, 0.43529412)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 9
+theme_override_constants/shadow_offset_y = 10
+theme_override_constants/outline_size = 19
+theme_override_fonts/font = ExtResource("4_fufy3")
+theme_override_font_sizes/font_size = 150
+text = "Beasts"
+
+[node name="OptionsBG" type="Panel" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -153,7 +173,7 @@ offset_bottom = 233.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="BackButton" type="Button" parent="OptionsBG" unique_id=203067386]
+[node name="BackButton" type="Button" parent="OptionsBG"]
 layout_mode = 1
 anchors_preset = 9
 anchor_bottom = 1.0
@@ -167,7 +187,7 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_1r54x")
 theme_override_styles/hover = SubResource("StyleBoxFlat_ycyae")
 text = "Back"
 
-[node name="OptionsTitle" type="Label" parent="OptionsBG" unique_id=543076605]
+[node name="OptionsTitle" type="Label" parent="OptionsBG"]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
@@ -177,7 +197,7 @@ theme_override_font_sizes/font_size = 30
 text = "Options"
 horizontal_alignment = 1
 
-[node name="Volume Slider" type="HSlider" parent="OptionsBG" unique_id=1422728526]
+[node name="Volume Slider" type="HSlider" parent="OptionsBG"]
 layout_mode = 0
 offset_left = 584.0
 offset_top = 40.0
@@ -188,14 +208,14 @@ theme_override_styles/grabber_area = SubResource("StyleBoxLine_vj3e8")
 theme_override_styles/grabber_area_highlight = SubResource("StyleBoxLine_vj3e8")
 value = 50.0
 
-[node name="Label" type="Label" parent="OptionsBG/Volume Slider" unique_id=260447549]
+[node name="Label" type="Label" parent="OptionsBG/Volume Slider"]
 layout_mode = 1
 offset_right = 85.0
 offset_bottom = 42.0
 theme_override_font_sizes/font_size = 30
 text = "Music"
 
-[node name="SFX Slider" type="HSlider" parent="OptionsBG" unique_id=2078135713]
+[node name="SFX Slider" type="HSlider" parent="OptionsBG"]
 layout_mode = 0
 offset_left = 587.0
 offset_top = 146.0
@@ -206,15 +226,17 @@ theme_override_styles/grabber_area = SubResource("StyleBoxLine_vj3e8")
 theme_override_styles/grabber_area_highlight = SubResource("StyleBoxLine_vj3e8")
 value = 50.0
 
-[node name="Label" type="Label" parent="OptionsBG/SFX Slider" unique_id=600628326]
+[node name="Label" type="Label" parent="OptionsBG/SFX Slider"]
 layout_mode = 1
 offset_right = 85.0
 offset_bottom = 42.0
 theme_override_font_sizes/font_size = 30
 text = "SFX"
 
-[node name="Audio" type="Node" parent="." unique_id=603978406]
+[node name="Audio" type="Node" parent="."]
 
-[node name="MainTheme" type="AudioStreamPlayer" parent="Audio" unique_id=2110059122]
+[node name="MainTheme" type="AudioStreamPlayer" parent="Audio"]
 stream = ExtResource("3_vj3e8")
 autoplay = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]

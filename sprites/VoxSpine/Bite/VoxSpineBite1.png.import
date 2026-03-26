@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://41qneatxble4"
-path="res://.godot/imported/MC_Final_Sprite.png-cc18d81da4525880ac2df8bea427bd44.ctex"
+uid="uid://dtwbi03s1b2se"
+path="res://.godot/imported/VoxSpineBite1.png-6730a1924f176730bc948d3d51c10bb7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/mc/MC_Final_Sprite.png"
-dest_files=["res://.godot/imported/MC_Final_Sprite.png-cc18d81da4525880ac2df8bea427bd44.ctex"]
+source_file="res://sprites/VoxSpine/Bite/VoxSpineBite1.png"
+dest_files=["res://.godot/imported/VoxSpineBite1.png-6730a1924f176730bc948d3d51c10bb7.ctex"]
 
 [params]
 

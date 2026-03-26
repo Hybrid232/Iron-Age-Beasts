@@ -12,11 +12,37 @@ public partial class TutorialBoss : BaseEnemy
 	[Export] public StaticBody2D EntranceGate;
 	[Export] public bool LockEntranceOnStart = true;
 
-	[ExportGroup("Boss UI")]
+	[ExportGroup("Boss UI (Robust Lookup)")]
+	[Export] public bool UseBossUIGroupLookup = true;
 	[Export] public NodePath BossUIPath;
 
 	private CanvasItem _bossUIItem;
 	private IBossUI bossUI;
+
+	// -----------------------------
+	// Animation
+	// -----------------------------
+	[ExportGroup("Animation")]
+	[Export] public AnimatedSprite2D Sprite; // assign in inspector (recommended)
+	[Export] public string IdleAnimName = "idle";
+	[Export] public string ChaseAnimName = "chase";
+
+	[Export] public string BiteAnimName = "bite";
+	[Export] public int BiteDamageFrameIndex = 2;
+
+	[Export] public bool DefaultFacesRight = true;
+	[Export] public float FaceDeadzonePx = 2f;
+
+	private string _currentAnim = "";
+	private bool _facingRight = true;
+
+	// -----------------------------
+	// Collision + Hurtbox flipping (LEFT/RIGHT only)
+	// -----------------------------
+	[ExportGroup("Collision / Hurtbox Facing (Flip X)")]
+	[Export] public Node2D BodyCollisionRoot;
+	[Export] public Node2D HurtboxRoot;
+	[Export] public bool CollisionDefaultFacesRight = true;
 
 	[ExportGroup("Phase 2 (<=40% HP)")]
 	[Export] public float Phase2SpeedMultiplier = 1.35f;
@@ -30,10 +56,7 @@ public partial class TutorialBoss : BaseEnemy
 	[Export] public float RoarStunSeconds = 2.5f;
 
 	[ExportGroup("Phase 2 Adds (Spawners)")]
-	// Set this to: EnemySpawnPoints/BossPhase2Spawns
 	[Export] public NodePath Phase2SpawnerRootPath;
-
-	// How many spawners to activate on Phase 2 roar
 	[Export] public int Phase2SpawnersToActivate = 3;
 
 	private const string ENEMY_GROUP = "Enemy";
@@ -104,6 +127,25 @@ public partial class TutorialBoss : BaseEnemy
 
 	private readonly Dictionary<ulong, float> _contactDamageCdByTarget = new();
 
+	// -----------------------------
+	// NEW: Phase 2 enemy knockback + anti-stuck collision config
+	// -----------------------------
+	[ExportGroup("Phase 2: Knockback Little Enemies")]
+	[Export] public bool Phase2RoarAffectsEnemies = true;
+	[Export] public float EnemyRoarKnockbackDistance = 320f;
+	[Export] public float EnemyRoarKnockbackTime = 0.25f;
+	[Export] public float EnemyRoarStunSeconds = 1.0f;
+
+	// To prevent the boss getting caught on adds, remove "Enemy" from the boss collision mask during phase 2 (or fight).
+	// Set these to match your project physics layers.
+	[ExportGroup("Phase 2: Prevent Boss Getting Stuck On Adds")]
+	[Export] public bool IgnoreEnemyBodyCollisionsInPhase2 = true;
+
+	// Default Godot layer indices are 1..32 in the UI. We'll store them as "layer numbers".
+	[Export(PropertyHint.Range, "1,32,1")] public int EnemyPhysicsLayerNumber = 3; // set in inspector to your Enemy layer
+	private uint _cachedPreFightCollisionMask = 0;
+	private bool _cachedMask = false;
+
 	private BossState state = BossState.Idle;
 	private BossAttack currentAttack = BossAttack.None;
 
@@ -118,6 +160,8 @@ public partial class TutorialBoss : BaseEnemy
 	private readonly HashSet<ulong> hitTargetsThisActive = new();
 
 	private bool fightStarted = false;
+
+	private bool _biteHitboxEnabledThisBite = false;
 
 	public override void _Ready()
 	{
@@ -144,18 +188,7 @@ public partial class TutorialBoss : BaseEnemy
 		chargeTelegraph = ResolveTelegraph(ChargeTelegraphPath);
 		HideAllTelegraphs();
 
-		_bossUIItem = (BossUIPath != null && !BossUIPath.IsEmpty)
-			? GetNodeOrNull(BossUIPath) as CanvasItem
-			: null;
-
-		bossUI = (BossUIPath != null && !BossUIPath.IsEmpty)
-			? GetNodeOrNull(BossUIPath) as IBossUI
-			: null;
-
-		if (bossUI != null)
-			bossUI.InitializeBoss(MaxHealth, _currentHealth);
-
-		if (_bossUIItem != null) _bossUIItem.Visible = false;
+		ResolveBossUI();
 
 		fightStarted = false;
 		state = BossState.Idle;
@@ -168,9 +201,13 @@ public partial class TutorialBoss : BaseEnemy
 		if (ArenaTriggerArea != null)
 		{
 			ArenaTriggerArea.Monitorable = true;
-			ArenaTriggerArea.Monitoring = false;
+			ArenaTriggerArea.Monitoring = false; // armed next frame
 			ArenaTriggerArea.BodyEntered += OnArenaTriggerBodyEntered;
 			CallDeferred(nameof(ArmArenaTriggerNextFrame));
+		}
+		else
+		{
+			GD.PushWarning("[Boss] ArenaTriggerArea is not assigned.");
 		}
 
 		if (BodyContactDamageArea != null)
@@ -178,16 +215,23 @@ public partial class TutorialBoss : BaseEnemy
 			BodyContactDamageArea.CollisionLayer = 2;
 			BodyContactDamageArea.CollisionMask = 1;
 		}
-	}
 
-	private async void ArmArenaTriggerNextFrame()
-	{
-		await ToSignal(GetTree(), SceneTree.SignalName.PhysicsFrame);
+		if (Sprite == null)
+			Sprite = GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite2D");
 
-		if (fightStarted) return;
-		if (ArenaTriggerArea == null) return;
+		if (Sprite != null)
+		{
+			Sprite.FrameChanged += OnSpriteFrameChanged;
+			Sprite.AnimationFinished += OnSpriteAnimationFinished;
+		}
 
-		ArenaTriggerArea.Monitoring = true;
+		if (BodyCollisionRoot == null)
+			BodyCollisionRoot = GetNodeOrNull<Node2D>("BodyCollision");
+
+		if (HurtboxRoot == null)
+			HurtboxRoot = GetNodeOrNull<Node2D>("HurtboxArea");
+
+		UpdateFacingAndAnimation(force: true);
 	}
 
 	public override void _Process(double delta)
@@ -208,6 +252,113 @@ public partial class TutorialBoss : BaseEnemy
 		}
 
 		HandlePhase2();
+
+		UpdateFacingAndAnimation(force: false);
+	}
+
+	private void UpdateFacingAndAnimation(bool force)
+	{
+		if (_player != null && IsInstanceValid(_player))
+		{
+			float dx = _player.GlobalPosition.X - GlobalPosition.X;
+			if (Mathf.Abs(dx) > FaceDeadzonePx)
+				_facingRight = dx > 0f;
+		}
+
+		if (Sprite != null)
+		{
+			bool flipSprite = DefaultFacesRight ? !_facingRight : _facingRight;
+			Sprite.FlipH = flipSprite;
+		}
+
+		ApplyLeftRightScaleFlip(BodyCollisionRoot, _facingRight, CollisionDefaultFacesRight);
+		ApplyLeftRightScaleFlip(HurtboxRoot, _facingRight, CollisionDefaultFacesRight);
+
+		string desiredAnim =
+			(state == BossState.Active && currentAttack == BossAttack.Bite)
+				? BiteAnimName
+				: state switch
+				{
+					BossState.Chasing => ChaseAnimName,
+					BossState.Telegraph => IdleAnimName,
+					BossState.Recover => IdleAnimName,
+					BossState.Roaring => IdleAnimName,
+					_ => IdleAnimName
+				};
+
+		if (Sprite == null) return;
+
+		if (force || _currentAnim != desiredAnim)
+		{
+			_currentAnim = desiredAnim;
+
+			if (Sprite.SpriteFrames != null && Sprite.SpriteFrames.HasAnimation(desiredAnim))
+				Sprite.Play(desiredAnim);
+			else
+				GD.PushWarning($"[Boss] AnimatedSprite2D missing animation '{desiredAnim}'.");
+		}
+	}
+
+	private static void ApplyLeftRightScaleFlip(Node2D root, bool facingRight, bool defaultFacesRight)
+	{
+		if (root == null) return;
+
+		float absX = Mathf.Abs(root.Scale.X);
+		if (absX < 0.0001f) absX = 1f;
+
+		bool facingMatchesDefault = (facingRight == defaultFacesRight);
+		float sx = facingMatchesDefault ? absX : -absX;
+
+		root.Scale = new Vector2(sx, root.Scale.Y);
+	}
+
+	private void ResolveBossUI()
+	{
+		_bossUIItem = null;
+		bossUI = null;
+
+		if (UseBossUIGroupLookup)
+		{
+			var uiNode = GetTree().GetFirstNodeInGroup(BossUI.GROUP_NAME);
+
+			_bossUIItem = uiNode as CanvasItem;
+			bossUI = uiNode as IBossUI;
+
+			if (_bossUIItem == null)
+				GD.PushWarning("[Boss] BossUI not found via group lookup OR is not a CanvasItem (group='BossUI').");
+			if (bossUI == null)
+				GD.PushWarning("[Boss] BossUI found via group lookup but does not implement IBossUI.");
+		}
+		else
+		{
+			_bossUIItem = (BossUIPath != null && !BossUIPath.IsEmpty)
+				? GetNodeOrNull(BossUIPath) as CanvasItem
+				: null;
+
+			bossUI = (BossUIPath != null && !BossUIPath.IsEmpty)
+				? GetNodeOrNull(BossUIPath) as IBossUI
+				: null;
+
+			if (_bossUIItem == null)
+				GD.PushWarning("[Boss] BossUIPath did not resolve to a CanvasItem.");
+			if (bossUI == null)
+				GD.PushWarning("[Boss] BossUIPath did not resolve to an IBossUI.");
+		}
+
+		bossUI?.InitializeBoss(MaxHealth, _currentHealth);
+
+		if (_bossUIItem != null) _bossUIItem.Visible = false;
+	}
+
+	private async void ArmArenaTriggerNextFrame()
+	{
+		await ToSignal(GetTree(), SceneTree.SignalName.PhysicsFrame);
+
+		if (fightStarted) return;
+		if (ArenaTriggerArea == null) return;
+
+		ArenaTriggerArea.Monitoring = true;
+		GD.Print("[Boss] Arena trigger armed.");
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -241,15 +392,27 @@ public partial class TutorialBoss : BaseEnemy
 	private void OnArenaTriggerBodyEntered(Node body)
 	{
 		if (fightStarted) return;
-		if (body is not Player player) return;
-		if (!player.IsInGroup(PlayerGroup)) return;
 
+		if (body is not Player player)
+			return;
+
+		if (!player.IsInGroup(PlayerGroup))
+			return;
+
+		GD.Print($"[Boss] Arena triggered by Player '{player.Name}'. Starting fight.");
 		StartBossFight(player);
 	}
 
 	private void StartBossFight(Player player)
 	{
 		fightStarted = true;
+
+		// Cache collision mask for restoration on reset
+		if (!_cachedMask)
+		{
+			_cachedPreFightCollisionMask = CollisionMask;
+			_cachedMask = true;
+		}
 
 		_player = player;
 		_chasing = true;
@@ -269,13 +432,18 @@ public partial class TutorialBoss : BaseEnemy
 		if (ArenaTriggerArea != null)
 			ArenaTriggerArea.Monitoring = false;
 
-		// Fail-safe so Phase 2 adds never appear at fight start
 		DisableAndDespawnPhase2Spawners();
+
+		UpdateFacingAndAnimation(force: true);
 	}
 
 	private void SetEntranceGateLocked(bool locked)
 	{
-		if (EntranceGate == null) return;
+		if (EntranceGate == null)
+		{
+			GD.PushWarning("[Boss] EntranceGate is not assigned.");
+			return;
+		}
 
 		foreach (var node in EntranceGate.GetChildren())
 		{
@@ -297,9 +465,23 @@ public partial class TutorialBoss : BaseEnemy
 			BiteCooldown *= 0.85f;
 			TailCooldown *= 0.85f;
 
+			// NEW: prevent boss body collision with adds so it doesn't get stuck on them
+			if (IgnoreEnemyBodyCollisionsInPhase2)
+				RemoveEnemyFromBossCollisionMask();
+
 			if (!_phase2RoarDone && state != BossState.Dead)
 				StartPhase2Roar();
 		}
+	}
+
+	private void RemoveEnemyFromBossCollisionMask()
+	{
+		// Godot physics layer bit: layerNumber 1 => bit 0.
+		int bitIndex = Mathf.Clamp(EnemyPhysicsLayerNumber, 1, 32) - 1;
+		uint enemyBit = 1u << bitIndex;
+
+		// CollisionMask is "what I collide with". Remove enemy bit.
+		CollisionMask &= ~enemyBit;
 	}
 
 	private void StartPhase2Roar()
@@ -340,7 +522,7 @@ public partial class TutorialBoss : BaseEnemy
 				break;
 
 			case BossState.Chasing:
-				Chase(dt);
+				Chase();
 				TryPickAttack();
 				break;
 
@@ -350,9 +532,12 @@ public partial class TutorialBoss : BaseEnemy
 				if (!(state == BossState.Active && currentAttack == BossAttack.Charge))
 					Velocity = Vector2.Zero;
 
-				stateTimer -= dt;
-				if (stateTimer <= 0f)
-					AdvanceAttackPhase();
+				if (!(state == BossState.Active && currentAttack == BossAttack.Bite))
+				{
+					stateTimer -= dt;
+					if (stateTimer <= 0f)
+						AdvanceAttackPhase();
+				}
 				break;
 		}
 	}
@@ -361,6 +546,7 @@ public partial class TutorialBoss : BaseEnemy
 	{
 		GD.Print("[Boss] ROAR pulse (global knockback + stun + phase2 adds).");
 
+		// Player knockback + stun (existing)
 		if (_player != null && IsInstanceValid(_player))
 		{
 			Vector2 pushDir = (_player.GlobalPosition - GlobalPosition);
@@ -373,10 +559,61 @@ public partial class TutorialBoss : BaseEnemy
 				stunnable.ApplyStun(RoarStunSeconds);
 		}
 
+		// NEW: knockback + optional stun for little enemies during phase 2
+		if (phase2 && Phase2RoarAffectsEnemies)
+			KnockbackNearbyEnemiesFromRoar();
+
 		ActivatePhase2SpawnersAndForceHunt(Phase2SpawnersToActivate);
 
 		state = BossState.Recover;
 		stateTimer = Phase2RoarRecover;
+	}
+
+	private void KnockbackNearbyEnemiesFromRoar()
+	{
+		// We don't have a dedicated roar hitbox, so we use a radius check around the boss.
+		// We'll use RoarKnockbackDistance as a gameplay number, but search radius should be something reasonable.
+		// Use TailSweepRange * 2 as a simple, tunable default (can be changed if you want it exported).
+		float radius = Math.Max(120f, TailSweepRange * 2f);
+		float radiusSq = radius * radius;
+
+		var enemies = GetTree().GetNodesInGroup(ENEMY_GROUP);
+		foreach (var n in enemies)
+		{
+			if (n is not Node2D e) continue;
+			if (e == this || IsAncestorOf(e)) continue;
+			if (!IsInstanceValid(e)) continue;
+
+			// Don't knock back the boss (if something else is in Enemy group)
+			if (e is TutorialBoss) continue;
+
+			Vector2 delta = e.GlobalPosition - GlobalPosition;
+			if (delta.LengthSquared() > radiusSq) continue;
+
+			Vector2 dir = delta;
+			if (dir == Vector2.Zero) dir = Vector2.Right;
+			dir = dir.Normalized();
+
+			// If they support recoil, use it. Otherwise, if they are CharacterBody2D,
+			// apply a simple velocity impulse.
+			if (e is Player maybePlayerLike) // unlikely, but safe
+			{
+				maybePlayerLike.TriggerHitRecoil(dir, EnemyRoarKnockbackDistance, EnemyRoarKnockbackTime);
+			}
+			else if (e.HasMethod("TriggerHitRecoil"))
+			{
+				// duck-typing fallback if your small enemies share the same method name
+				e.Call("TriggerHitRecoil", dir, EnemyRoarKnockbackDistance, EnemyRoarKnockbackTime);
+			}
+			else if (e is CharacterBody2D cb)
+			{
+				// simple fallback shove; requires their own movement code to respect Velocity
+				cb.Velocity = dir * (EnemyRoarKnockbackDistance / Math.Max(0.001f, EnemyRoarKnockbackTime));
+			}
+
+			if (e is IStunnable stunnable)
+				stunnable.ApplyStun(EnemyRoarStunSeconds);
+		}
 	}
 
 	private void ActivatePhase2SpawnersAndForceHunt(int count)
@@ -393,7 +630,6 @@ public partial class TutorialBoss : BaseEnemy
 			if (sp == null || !IsInstanceValid(sp)) continue;
 			if (sp.IsBossSpawner) continue;
 
-			// spawner will spawn and then call enemy.ForceAggro(_player)
 			sp.EnableAndSpawn(_player);
 			activated++;
 		}
@@ -426,8 +662,10 @@ public partial class TutorialBoss : BaseEnemy
 		return results;
 	}
 
-	private void Chase(float dt)
+	private void Chase()
 	{
+		if (_player == null) return;
+
 		Vector2 toPlayer = _player.GlobalPosition - GlobalPosition;
 		float dist = toPlayer.Length();
 		if (dist < 1f)
@@ -443,7 +681,6 @@ public partial class TutorialBoss : BaseEnemy
 	private void TryPickAttack()
 	{
 		if (_player == null) return;
-		if (state != BossState.Chasing) return;
 
 		float dist = GlobalPosition.DistanceTo(_player.GlobalPosition);
 		bool chargeUnlocked = phase2 && UnlockChargeAt40Percent;
@@ -475,6 +712,8 @@ public partial class TutorialBoss : BaseEnemy
 		currentAttack = attack;
 		state = BossState.Telegraph;
 
+		_biteHitboxEnabledThisBite = false;
+
 		if (_player != null && attack == BossAttack.Charge)
 			chargeDir = (_player.GlobalPosition - GlobalPosition).Normalized();
 
@@ -494,19 +733,34 @@ public partial class TutorialBoss : BaseEnemy
 			stateTimer = GetActiveTime(currentAttack);
 
 			hitTargetsThisActive.Clear();
+
 			PrepareHitboxForAttack(currentAttack);
 
 			ShowTelegraph(currentAttack, false);
-			EnableAttackHitbox(currentAttack, true);
+
+			if (currentAttack != BossAttack.Bite)
+				EnableAttackHitbox(currentAttack, true);
+			else
+				EnableAttackHitbox(BossAttack.Bite, false);
 
 			if (currentAttack == BossAttack.Charge)
 				Velocity = chargeDir * (Speed * 2.2f);
+
+			if (currentAttack == BossAttack.Bite && Sprite != null)
+			{
+				if (Sprite.SpriteFrames != null && Sprite.SpriteFrames.HasAnimation(BiteAnimName))
+					Sprite.Play(BiteAnimName);
+				else
+					GD.PushWarning($"[Boss] AnimatedSprite2D missing animation '{BiteAnimName}'.");
+			}
 
 			return;
 		}
 
 		if (state == BossState.Active)
 		{
+			if (currentAttack == BossAttack.Bite) return;
+
 			EnableAttackHitbox(currentAttack, false);
 			ShowTelegraph(currentAttack, false);
 
@@ -654,7 +908,11 @@ public partial class TutorialBoss : BaseEnemy
 		}
 	}
 
-	private void OnBodyContactEntered(Node2D body) => TryApplyContactDamage(body);
+	private void OnBodyContactEntered(Node2D body)
+	{
+		TryApplyContactDamage(body);
+	}
+
 	private void OnBodyContactExited(Node2D body) { }
 
 	private void TryApplyContactDamage(Node2D body)
@@ -770,6 +1028,36 @@ public partial class TutorialBoss : BaseEnemy
 			n2d.GlobalRotation = angle;
 	}
 
+	private void OnSpriteFrameChanged()
+	{
+		if (state != BossState.Active) return;
+		if (currentAttack != BossAttack.Bite) return;
+		if (Sprite == null) return;
+		if (Sprite.Animation != BiteAnimName) return;
+		if (!Sprite.IsPlaying()) return;
+
+		if (!_biteHitboxEnabledThisBite && Sprite.Frame == BiteDamageFrameIndex)
+		{
+			_biteHitboxEnabledThisBite = true;
+			EnableAttackHitbox(BossAttack.Bite, true);
+		}
+	}
+
+	private void OnSpriteAnimationFinished()
+	{
+		if (currentAttack != BossAttack.Bite) return;
+		if (state != BossState.Active) return;
+		if (Sprite == null) return;
+		if (Sprite.Animation != BiteAnimName) return;
+
+		EnableAttackHitbox(BossAttack.Bite, false);
+		ShowTelegraph(BossAttack.Bite, false);
+
+		Velocity = Vector2.Zero;
+		state = BossState.Recover;
+		stateTimer = BiteRecover;
+	}
+
 	protected override void OnDamageTaken(int damage)
 	{
 		base.OnDamageTaken(damage);
@@ -800,6 +1088,10 @@ public partial class TutorialBoss : BaseEnemy
 	{
 		base.ResetEnemy();
 
+		// Restore collision mask if we changed it
+		if (_cachedMask)
+			CollisionMask = _cachedPreFightCollisionMask;
+
 		state = BossState.Idle;
 		currentAttack = BossAttack.None;
 		fightStarted = false;
@@ -812,6 +1104,8 @@ public partial class TutorialBoss : BaseEnemy
 		chargeCd = 0f;
 		hitTargetsThisActive.Clear();
 		_contactDamageCdByTarget.Clear();
+
+		_biteHitboxEnabledThisBite = false;
 
 		if (_bossUIItem != null) _bossUIItem.Visible = false;
 		bossUI?.InitializeBoss(MaxHealth, _currentHealth);
@@ -830,5 +1124,7 @@ public partial class TutorialBoss : BaseEnemy
 		}
 
 		DisableAndDespawnPhase2Spawners();
+
+		UpdateFacingAndAnimation(force: true);
 	}
 }
