@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=3 uid="uid://b6m3oycxmqq7g"]
+[gd_scene load_steps=31 format=3 uid="uid://b6m3oycxmqq7g"]
 
 [ext_resource type="Script" uid="uid://dt62qwb6ahakj" path="res://scene/scripts/NPC Scripts/NPC.cs" id="1_hqct7"]
 [ext_resource type="Texture2D" uid="uid://bsunr61kjpenk" path="res://sprites/test/NPC_boogins.jpg" id="1_v5spc"]
@@ -6,7 +6,9 @@
 [ext_resource type="Texture2D" uid="uid://41qneatxble4" path="res://sprites/MC/MC_Final_Sprite.png" id="4_ts6i4"]
 [ext_resource type="Texture2D" uid="uid://byqbdkq2u3mh" path="res://sprites/test/potion.png" id="5_kevq5"]
 [ext_resource type="Texture2D" uid="uid://d1gvcmoya65ne" path="res://sprites/Boogins/BooginsG.png" id="5_v0yar"]
+[ext_resource type="FontFile" uid="uid://b6gecg6ywmtyj" path="res://scene/Fonts/PrimalFont/Bahiana-Regular.ttf" id="6_4qg82"]
 [ext_resource type="Texture2D" uid="uid://8wovptkau74u" path="res://sprites/test/knight.png" id="6_6m5po"]
+[ext_resource type="FontFile" uid="uid://cjhha6sdhxp87" path="res://scene/Fonts/FuturisticFont/Wallpoet-Regular.ttf" id="7_1e8w8"]
 [ext_resource type="PackedScene" uid="uid://bdcoq0m6vlp8i" path="res://scene/Scenes/Interact.tscn" id="7_jjcxd"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_hqct7"]
@@ -218,6 +220,7 @@ offset_right = 40.0
 offset_bottom = 40.0
 
 [node name="Panel" type="Panel" parent="CanvasLayer/BooginsShopUI"]
+visible = false
 layout_mode = 1
 anchors_preset = -1
 anchor_top = -0.31573334
@@ -239,6 +242,7 @@ offset_top = 54.0
 offset_right = 4.0
 offset_bottom = 96.0
 grow_horizontal = 2
+theme_override_fonts/font = ExtResource("6_4qg82")
 theme_override_font_sizes/font_size = 30
 
 [node name="SpeakButton" type="Button" parent="CanvasLayer/BooginsShopUI/Panel"]
@@ -254,6 +258,8 @@ offset_right = 512.5
 offset_bottom = 10.5
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_fonts/font = ExtResource("6_4qg82")
+theme_override_font_sizes/font_size = 36
 theme_override_styles/normal = SubResource("StyleBoxFlat_6m5po")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_jjcxd")
 theme_override_styles/hover = SubResource("StyleBoxFlat_v0yar")
@@ -272,6 +278,8 @@ offset_right = 512.5
 offset_bottom = 58.5
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_fonts/font = ExtResource("7_1e8w8")
+theme_override_font_sizes/font_size = 29
 theme_override_styles/normal = SubResource("StyleBoxFlat_6m5po")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_jjcxd")
 theme_override_styles/hover = SubResource("StyleBoxFlat_v0yar")
@@ -290,6 +298,8 @@ offset_right = 513.0
 offset_bottom = 108.5
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_fonts/font = ExtResource("6_4qg82")
+theme_override_font_sizes/font_size = 34
 theme_override_styles/normal = SubResource("StyleBoxFlat_6m5po")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_jjcxd")
 theme_override_styles/hover = SubResource("StyleBoxFlat_v0yar")
@@ -336,9 +346,10 @@ anchor_top = 1.0
 anchor_bottom = 1.0
 offset_left = 36.0
 offset_top = -311.0
-offset_right = 210.0
+offset_right = 239.0
 offset_bottom = -235.0
 grow_vertical = 0
+theme_override_fonts/font = ExtResource("7_1e8w8")
 theme_override_styles/normal = SubResource("StyleBoxFlat_rkm81")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_4qg82")
 theme_override_styles/hover = SubResource("StyleBoxFlat_1e8w8")
@@ -354,9 +365,10 @@ anchor_top = 1.0
 anchor_bottom = 1.0
 offset_left = 40.0
 offset_top = -151.0
-offset_right = 214.0
+offset_right = 239.0
 offset_bottom = -75.0
 grow_vertical = 0
+theme_override_fonts/font = ExtResource("7_1e8w8")
 theme_override_styles/normal = SubResource("StyleBoxFlat_083nj")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_teo0y")
 theme_override_styles/hover = SubResource("StyleBoxFlat_5rqdx")
@@ -374,6 +386,7 @@ offset_top = -232.0
 offset_right = 212.0
 offset_bottom = -156.0
 grow_vertical = 0
+theme_override_fonts/font = ExtResource("7_1e8w8")
 theme_override_styles/normal = SubResource("StyleBoxFlat_4hqy0")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_gucvi")
 theme_override_styles/hover = SubResource("StyleBoxFlat_uuait")
@@ -386,11 +399,12 @@ layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_left = 223.0
+offset_left = 282.0
 offset_top = -150.0
-offset_right = 416.0
+offset_right = 499.0
 offset_bottom = -74.0
 grow_vertical = 0
+theme_override_fonts/font = ExtResource("7_1e8w8")
 theme_override_styles/normal = SubResource("StyleBoxFlat_kev5b")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_a5d6l")
 theme_override_styles/hover = SubResource("StyleBoxFlat_34rcp")
@@ -409,6 +423,8 @@ offset_top = -70.0
 offset_right = 210.0
 offset_bottom = -39.0
 grow_vertical = 0
+theme_override_fonts/font = ExtResource("6_4qg82")
+theme_override_font_sizes/font_size = 23
 theme_override_styles/normal = SubResource("StyleBoxFlat_hi6dq")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_ct220")
 theme_override_styles/hover = SubResource("StyleBoxFlat_aij3i")
