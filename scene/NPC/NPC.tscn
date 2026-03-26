@@ -337,6 +337,7 @@ offset_top = 8.0
 offset_right = 223.5
 offset_bottom = 258.0
 grow_horizontal = 2
+theme_override_fonts/font = ExtResource("6_4qg82")
 theme_override_font_sizes/font_size = 30
 
 [node name="PotionButton" type="Button" parent="CanvasLayer/BooginsShopUI/ShopPanel"]
