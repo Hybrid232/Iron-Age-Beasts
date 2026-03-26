@@ -19,13 +19,19 @@ public partial class TutorialBoss : BaseEnemy
 	private CanvasItem _bossUIItem;
 	private IBossUI bossUI;
 
-	// -----------------------------
-	// Animation + Facing (AnimatedSprite2D)
+	// -----------------------------d
+	// Animation
 	// -----------------------------
 	[ExportGroup("Animation")]
 	[Export] public AnimatedSprite2D Sprite; // assign in inspector (recommended)
 	[Export] public string IdleAnimName = "idle";
 	[Export] public string ChaseAnimName = "chase";
+
+	// NEW: Bite attack animation config
+	[Export] public string BiteAnimName = "bite";
+	// You said your frames are 0, 1, 2 and the bite happens on frame 2 (third frame).
+	[Export] public int BiteDamageFrameIndex = 2;
+
 	[Export] public bool DefaultFacesRight = true;
 	[Export] public float FaceDeadzonePx = 2f;
 
@@ -146,6 +152,9 @@ public partial class TutorialBoss : BaseEnemy
 
 	private bool fightStarted = false;
 
+	// NEW: animation-driven bite state
+	private bool _biteHitboxEnabledThisBite = false;
+
 	public override void _Ready()
 	{
 		base._Ready();
@@ -203,6 +212,13 @@ public partial class TutorialBoss : BaseEnemy
 		if (Sprite == null)
 			Sprite = GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite2D");
 
+		// NEW: hook animation signals so bite damage can happen on frame 2
+		if (Sprite != null)
+		{
+			Sprite.FrameChanged += OnSpriteFrameChanged;
+			Sprite.AnimationFinished += OnSpriteAnimationFinished;
+		}
+
 		// If you want, rename your nodes to match these and it will auto-find them:
 		if (BodyCollisionRoot == null)
 			BodyCollisionRoot = GetNodeOrNull<Node2D>("BodyCollision");
@@ -257,14 +273,17 @@ public partial class TutorialBoss : BaseEnemy
 		ApplyLeftRightScaleFlip(HurtboxRoot, _facingRight, CollisionDefaultFacesRight);
 
 		// Pick animation
-		string desiredAnim = state switch
-		{
-			BossState.Chasing => ChaseAnimName,
-			BossState.Telegraph => IdleAnimName,
-			BossState.Recover => IdleAnimName,
-			BossState.Roaring => IdleAnimName,
-			_ => IdleAnimName
-		};
+		string desiredAnim =
+			(state == BossState.Active && currentAttack == BossAttack.Bite)
+				? BiteAnimName
+				: state switch
+				{
+					BossState.Chasing => ChaseAnimName,
+					BossState.Telegraph => IdleAnimName,
+					BossState.Recover => IdleAnimName,
+					BossState.Roaring => IdleAnimName,
+					_ => IdleAnimName
+				};
 
 		if (Sprite == null) return;
 
@@ -413,7 +432,7 @@ public partial class TutorialBoss : BaseEnemy
 	}
 
 	// -----------------------------
-	// Everything below here is your original script (unchanged)
+	// Everything below here is your original script (with bite animation integration)
 	// -----------------------------
 
 	private void SetEntranceGateLocked(bool locked)
@@ -497,9 +516,14 @@ public partial class TutorialBoss : BaseEnemy
 				if (!(state == BossState.Active && currentAttack == BossAttack.Charge))
 					Velocity = Vector2.Zero;
 
-				stateTimer -= dt;
-				if (stateTimer <= 0f)
-					AdvanceAttackPhase();
+				// Bite Active is animation-driven (ends via AnimationFinished).
+				// Telegraph and Recover remain timer-driven, and Active for other attacks remains timer-driven.
+				if (!(state == BossState.Active && currentAttack == BossAttack.Bite))
+				{
+					stateTimer -= dt;
+					if (stateTimer <= 0f)
+						AdvanceAttackPhase();
+				}
 				break;
 		}
 	}
@@ -622,6 +646,8 @@ public partial class TutorialBoss : BaseEnemy
 		currentAttack = attack;
 		state = BossState.Telegraph;
 
+		_biteHitboxEnabledThisBite = false;
+
 		if (_player != null && attack == BossAttack.Charge)
 			chargeDir = (_player.GlobalPosition - GlobalPosition).Normalized();
 
@@ -638,7 +664,7 @@ public partial class TutorialBoss : BaseEnemy
 		if (state == BossState.Telegraph)
 		{
 			state = BossState.Active;
-			stateTimer = GetActiveTime(currentAttack);
+			stateTimer = GetActiveTime(currentAttack); // used for non-bite attacks
 
 			hitTargetsThisActive.Clear();
 
@@ -646,16 +672,32 @@ public partial class TutorialBoss : BaseEnemy
 
 			ShowTelegraph(currentAttack, false);
 
-			EnableAttackHitbox(currentAttack, true);
+			// Bite: enable hitbox on animation frame 2 (index 2), not immediately.
+			if (currentAttack != BossAttack.Bite)
+				EnableAttackHitbox(currentAttack, true);
+			else
+				EnableAttackHitbox(BossAttack.Bite, false);
 
 			if (currentAttack == BossAttack.Charge)
 				Velocity = chargeDir * (Speed * 2.2f);
+
+			// Start bite animation at the beginning of the Active phase
+			if (currentAttack == BossAttack.Bite && Sprite != null)
+			{
+				if (Sprite.SpriteFrames != null && Sprite.SpriteFrames.HasAnimation(BiteAnimName))
+					Sprite.Play(BiteAnimName);
+				else
+					GD.PushWarning($"[Boss] AnimatedSprite2D missing animation '{BiteAnimName}'.");
+			}
 
 			return;
 		}
 
 		if (state == BossState.Active)
 		{
+			// Bite Active ends via animation finished (OnSpriteAnimationFinished).
+			if (currentAttack == BossAttack.Bite) return;
+
 			EnableAttackHitbox(currentAttack, false);
 			ShowTelegraph(currentAttack, false);
 
@@ -923,6 +965,40 @@ public partial class TutorialBoss : BaseEnemy
 			n2d.GlobalRotation = angle;
 	}
 
+	// NEW: Bite damage timing driven by bite animation frame + animation finished
+	private void OnSpriteFrameChanged()
+	{
+		if (state != BossState.Active) return;
+		if (currentAttack != BossAttack.Bite) return;
+		if (Sprite == null) return;
+		if (Sprite.Animation != BiteAnimName) return;
+		if (!Sprite.IsPlaying()) return;
+
+		if (!_biteHitboxEnabledThisBite && Sprite.Frame == BiteDamageFrameIndex)
+		{
+			_biteHitboxEnabledThisBite = true;
+			EnableAttackHitbox(BossAttack.Bite, true);
+		}
+	}
+
+	private void OnSpriteAnimationFinished()
+	{
+		if (currentAttack != BossAttack.Bite) return;
+		if (state != BossState.Active) return;
+		if (Sprite == null) return;
+		if (Sprite.Animation != BiteAnimName) return;
+
+		// End bite on animation end
+		EnableAttackHitbox(BossAttack.Bite, false);
+		ShowTelegraph(BossAttack.Bite, false);
+
+		Velocity = Vector2.Zero;
+		state = BossState.Recover;
+		stateTimer = BiteRecover;
+
+		// Recover will finish via timer and return to chasing
+	}
+
 	protected override void OnDamageTaken(int damage)
 	{
 		base.OnDamageTaken(damage);
@@ -965,6 +1041,8 @@ public partial class TutorialBoss : BaseEnemy
 		chargeCd = 0f;
 		hitTargetsThisActive.Clear();
 		_contactDamageCdByTarget.Clear();
+
+		_biteHitboxEnabledThisBite = false;
 
 		if (_bossUIItem != null) _bossUIItem.Visible = false;
 		bossUI?.InitializeBoss(MaxHealth, _currentHealth);
