@@ -15,6 +15,16 @@ public partial class RangeEnemy : BaseEnemy
 	
 	[ExportGroup("Combat")]
 	[Export] public PackedScene ProjectileScene;
+	
+	// ── Patrol ───────────────────────────────────────────────────
+	[ExportGroup("Patrol")]
+	[Export] public float PatrolRadius    = 80f;  
+	[Export] public float PatrolSpeed     = 30f;  
+	[Export] public float PatrolWaitTime  = 1.5f;  
+
+	private Vector2 _patrolTarget        = Vector2.Zero;
+	private float   _patrolWaitTimer     = 0f;
+	private bool    _waitingAtPoint      = false;
 
 	// ── State Machine ────────────────────────────────────────────
 	private enum State { Idle, Alert, Attack, Reposition, LoseSight, Dead }
@@ -35,7 +45,7 @@ public partial class RangeEnemy : BaseEnemy
 	public override void _Ready()
 	{
 		base._Ready();
-
+		PickNewPatrolTarget();
 		GD.Print("[RangeEnemy] _Ready called!");
 
 		_detectionArea = GetNode<Area2D>("detection_area");
@@ -112,9 +122,52 @@ public partial class RangeEnemy : BaseEnemy
 	// ── State Handlers ───────────────────────────────────────────
 	private void HandleIdle()
 	{
-		Velocity = Vector2.Zero;
+		// Waiting at a patrol point
+		if (_waitingAtPoint)
+		{
+			Velocity = Vector2.Zero;
+			_patrolWaitTimer -= (float)GetPhysicsProcessDeltaTime();
+
+			if (_patrolWaitTimer <= 0f)
+			{
+				_waitingAtPoint = false;
+				PickNewPatrolTarget();
+			}
+			return;
+		}
+
+		// Move toward patrol target
+		float distToTarget = GlobalPosition.DistanceTo(_patrolTarget);
+
+		if (distToTarget < 4f)
+		{
+			// Reached the target — wait before picking next
+			Velocity = Vector2.Zero;
+			_waitingAtPoint  = true;
+			_patrolWaitTimer = PatrolWaitTime;
+			return;
+		}
+
+		// Face and move toward patrol target
+		Vector2 dir = (_patrolTarget - GlobalPosition).Normalized();
+		Velocity = dir * PatrolSpeed;
+
+		// Face walking direction
+		_rayCastOrigin.Rotation = dir.Angle();
 	}
 
+	private void PickNewPatrolTarget()
+	{
+		// Pick a random point within PatrolRadius of the start position
+		float angle  = (float)GD.RandRange(0, Mathf.Tau);
+		float radius = (float)GD.RandRange(0, PatrolRadius);
+
+		_patrolTarget = _startPosition + new Vector2(
+			Mathf.Cos(angle) * radius,
+			Mathf.Sin(angle) * radius
+		);
+	}
+	
 	private void HandleAlert(float dt)
 	{
 		Velocity = Vector2.Zero;
