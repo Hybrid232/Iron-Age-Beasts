@@ -25,10 +25,7 @@ public partial class TutorialBoss : BaseEnemy
 	[ExportGroup("Encounter Reset")]
 	[Export] public bool ResetEncounterWhenPlayerDies = true;
 
-	// Group name for respawn systems to call ForceResetEncounter() (optional, but handy)
 	public const string BOSS_ENCOUNTER_GROUP = "BossEncounter";
-
-	// Track player death/removal
 	private bool _playerDeathHooked = false;
 
 	// -----------------------------
@@ -42,10 +39,19 @@ public partial class TutorialBoss : BaseEnemy
 	[Export] public string BiteAnimName = "bite";
 	[Export] public int BiteDamageFrameIndex = 2;
 
-	// NEW: Tail sweep animation-driven hit window
 	[Export] public string TailSweepAnimName = "Spin";
 	[Export] public int TailSweepActiveStartFrame = 8;
 	[Export] public int TailSweepActiveEndFrame = 11;
+
+	[Export] public string ChargeAnimName = "charge";
+	[Export] public int ChargeActiveStartFrame = 7;
+	[Export] public int ChargeActiveEndFrame = 15;
+	[Export] public float ChargeSpeedMultiplier = 2.2f;
+
+	// NEW: Phase 2 roar animation + active window
+	[Export] public string Phase2RoarAnimName = "Roar";
+	[Export] public int Phase2RoarActiveStartFrame = 3; // inclusive
+	[Export] public int Phase2RoarActiveEndFrame = 9;   // inclusive
 
 	[Export] public bool DefaultFacesRight = true;
 	[Export] public float FaceDeadzonePx = 2f;
@@ -66,7 +72,7 @@ public partial class TutorialBoss : BaseEnemy
 	[Export] public bool UnlockChargeAt40Percent = true;
 
 	[ExportGroup("Phase 2 Roar (on enter)")]
-	[Export] public float Phase2RoarTelegraph = 0.6f;
+	[Export] public float Phase2RoarTelegraph = 0.6f; // kept (not used for timing anymore, animation drives it)
 	[Export] public float Phase2RoarRecover = 0.7f;
 	[Export] public float RoarKnockbackDistance = 420f;
 	[Export] public float RoarKnockbackTime = 0.25f;
@@ -103,7 +109,7 @@ public partial class TutorialBoss : BaseEnemy
 	[Export] public float BiteRecover = 0.55f;
 
 	[Export] public float TailTelegraph = 0.30f;
-	[Export] public float TailActive = 0.18f; // (kept for tuning, but TailSweep now ends via animation)
+	[Export] public float TailActive = 0.18f;
 	[Export] public float TailRecover = 0.70f;
 
 	[Export] public float ChargeTelegraph = 0.40f;
@@ -131,6 +137,12 @@ public partial class TutorialBoss : BaseEnemy
 	[Export] public float TailKnockbackTime = 0.18f;
 	[Export] public float ChargeKnockbackDistance = 250f;
 	[Export] public float ChargeKnockbackTime = 2.0f;
+
+	[ExportGroup("Charge: Knockback Little Enemies")]
+	[Export] public bool ChargeKnockbackAffectsEnemies = true;
+	[Export] public float ChargeEnemyKnockbackDistance = 260f;
+	[Export] public float ChargeEnemyKnockbackTime = 0.25f;
+	[Export] public float ChargeEnemyStunSeconds = 0.35f;
 
 	[ExportGroup("Facing / Orientation")]
 	[Export] public bool FlipAttackDirection = true;
@@ -174,11 +186,14 @@ public partial class TutorialBoss : BaseEnemy
 
 	private bool _biteHitboxEnabledThisBite = false;
 	private bool _tailHitboxEnabledThisSpin = false;
+	private bool _chargeActiveWindowOpen = false;
+
+	// NEW: roar pulse gating (fire once during active frame window)
+	private bool _roarPulseFiredThisRoar = false;
 
 	public override void _EnterTree()
 	{
 		base._EnterTree();
-		// Optional: allow external systems to find bosses easily
 		AddToGroup(BOSS_ENCOUNTER_GROUP);
 	}
 
@@ -253,7 +268,6 @@ public partial class TutorialBoss : BaseEnemy
 		UpdateFacingAndAnimation(force: true);
 	}
 
-	// NEW: if the player disappears while the fight is active, reset.
 	public override void _Process(double delta)
 	{
 		base._Process(delta);
@@ -262,7 +276,6 @@ public partial class TutorialBoss : BaseEnemy
 		{
 			if (_player == null || !IsInstanceValid(_player))
 			{
-				// Player died / got freed / changed scenes.
 				GD.Print("[Boss] Player became invalid during fight; resetting encounter.");
 				ForceResetEncounter();
 				return;
@@ -292,7 +305,6 @@ public partial class TutorialBoss : BaseEnemy
 		if (p == null || !IsInstanceValid(p)) return;
 		if (_playerDeathHooked) return;
 
-		// This fires if the player node is removed/freed on death.
 		p.TreeExiting += OnPlayerTreeExiting;
 		_playerDeathHooked = true;
 	}
@@ -317,12 +329,8 @@ public partial class TutorialBoss : BaseEnemy
 
 	public void ForceResetEncounter()
 	{
-		// Hide UI immediately (even before ResetEnemy finishes)
 		if (_bossUIItem != null) _bossUIItem.Visible = false;
-
-		// Unhook old player death event so we don't keep stale delegates around
 		UnhookPlayerDeathEvents(_player);
-
 		ResetEnemy();
 	}
 
@@ -349,11 +357,14 @@ public partial class TutorialBoss : BaseEnemy
 		ApplyLeftRightScaleFlip(BodyCollisionRoot, _facingRight, CollisionDefaultFacesRight);
 		ApplyLeftRightScaleFlip(HurtboxRoot, _facingRight, CollisionDefaultFacesRight);
 
+		// NEW: Roaring state uses Roar animation
 		string desiredAnim =
-			(state == BossState.Active) ? currentAttack switch
+			(state == BossState.Roaring) ? Phase2RoarAnimName
+			: (state == BossState.Active) ? currentAttack switch
 			{
 				BossAttack.Bite => BiteAnimName,
 				BossAttack.TailSweep => TailSweepAnimName,
+				BossAttack.Charge => ChargeAnimName,
 				_ => IdleAnimName
 			}
 			: state switch
@@ -361,7 +372,6 @@ public partial class TutorialBoss : BaseEnemy
 				BossState.Chasing => ChaseAnimName,
 				BossState.Telegraph => IdleAnimName,
 				BossState.Recover => IdleAnimName,
-				BossState.Roaring => IdleAnimName,
 				_ => IdleAnimName
 			};
 
@@ -490,7 +500,6 @@ public partial class TutorialBoss : BaseEnemy
 		_player = player;
 		_chasing = true;
 
-		// NEW: hook player death/removal so we can reset
 		HookPlayerDeathEvents(_player);
 
 		state = BossState.Chasing;
@@ -570,8 +579,9 @@ public partial class TutorialBoss : BaseEnemy
 
 		Velocity = Vector2.Zero;
 
+		// NEW: roaring state uses animation frames to decide when pulse happens.
 		state = BossState.Roaring;
-		stateTimer = Phase2RoarTelegraph;
+		_roarPulseFiredThisRoar = false;
 
 		GD.Print("[Boss] PHASE 2 ROAR starting...");
 	}
@@ -587,10 +597,8 @@ public partial class TutorialBoss : BaseEnemy
 		switch (state)
 		{
 			case BossState.Roaring:
+				// Roar animation drives the timing; just stay still until AnimationFinished.
 				Velocity = Vector2.Zero;
-				stateTimer -= dt;
-				if (stateTimer <= 0f)
-					DoRoarPulseAndStartPhase2Adds();
 				break;
 
 			case BossState.Chasing:
@@ -601,11 +609,12 @@ public partial class TutorialBoss : BaseEnemy
 			case BossState.Telegraph:
 			case BossState.Active:
 			case BossState.Recover:
-				if (!(state == BossState.Active && currentAttack == BossAttack.Charge))
+				if (!(state == BossState.Active && currentAttack == BossAttack.Charge && _chargeActiveWindowOpen))
 					Velocity = Vector2.Zero;
 
 				if (!(state == BossState.Active && currentAttack == BossAttack.Bite) &&
-					!(state == BossState.Active && currentAttack == BossAttack.TailSweep))
+					!(state == BossState.Active && currentAttack == BossAttack.TailSweep) &&
+					!(state == BossState.Active && currentAttack == BossAttack.Charge))
 				{
 					stateTimer -= dt;
 					if (stateTimer <= 0f)
@@ -738,6 +747,7 @@ public partial class TutorialBoss : BaseEnemy
 
 		_biteHitboxEnabledThisBite = false;
 		_tailHitboxEnabledThisSpin = false;
+		_chargeActiveWindowOpen = false;
 
 		if (_player != null && attack == BossAttack.Charge)
 			chargeDir = (_player.GlobalPosition - GlobalPosition).Normalized();
@@ -762,23 +772,25 @@ public partial class TutorialBoss : BaseEnemy
 			PrepareHitboxForAttack(currentAttack);
 			ShowTelegraph(currentAttack, false);
 
-			// Bite and TailSweep are animation-driven for when hitboxes enable/disable
-			if (currentAttack != BossAttack.Bite && currentAttack != BossAttack.TailSweep)
+			if (currentAttack != BossAttack.Bite &&
+				currentAttack != BossAttack.TailSweep &&
+				currentAttack != BossAttack.Charge)
+			{
 				EnableAttackHitbox(currentAttack, true);
+			}
 			else
+			{
 				EnableAttackHitbox(currentAttack, false);
-
-			if (currentAttack == BossAttack.Charge)
-				Velocity = chargeDir * (Speed * 2.2f);
+			}
 
 			return;
 		}
 
 		if (state == BossState.Active)
 		{
-			// Bite & TailSweep end via AnimationFinished
 			if (currentAttack == BossAttack.Bite) return;
 			if (currentAttack == BossAttack.TailSweep) return;
+			if (currentAttack == BossAttack.Charge) return;
 
 			EnableAttackHitbox(currentAttack, false);
 			ShowTelegraph(currentAttack, false);
@@ -924,6 +936,20 @@ public partial class TutorialBoss : BaseEnemy
 					p.TriggerHitRecoil(pushDir, kbDist, kbTime);
 				}
 			}
+			else if (isEnemy && a == BossAttack.Charge && ChargeKnockbackAffectsEnemies)
+			{
+				Vector2 pushDir = ((Node2D)body).GlobalPosition - GlobalPosition;
+				if (pushDir == Vector2.Zero) pushDir = chargeDir == Vector2.Zero ? Vector2.Right : chargeDir;
+				pushDir = pushDir.Normalized();
+
+				if (body.HasMethod("TriggerHitRecoil"))
+					body.Call("TriggerHitRecoil", pushDir, ChargeEnemyKnockbackDistance, ChargeEnemyKnockbackTime);
+				else if (body is CharacterBody2D cb)
+					cb.Velocity = pushDir * (ChargeEnemyKnockbackDistance / Math.Max(0.001f, ChargeEnemyKnockbackTime));
+
+				if (body is IStunnable stunnable)
+					stunnable.ApplyStun(ChargeEnemyStunSeconds);
+			}
 		}
 	}
 
@@ -1044,11 +1070,27 @@ public partial class TutorialBoss : BaseEnemy
 
 	private void OnSpriteFrameChanged()
 	{
+		// -------- Roar frame window (state = Roaring) --------
+		if (state == BossState.Roaring && Sprite != null && Sprite.IsPlaying() && Sprite.Animation == Phase2RoarAnimName)
+		{
+			bool inActive =
+				Sprite.Frame >= Phase2RoarActiveStartFrame &&
+				Sprite.Frame <= Phase2RoarActiveEndFrame;
+
+			// Fire the pulse once, the first time we enter the active window.
+			if (inActive && !_roarPulseFiredThisRoar)
+			{
+				_roarPulseFiredThisRoar = true;
+				DoRoarPulseAndStartPhase2Adds();
+			}
+			return;
+		}
+
+		// -------- Attacks frame windows (state = Active) --------
 		if (state != BossState.Active) return;
 		if (Sprite == null) return;
 		if (!Sprite.IsPlaying()) return;
 
-		// Bite: enable once on the damage frame
 		if (currentAttack == BossAttack.Bite && Sprite.Animation == BiteAnimName)
 		{
 			if (!_biteHitboxEnabledThisBite && Sprite.Frame == BiteDamageFrameIndex)
@@ -1059,7 +1101,6 @@ public partial class TutorialBoss : BaseEnemy
 			return;
 		}
 
-		// Tail sweep: enable only during Spin active window (frames 8-11 inclusive)
 		if (currentAttack == BossAttack.TailSweep && Sprite.Animation == TailSweepAnimName)
 		{
 			bool inActive =
@@ -1076,12 +1117,32 @@ public partial class TutorialBoss : BaseEnemy
 				_tailHitboxEnabledThisSpin = false;
 				EnableAttackHitbox(BossAttack.TailSweep, false);
 			}
+			return;
+		}
+
+		if (currentAttack == BossAttack.Charge && Sprite.Animation == ChargeAnimName)
+		{
+			bool inActive =
+				Sprite.Frame >= ChargeActiveStartFrame &&
+				Sprite.Frame <= ChargeActiveEndFrame;
+
+			if (inActive && !_chargeActiveWindowOpen)
+			{
+				_chargeActiveWindowOpen = true;
+				EnableAttackHitbox(BossAttack.Charge, true);
+				Velocity = chargeDir * (Speed * ChargeSpeedMultiplier);
+			}
+			else if (!inActive && _chargeActiveWindowOpen)
+			{
+				_chargeActiveWindowOpen = false;
+				EnableAttackHitbox(BossAttack.Charge, false);
+				Velocity = Vector2.Zero;
+			}
 		}
 	}
 
 	private void OnSpriteAnimationFinished()
 	{
-		// Bite ends on animation finished
 		if (currentAttack == BossAttack.Bite && state == BossState.Active && Sprite != null && Sprite.Animation == BiteAnimName)
 		{
 			EnableAttackHitbox(BossAttack.Bite, false);
@@ -1093,7 +1154,6 @@ public partial class TutorialBoss : BaseEnemy
 			return;
 		}
 
-		// Tail sweep ends on Spin finished
 		if (currentAttack == BossAttack.TailSweep && state == BossState.Active && Sprite != null && Sprite.Animation == TailSweepAnimName)
 		{
 			EnableAttackHitbox(BossAttack.TailSweep, false);
@@ -1104,6 +1164,30 @@ public partial class TutorialBoss : BaseEnemy
 			Velocity = Vector2.Zero;
 			state = BossState.Recover;
 			stateTimer = TailRecover;
+			return;
+		}
+
+		if (currentAttack == BossAttack.Charge && state == BossState.Active && Sprite != null && Sprite.Animation == ChargeAnimName)
+		{
+			EnableAttackHitbox(BossAttack.Charge, false);
+			ShowTelegraph(BossAttack.Charge, false);
+
+			_chargeActiveWindowOpen = false;
+
+			Velocity = Vector2.Zero;
+			state = BossState.Recover;
+			stateTimer = ChargeRecover;
+			return;
+		}
+
+		// NEW: if Roar animation finishes and we haven't transitioned yet, go to Recover.
+		if (state == BossState.Roaring && Sprite != null && Sprite.Animation == Phase2RoarAnimName)
+		{
+			// If the roar never reached the active window (frames 3-9), still continue the fight.
+			if (!_roarPulseFiredThisRoar)
+				DoRoarPulseAndStartPhase2Adds();
+
+			// DoRoarPulseAndStartPhase2Adds() already set state to Recover, so nothing else needed.
 			return;
 		}
 	}
@@ -1131,7 +1215,6 @@ public partial class TutorialBoss : BaseEnemy
 		if (BodyContactDamageArea != null)
 			SetHitboxEnabled(BodyContactDamageArea, false);
 
-		// Unhook player events on boss death too
 		UnhookPlayerDeathEvents(_player);
 
 		base.Die();
@@ -1141,7 +1224,6 @@ public partial class TutorialBoss : BaseEnemy
 	{
 		base.ResetEnemy();
 
-		// Restore collision mask if we changed it
 		if (_cachedMask)
 			CollisionMask = _cachedPreFightCollisionMask;
 
@@ -1160,8 +1242,9 @@ public partial class TutorialBoss : BaseEnemy
 
 		_biteHitboxEnabledThisBite = false;
 		_tailHitboxEnabledThisSpin = false;
+		_chargeActiveWindowOpen = false;
+		_roarPulseFiredThisRoar = false;
 
-		// Ensure UI is hidden on reset (important for respawn)
 		if (_bossUIItem != null) _bossUIItem.Visible = false;
 		bossUI?.InitializeBoss(MaxHealth, _currentHealth);
 
@@ -1171,10 +1254,8 @@ public partial class TutorialBoss : BaseEnemy
 		SetHitboxEnabled(ChargeHitbox, false);
 		if (BodyContactDamageArea != null) SetHitboxEnabled(BodyContactDamageArea, false);
 
-		// Reopen gate
 		SetEntranceGateLocked(false);
 
-		// Re-arm arena trigger
 		if (ArenaTriggerArea != null)
 		{
 			ArenaTriggerArea.Monitorable = true;
