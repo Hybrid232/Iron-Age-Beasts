@@ -408,7 +408,6 @@ position = Vector2(7810, -674)
 ArenaTriggerArea = NodePath("../BossStart")
 EntranceGate = NodePath("../StaticBody2D")
 BossUIPath = NodePath("../HUD/BossUI")
-BiteAnimName = "Bite"
 DefaultFacesRight = false
 CollisionDefaultFacesRight = false
 Phase2SpawnerRootPath = NodePath("../EnemySpawnPoints/BossPhase2Spawns")
