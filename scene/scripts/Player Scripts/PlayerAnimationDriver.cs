@@ -6,16 +6,21 @@ public partial class PlayerAnimationDriver : Node
 	[Export] public AnimationTree AnimationTree;
 
 	// Your tree is: Idle (BlendTree) -> BlendSpace2D -> TimeScale -> Output
-	// So we must set BlendSpace2D's blend_position inside each state.
-	[ExportGroup("AnimationTree Keys (match your node names)")]
+	[ExportGroup("AnimationTree Keys")]
 	[Export] public string IdleBlendPositionKey = "parameters/Idle/BlendSpace2D/blend_position";
 	[Export] public string RunBlendPositionKey  = "parameters/Run/BlendSpace2D/blend_position";
+
+	// NEW: Dash state BlendSpace2D blend_position
+	[Export] public string DashBlendPositionKey = "parameters/Dash/BlendSpace2D/blend_position";
 
 	[ExportGroup("StateMachine")]
 	[Export] public bool UseStateMachine = true;
 	[Export] public string PlaybackKey = "parameters/playback";
 	[Export] public string IdleStateName = "Idle";
 	[Export] public string RunStateName = "Run";
+
+	// NEW: Dash state name (you said the state is named Dash)
+	[Export] public string DashStateName = "Dash";
 
 	[ExportGroup("BlendSpace Convention")]
 	[Export] public bool InvertYForBlendSpace = false;
@@ -43,16 +48,10 @@ public partial class PlayerAnimationDriver : Node
 		}
 
 		AnimationTree.Active = true;
-
-		if (PrintDebug)
-		{
-			var idle = AnimationTree.Get(new StringName(IdleBlendPositionKey));
-			var run = AnimationTree.Get(new StringName(RunBlendPositionKey));
-			GD.Print($"[AnimDriver] Ready idle='{idle}' run='{run}'");
-		}
 	}
 
-	public void UpdateFromInput(bool allowRun = true)
+	// CHANGED: added isDashing
+	public void UpdateFromInput(bool allowRun = true, bool isDashing = false)
 	{
 		if (AnimationTree == null)
 			return;
@@ -68,24 +67,28 @@ public partial class PlayerAnimationDriver : Node
 		if (dir != Vector2.Zero)
 			_facing = dir;
 
-		bool isRunning = allowRun && anyHeld;
-
+		// State selection: Dash overrides Run/Idle
 		if (UseStateMachine)
-			TrySetState(isRunning ? RunStateName : IdleStateName);
+		{
+			if (isDashing)
+			{
+				TrySetState(DashStateName);
+			}
+			else
+			{
+				bool isRunning = allowRun && anyHeld;
+				TrySetState(isRunning ? RunStateName : IdleStateName);
+			}
+		}
 
 		Vector2 blendDir = _facing;
 		if (InvertYForBlendSpace)
 			blendDir.Y *= -1f;
 
+		// Update blend positions for all 3 states (safe even if not currently active)
 		AnimationTree.Set(new StringName(IdleBlendPositionKey), blendDir);
 		AnimationTree.Set(new StringName(RunBlendPositionKey), blendDir);
-
-		if (PrintDebug)
-		{
-			var idleNow = AnimationTree.Get(new StringName(IdleBlendPositionKey));
-			var runNow = AnimationTree.Get(new StringName(RunBlendPositionKey));
-			GD.Print($"[AnimDriver] held={anyHeld} running={isRunning} facing={_facing} blend={blendDir} idleNow='{idleNow}' runNow='{runNow}'");
-		}
+		AnimationTree.Set(new StringName(DashBlendPositionKey), blendDir);
 	}
 
 	private void TrySetState(string stateName)
