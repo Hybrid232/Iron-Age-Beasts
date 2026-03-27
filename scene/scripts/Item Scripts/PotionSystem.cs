@@ -5,6 +5,9 @@ public class PotionSystem
 	private int maxPotions = 5;
 	private int currentPotions;
 	private int healAmount;
+	
+	private AudioStreamPlayer potionSFX;
+	private AudioStream potionSFXFile;
 
 	// How many potions the player has permanently unlocked (refill amount)
 	private int unlockedPotions;
@@ -19,16 +22,25 @@ public class PotionSystem
 	public int UnlockedPotions => unlockedPotions;
 
 	// StartingPotions defaults to 1, and also sets unlocked amount
-	public PotionSystem(int healAmount, HealthSystem healthSystem, UI uiReference, int startingPotions = 1)
+	public PotionSystem(int healAmount, HealthSystem healthSystem, UI uiReference, int startingPotions = 1, 
+						AudioStream potionSFXFile = null, 
+						AudioStreamPlayer potionSFX = null)
 	{
 		this.healAmount = healAmount;
 		this.healthSystem = healthSystem;
 		this.uiReference = uiReference;
+		this.potionSFXFile = potionSFXFile;
+		this.potionSFX = potionSFX;
 
 		unlockedPotions = Mathf.Clamp(startingPotions, 0, maxPotions);
 		currentPotions = unlockedPotions;
 
 		uiReference?.UpdatePotionDisplay(currentPotions);
+		
+		if (potionSFX != null && potionSFXFile != null)
+		{
+			potionSFX.Stream = potionSFXFile;
+		}
 	}
 
 	public bool CanBuyPotion() => unlockedPotions < maxPotions;
@@ -56,6 +68,7 @@ public class PotionSystem
 
 			uiReference?.UpdatePotionDisplay(currentPotions);
 			GD.Print($"Potion used! Remaining: {currentPotions}");
+			potionSFX?.Play();
 		}
 	}
 

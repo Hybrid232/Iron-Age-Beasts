@@ -1,10 +1,11 @@
-[gd_scene load_steps=67 format=3 uid="uid://d38cvt67w5bgb"]
+[gd_scene format=3 uid="uid://d38cvt67w5bgb"]
 
 [ext_resource type="Script" uid="uid://bdxac0jm2jtt2" path="res://scene/scripts/Player Scripts/Player.cs" id="1_4bggy"]
 [ext_resource type="PackedScene" uid="uid://77e4i6lmd7ih" path="res://scene/Player/Bullet.tscn" id="2_a1q3d"]
 [ext_resource type="AudioStream" uid="uid://cb82wynxgbpu5" path="res://Audio/SFX/Weapon/Gun/Fired Shot.wav" id="3_wsr1k"]
 [ext_resource type="AudioStream" uid="uid://ymffvfq4hyy7" path="res://Audio/SFX/Player/FootStepsGrass.wav" id="4_0fwxj"]
 [ext_resource type="AudioStream" uid="uid://b0xmaderrnmxx" path="res://Audio/SFX/Weapon/Halberd/Swoosh.wav" id="5_wsr1k"]
+[ext_resource type="AudioStream" uid="uid://b4fe503cswdh" path="res://Audio/SFX/Player/Healing Stim.wav" id="6_ve2us"]
 [ext_resource type="Texture2D" uid="uid://j7bspm3fmg3q" path="res://sprites/MC/MC_Runs.png" id="6_wsr1k"]
 [ext_resource type="Script" uid="uid://hwskfynq1rhf" path="res://scene/scripts/Player Scripts/PlayerAnimationDriver.cs" id="7_46pjf"]
 
@@ -282,6 +283,90 @@ tracks/1/keys = {
 "values": [0]
 }
 
+[sub_resource type="Animation" id="Animation_wgxy5"]
+resource_name = "Idle_Left"
+length = 0.01
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AnimatedSprite2D:animation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [&"Idle_Left", &"Run_Down"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("AnimatedSprite2D:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="Animation" id="Animation_tlwrw"]
+resource_name = "Idle_Right"
+length = 0.01
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AnimatedSprite2D:animation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [&"Idle_Right", &"Run_Down"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("AnimatedSprite2D:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="Animation" id="Animation_bbm51"]
+resource_name = "Idle_Up"
+length = 0.01
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AnimatedSprite2D:animation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [&"Idle_Up", &"Run_Down"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("AnimatedSprite2D:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
 [sub_resource type="Animation" id="Animation_kkphd"]
 length = 0.001
 tracks/0/type = "value"
@@ -425,90 +510,6 @@ tracks/1/keys = {
 "values": [0, 1, 2, 3, 4, 5]
 }
 
-[sub_resource type="Animation" id="Animation_tlwrw"]
-resource_name = "Idle_Right"
-length = 0.01
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("AnimatedSprite2D:animation")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 1),
-"transitions": PackedFloat32Array(1, 1),
-"update": 1,
-"values": [&"Idle_Right", &"Run_Down"]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("AnimatedSprite2D:frame")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [0]
-}
-
-[sub_resource type="Animation" id="Animation_bbm51"]
-resource_name = "Idle_Up"
-length = 0.01
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("AnimatedSprite2D:animation")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 1),
-"transitions": PackedFloat32Array(1, 1),
-"update": 1,
-"values": [&"Idle_Up", &"Run_Down"]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("AnimatedSprite2D:frame")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [0]
-}
-
-[sub_resource type="Animation" id="Animation_wgxy5"]
-resource_name = "Idle_Left"
-length = 0.01
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("AnimatedSprite2D:animation")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 1),
-"transitions": PackedFloat32Array(1, 1),
-"update": 1,
-"values": [&"Idle_Left", &"Run_Down"]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("AnimatedSprite2D:frame")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [0]
-}
-
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_r2k8o"]
 _data = {
 &"Idle_Down": SubResource("Animation_wneb6"),
@@ -605,7 +606,7 @@ states/Start/position = Vector2(196, 100)
 transitions = ["Start", "Idle", SubResource("AnimationNodeStateMachineTransition_hmv17"), "Idle", "Run", SubResource("AnimationNodeStateMachineTransition_ww526"), "Run", "Idle", SubResource("AnimationNodeStateMachineTransition_r6pp1")]
 graph_offset = Vector2(-23, 60)
 
-[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("attackPivot", "attackHitbox", "halberdSFX", "bulletContainer", "bulletBars", "gunSFX", "walkSFX", "swingSFX", "animationDriver") groups=["Player", "player"]]
+[node name="Player" type="CharacterBody2D" unique_id=454820703 node_paths=PackedStringArray("attackPivot", "attackHitbox", "halberdSFX", "bulletContainer", "bulletBars", "gunSFX", "walkSFX", "swingSFX", "potionSFX", "animationDriver") groups=["Player", "player"]]
 collision_layer = 3
 collision_mask = 3
 script = ExtResource("1_4bggy")
@@ -627,9 +628,11 @@ walkSFX = NodePath("PlayerSFX/WalkSFX")
 walkSoundFile = ExtResource("4_0fwxj")
 swingSFX = NodePath("PlayerSFX/HalberdSwing")
 swingSoundFile = ExtResource("5_wsr1k")
+potionSFX = NodePath("PlayerSFX/PotionSFX")
+potionSFXFile = ExtResource("6_ve2us")
 animationDriver = NodePath("PlayerAnimationDriver")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." groups=["Player"]]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=2014707976 groups=["Player"]]
 light_mask = 3
 visibility_layer = 3
 z_index = 2
@@ -637,11 +640,11 @@ sprite_frames = SubResource("SpriteFrames_uuvml")
 animation = &"Run_Down"
 frame = 1
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="Camera2D" type="Camera2D" parent="." unique_id=74692412]
 zoom = Vector2(1.5, 1.5)
 position_smoothing_enabled = true
 
-[node name="HitboxArea" type="CollisionShape2D" parent="." groups=["Player", "player"]]
+[node name="HitboxArea" type="CollisionShape2D" parent="." unique_id=1232112555 groups=["Player", "player"]]
 light_mask = 7
 visibility_layer = 7
 z_index = 2
@@ -651,24 +654,22 @@ scale = Vector2(0.655, 0.415)
 shape = SubResource("CapsuleShape2D_0fwxj")
 debug_color = Color(2.4065375e-07, 0.63608485, 0.4131711, 0.41960785)
 
-[node name="AttackPivot" type="Node2D" parent="."]
+[node name="AttackPivot" type="Node2D" parent="." unique_id=1195871004]
 
-[node name="Attackbox" type="Area2D" parent="AttackPivot"]
+[node name="Attackbox" type="Area2D" parent="AttackPivot" unique_id=832232633]
 z_index = 2
 rotation = -1.6309803
 
-[node name="AttackArea" type="CollisionShape2D" parent="AttackPivot/Attackbox"]
+[node name="AttackArea" type="CollisionShape2D" parent="AttackPivot/Attackbox" unique_id=1161166641]
 shape = SubResource("CircleShape2D_d75ba")
 debug_color = Color(0.9917659, 0, 0.2673412, 0.41960785)
 
-[node name="BulletContainer" type="Node2D" parent="."]
+[node name="BulletContainer" type="Node2D" parent="." unique_id=55892541]
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-libraries = {
-&"": SubResource("AnimationLibrary_r2k8o")
-}
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=2079446279]
+libraries/ = SubResource("AnimationLibrary_r2k8o")
 
-[node name="AnimationTree" type="AnimationTree" parent="."]
+[node name="AnimationTree" type="AnimationTree" parent="." unique_id=18610335]
 tree_root = SubResource("AnimationNodeStateMachine_i2brr")
 anim_player = NodePath("../AnimationPlayer")
 parameters/Idle/TimeScale/scale = 1.0
@@ -676,15 +677,17 @@ parameters/Idle/BlendSpace2D/blend_position = Vector2(0.0030030012, 0.59641254)
 parameters/Run/BlendSpace2D/blend_position = Vector2(-0.007007003, 0.049327374)
 parameters/Run/TimeScale/scale = 0.3999999999999986
 
-[node name="PlayerSFX" type="Node" parent="."]
+[node name="PlayerSFX" type="Node" parent="." unique_id=1332641551]
 
-[node name="WalkSFX" type="AudioStreamPlayer" parent="PlayerSFX"]
+[node name="WalkSFX" type="AudioStreamPlayer" parent="PlayerSFX" unique_id=179758236]
 stream = ExtResource("4_0fwxj")
 
-[node name="GunSFX" type="AudioStreamPlayer" parent="PlayerSFX"]
+[node name="GunSFX" type="AudioStreamPlayer" parent="PlayerSFX" unique_id=982562216]
 
-[node name="HalberdSwing" type="AudioStreamPlayer" parent="PlayerSFX"]
+[node name="HalberdSwing" type="AudioStreamPlayer" parent="PlayerSFX" unique_id=2111266498]
 
-[node name="PlayerAnimationDriver" type="Node" parent="." node_paths=PackedStringArray("AnimationTree")]
+[node name="PotionSFX" type="AudioStreamPlayer" parent="PlayerSFX" unique_id=1957674034]
+
+[node name="PlayerAnimationDriver" type="Node" parent="." unique_id=42493607 node_paths=PackedStringArray("AnimationTree")]
 script = ExtResource("7_46pjf")
 AnimationTree = NodePath("../AnimationTree")

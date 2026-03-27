@@ -83,6 +83,8 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 	[Export] private AudioStream walkSoundFile;
 	[Export] private AudioStreamPlayer swingSFX;
 	[Export] private AudioStream swingSoundFile;
+	[Export] private AudioStreamPlayer potionSFX;
+	[Export] private AudioStream potionSFXFile;
 
 	// ======= UPGRADES =======
 	[ExportGroup("Upgrades")]
@@ -173,7 +175,7 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 
 		respawnPosition = GlobalPosition;
 
-		potionSystem = new PotionSystem(potionHealAmount, healthSystem, uiReference, startingPotions);
+		potionSystem = new PotionSystem(potionHealAmount, healthSystem, uiReference, startingPotions, potionSFXFile, potionSFX);
 
 		if (uiReference != null)
 			uiReference.UpdatePotionDisplay(potionSystem.CurrentPotions);
