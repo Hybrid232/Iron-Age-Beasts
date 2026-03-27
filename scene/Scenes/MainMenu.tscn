@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://cl43r3q2hw3hh"]
+[gd_scene format=3 uid="uid://cl43r3q2hw3hh"]
 
 [ext_resource type="Script" uid="uid://6bn28qiwm8k4" path="res://scene/scripts/MainMenu.cs" id="1_aufxo"]
 [ext_resource type="Texture2D" uid="uid://bp1ad2kmgkaxj" path="res://sprites/test/MenuBGTest.jpg" id="1_ri2lj"]
@@ -72,7 +72,7 @@ thickness = 10
 color = Color(0.58695936, 0.10834391, 0.20244285, 1)
 thickness = 10
 
-[node name="MainMenu" type="Control"]
+[node name="MainMenu" type="Control" unique_id=456005412]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -81,7 +81,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_aufxo")
 
-[node name="Panel" type="Panel" parent="."]
+[node name="Panel" type="Panel" parent="." unique_id=2007872396]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -90,7 +90,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_aufxo")
 
-[node name="MenuContainer" type="VBoxContainer" parent="."]
+[node name="MenuContainer" type="VBoxContainer" parent="." unique_id=223305666]
 layout_mode = 0
 offset_left = -79.0
 offset_top = 385.0
@@ -98,7 +98,7 @@ offset_right = 320.0
 offset_bottom = 641.0
 theme_override_constants/separation = 34
 
-[node name="StartButton" type="Button" parent="MenuContainer"]
+[node name="StartButton" type="Button" parent="MenuContainer" unique_id=1972357489]
 layout_mode = 2
 theme_override_colors/font_pressed_color = Color(0.29324415, 0.2453025, 0.15559536, 1)
 theme_override_colors/font_hover_color = Color(0.7058236, 0.303274, 0.2497719, 1)
@@ -109,7 +109,7 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_aufxo")
 theme_override_styles/hover = SubResource("StyleBoxFlat_ri2lj")
 text = "Start"
 
-[node name="OptionsButton" type="Button" parent="MenuContainer"]
+[node name="OptionsButton" type="Button" parent="MenuContainer" unique_id=800676586]
 layout_mode = 2
 theme_override_colors/font_pressed_color = Color(0.29324415, 0.2453025, 0.15559536, 1)
 theme_override_colors/font_hover_color = Color(0.7058236, 0.303274, 0.2497719, 1)
@@ -120,7 +120,7 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_aufxo")
 theme_override_styles/hover = SubResource("StyleBoxFlat_ri2lj")
 text = "Options"
 
-[node name="QuitButton" type="Button" parent="MenuContainer"]
+[node name="QuitButton" type="Button" parent="MenuContainer" unique_id=1383365099]
 layout_mode = 2
 theme_override_colors/font_pressed_color = Color(0.29324415, 0.2453025, 0.15559536, 1)
 theme_override_colors/font_hover_color = Color(0.7058236, 0.303274, 0.2497719, 1)
@@ -131,7 +131,7 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_aufxo")
 theme_override_styles/hover = SubResource("StyleBoxFlat_ri2lj")
 text = "Quit"
 
-[node name="IronAge" type="Label" parent="."]
+[node name="IronAge" type="Label" parent="." unique_id=1511378510]
 layout_mode = 0
 offset_left = 624.0
 offset_right = 1152.0
@@ -145,7 +145,7 @@ text = "Iron Age"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Label" type="Label" parent="IronAge"]
+[node name="Label" type="Label" parent="IronAge" unique_id=1726327482]
 layout_mode = 0
 offset_left = 228.0
 offset_top = 71.0
@@ -161,7 +161,7 @@ theme_override_fonts/font = ExtResource("4_fufy3")
 theme_override_font_sizes/font_size = 150
 text = "Beasts"
 
-[node name="OptionsBG" type="Panel" parent="."]
+[node name="OptionsBG" type="Panel" parent="." unique_id=1167423371]
 visible = false
 layout_mode = 1
 anchors_preset = 8
@@ -176,7 +176,7 @@ offset_bottom = 233.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="BackButton" type="Button" parent="OptionsBG"]
+[node name="BackButton" type="Button" parent="OptionsBG" unique_id=1826392655]
 layout_mode = 1
 anchors_preset = 9
 anchor_bottom = 1.0
@@ -190,7 +190,7 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_1r54x")
 theme_override_styles/hover = SubResource("StyleBoxFlat_ycyae")
 text = "Back"
 
-[node name="OptionsTitle" type="Label" parent="OptionsBG"]
+[node name="OptionsTitle" type="Label" parent="OptionsBG" unique_id=786514377]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
@@ -200,7 +200,7 @@ theme_override_font_sizes/font_size = 30
 text = "Options"
 horizontal_alignment = 1
 
-[node name="Volume Slider" type="HSlider" parent="OptionsBG"]
+[node name="Volume Slider" type="HSlider" parent="OptionsBG" unique_id=1185536644]
 layout_mode = 0
 offset_left = 584.0
 offset_top = 40.0
@@ -211,14 +211,14 @@ theme_override_styles/grabber_area = SubResource("StyleBoxLine_vj3e8")
 theme_override_styles/grabber_area_highlight = SubResource("StyleBoxLine_vj3e8")
 value = 50.0
 
-[node name="Label" type="Label" parent="OptionsBG/Volume Slider"]
+[node name="Label" type="Label" parent="OptionsBG/Volume Slider" unique_id=1004221271]
 layout_mode = 1
 offset_right = 85.0
 offset_bottom = 42.0
 theme_override_font_sizes/font_size = 30
 text = "Music"
 
-[node name="SFX Slider" type="HSlider" parent="OptionsBG"]
+[node name="SFX Slider" type="HSlider" parent="OptionsBG" unique_id=1254733640]
 layout_mode = 0
 offset_left = 587.0
 offset_top = 146.0
@@ -229,17 +229,17 @@ theme_override_styles/grabber_area = SubResource("StyleBoxLine_vj3e8")
 theme_override_styles/grabber_area_highlight = SubResource("StyleBoxLine_vj3e8")
 value = 50.0
 
-[node name="Label" type="Label" parent="OptionsBG/SFX Slider"]
+[node name="Label" type="Label" parent="OptionsBG/SFX Slider" unique_id=1309090668]
 layout_mode = 1
 offset_right = 85.0
 offset_bottom = 42.0
 theme_override_font_sizes/font_size = 30
 text = "SFX"
 
-[node name="Audio" type="Node" parent="."]
+[node name="Audio" type="Node" parent="." unique_id=1797319804]
 
-[node name="MainTheme" type="AudioStreamPlayer" parent="Audio"]
+[node name="MainTheme" type="AudioStreamPlayer" parent="Audio" unique_id=1138944145]
 stream = ExtResource("3_vj3e8")
 autoplay = true
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1470611519]
