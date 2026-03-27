@@ -12,6 +12,9 @@ public partial class RangeEnemy : BaseEnemy
 	[Export] public float TooCloseDistance  = 60f;
 	[Export] public float AlertDuration     = 0.6f;
 	[Export] public float LoseSightDuration = 2f;
+	
+	[ExportGroup("Combat")]
+	[Export] public PackedScene ProjectileScene;
 
 	// ── State Machine ────────────────────────────────────────────
 	private enum State { Idle, Alert, Attack, Reposition, LoseSight, Dead }
@@ -216,9 +219,27 @@ public partial class RangeEnemy : BaseEnemy
 	protected override void Attack(Node2D target)
 	{
 		_attackCooldownTimer = AttackCooldown;
+
+		if (ProjectileScene == null)
+		{
+			GD.PrintErr("[RangeEnemy] ProjectileScene not assigned!");
+			return;
+		}
+
+		// Spawn projectile at enemy position
+		var projectile = ProjectileScene.Instantiate<Projectile>();
+		
+		// Add to the scene root (not as child of enemy, so it moves independently)
+		GetTree().CurrentScene.AddChild(projectile);
+		projectile.GlobalPosition = GlobalPosition;
+
+		// Fire towards player
+		Vector2 direction = (target.GlobalPosition - GlobalPosition).Normalized();
+		projectile.Initialize(direction);
+
 		GD.Print("[RangeEnemy] SHOOT!");
-		// Projectile spawning goes here next step
 	}
+
 
 	// ── Death ────────────────────────────────────────────────────
 	protected override void Die()
