@@ -42,6 +42,11 @@ public partial class TutorialBoss : BaseEnemy
 	[Export] public string BiteAnimName = "bite";
 	[Export] public int BiteDamageFrameIndex = 2;
 
+	// NEW: Tail sweep animation-driven hit window
+	[Export] public string TailSweepAnimName = "Spin";
+	[Export] public int TailSweepActiveStartFrame = 8;
+	[Export] public int TailSweepActiveEndFrame = 11;
+
 	[Export] public bool DefaultFacesRight = true;
 	[Export] public float FaceDeadzonePx = 2f;
 
@@ -98,7 +103,7 @@ public partial class TutorialBoss : BaseEnemy
 	[Export] public float BiteRecover = 0.55f;
 
 	[Export] public float TailTelegraph = 0.30f;
-	[Export] public float TailActive = 0.18f;
+	[Export] public float TailActive = 0.18f; // (kept for tuning, but TailSweep now ends via animation)
 	[Export] public float TailRecover = 0.70f;
 
 	[Export] public float ChargeTelegraph = 0.40f;
@@ -168,6 +173,7 @@ public partial class TutorialBoss : BaseEnemy
 	private bool fightStarted = false;
 
 	private bool _biteHitboxEnabledThisBite = false;
+	private bool _tailHitboxEnabledThisSpin = false;
 
 	public override void _EnterTree()
 	{
@@ -344,16 +350,20 @@ public partial class TutorialBoss : BaseEnemy
 		ApplyLeftRightScaleFlip(HurtboxRoot, _facingRight, CollisionDefaultFacesRight);
 
 		string desiredAnim =
-			(state == BossState.Active && currentAttack == BossAttack.Bite)
-				? BiteAnimName
-				: state switch
-				{
-					BossState.Chasing => ChaseAnimName,
-					BossState.Telegraph => IdleAnimName,
-					BossState.Recover => IdleAnimName,
-					BossState.Roaring => IdleAnimName,
-					_ => IdleAnimName
-				};
+			(state == BossState.Active) ? currentAttack switch
+			{
+				BossAttack.Bite => BiteAnimName,
+				BossAttack.TailSweep => TailSweepAnimName,
+				_ => IdleAnimName
+			}
+			: state switch
+			{
+				BossState.Chasing => ChaseAnimName,
+				BossState.Telegraph => IdleAnimName,
+				BossState.Recover => IdleAnimName,
+				BossState.Roaring => IdleAnimName,
+				_ => IdleAnimName
+			};
 
 		if (Sprite == null) return;
 
@@ -594,7 +604,8 @@ public partial class TutorialBoss : BaseEnemy
 				if (!(state == BossState.Active && currentAttack == BossAttack.Charge))
 					Velocity = Vector2.Zero;
 
-				if (!(state == BossState.Active && currentAttack == BossAttack.Bite))
+				if (!(state == BossState.Active && currentAttack == BossAttack.Bite) &&
+					!(state == BossState.Active && currentAttack == BossAttack.TailSweep))
 				{
 					stateTimer -= dt;
 					if (stateTimer <= 0f)
@@ -726,6 +737,7 @@ public partial class TutorialBoss : BaseEnemy
 		state = BossState.Telegraph;
 
 		_biteHitboxEnabledThisBite = false;
+		_tailHitboxEnabledThisSpin = false;
 
 		if (_player != null && attack == BossAttack.Charge)
 			chargeDir = (_player.GlobalPosition - GlobalPosition).Normalized();
@@ -750,26 +762,23 @@ public partial class TutorialBoss : BaseEnemy
 			PrepareHitboxForAttack(currentAttack);
 			ShowTelegraph(currentAttack, false);
 
-			if (currentAttack != BossAttack.Bite)
+			// Bite and TailSweep are animation-driven for when hitboxes enable/disable
+			if (currentAttack != BossAttack.Bite && currentAttack != BossAttack.TailSweep)
 				EnableAttackHitbox(currentAttack, true);
 			else
-				EnableAttackHitbox(BossAttack.Bite, false);
+				EnableAttackHitbox(currentAttack, false);
 
 			if (currentAttack == BossAttack.Charge)
 				Velocity = chargeDir * (Speed * 2.2f);
-
-			if (currentAttack == BossAttack.Bite && Sprite != null)
-			{
-				if (Sprite.SpriteFrames != null && Sprite.SpriteFrames.HasAnimation(BiteAnimName))
-					Sprite.Play(BiteAnimName);
-			}
 
 			return;
 		}
 
 		if (state == BossState.Active)
 		{
+			// Bite & TailSweep end via AnimationFinished
 			if (currentAttack == BossAttack.Bite) return;
+			if (currentAttack == BossAttack.TailSweep) return;
 
 			EnableAttackHitbox(currentAttack, false);
 			ShowTelegraph(currentAttack, false);
@@ -1036,31 +1045,67 @@ public partial class TutorialBoss : BaseEnemy
 	private void OnSpriteFrameChanged()
 	{
 		if (state != BossState.Active) return;
-		if (currentAttack != BossAttack.Bite) return;
 		if (Sprite == null) return;
-		if (Sprite.Animation != BiteAnimName) return;
 		if (!Sprite.IsPlaying()) return;
 
-		if (!_biteHitboxEnabledThisBite && Sprite.Frame == BiteDamageFrameIndex)
+		// Bite: enable once on the damage frame
+		if (currentAttack == BossAttack.Bite && Sprite.Animation == BiteAnimName)
 		{
-			_biteHitboxEnabledThisBite = true;
-			EnableAttackHitbox(BossAttack.Bite, true);
+			if (!_biteHitboxEnabledThisBite && Sprite.Frame == BiteDamageFrameIndex)
+			{
+				_biteHitboxEnabledThisBite = true;
+				EnableAttackHitbox(BossAttack.Bite, true);
+			}
+			return;
+		}
+
+		// Tail sweep: enable only during Spin active window (frames 8-11 inclusive)
+		if (currentAttack == BossAttack.TailSweep && Sprite.Animation == TailSweepAnimName)
+		{
+			bool inActive =
+				Sprite.Frame >= TailSweepActiveStartFrame &&
+				Sprite.Frame <= TailSweepActiveEndFrame;
+
+			if (inActive && !_tailHitboxEnabledThisSpin)
+			{
+				_tailHitboxEnabledThisSpin = true;
+				EnableAttackHitbox(BossAttack.TailSweep, true);
+			}
+			else if (!inActive && _tailHitboxEnabledThisSpin)
+			{
+				_tailHitboxEnabledThisSpin = false;
+				EnableAttackHitbox(BossAttack.TailSweep, false);
+			}
 		}
 	}
 
 	private void OnSpriteAnimationFinished()
 	{
-		if (currentAttack != BossAttack.Bite) return;
-		if (state != BossState.Active) return;
-		if (Sprite == null) return;
-		if (Sprite.Animation != BiteAnimName) return;
+		// Bite ends on animation finished
+		if (currentAttack == BossAttack.Bite && state == BossState.Active && Sprite != null && Sprite.Animation == BiteAnimName)
+		{
+			EnableAttackHitbox(BossAttack.Bite, false);
+			ShowTelegraph(BossAttack.Bite, false);
 
-		EnableAttackHitbox(BossAttack.Bite, false);
-		ShowTelegraph(BossAttack.Bite, false);
+			Velocity = Vector2.Zero;
+			state = BossState.Recover;
+			stateTimer = BiteRecover;
+			return;
+		}
 
-		Velocity = Vector2.Zero;
-		state = BossState.Recover;
-		stateTimer = BiteRecover;
+		// Tail sweep ends on Spin finished
+		if (currentAttack == BossAttack.TailSweep && state == BossState.Active && Sprite != null && Sprite.Animation == TailSweepAnimName)
+		{
+			EnableAttackHitbox(BossAttack.TailSweep, false);
+			ShowTelegraph(BossAttack.TailSweep, false);
+
+			_tailHitboxEnabledThisSpin = false;
+
+			Velocity = Vector2.Zero;
+			state = BossState.Recover;
+			stateTimer = TailRecover;
+			return;
+		}
 	}
 
 	protected override void OnDamageTaken(int damage)
@@ -1114,6 +1159,7 @@ public partial class TutorialBoss : BaseEnemy
 		_contactDamageCdByTarget.Clear();
 
 		_biteHitboxEnabledThisBite = false;
+		_tailHitboxEnabledThisSpin = false;
 
 		// Ensure UI is hidden on reset (important for respawn)
 		if (_bossUIItem != null) _bossUIItem.Visible = false;
