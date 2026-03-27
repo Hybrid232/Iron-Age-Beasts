@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://d4heq0i17knph"]
+[gd_scene load_steps=68 format=3 uid="uid://d4heq0i17knph"]
 
 [ext_resource type="Script" uid="uid://bf4f5t0p3v7n6" path="res://scene/scripts/enemy Scripts/TutorialBoss.cs" id="1_4m671"]
 [ext_resource type="Texture2D" uid="uid://dtwbi03s1b2se" path="res://sprites/VoxSpine/Bite/VoxSpineBite1.png" id="2_6487y"]
@@ -14,6 +14,54 @@
 [ext_resource type="Texture2D" uid="uid://dgb6e4hunrlku" path="res://sprites/VoxSpine/Bite/VoxSpineBite6.png" id="7_6oi1r"]
 [ext_resource type="Texture2D" uid="uid://kej1u6wlpfof" path="res://sprites/VoxSpine/Walk/VoxSpineWalk2.png" id="7_k663f"]
 [ext_resource type="Texture2D" uid="uid://8skxoi6aju86" path="res://sprites/VoxSpine/Walk/VoxSpineWalk3.png" id="8_edccq"]
+[ext_resource type="Texture2D" uid="uid://4en1fo3lvjcu" path="res://sprites/VoxSpine/Charge/VoxSpineCharge1.png" id="8_j70oc"]
+[ext_resource type="Texture2D" uid="uid://4mqrxrbsnqt7" path="res://sprites/VoxSpine/Charge/VoxSpineCharge2.png" id="9_xym02"]
+[ext_resource type="Texture2D" uid="uid://dtqsowiahxlhl" path="res://sprites/VoxSpine/Charge/VoxSpineCharge3.png" id="10_uv8u2"]
+[ext_resource type="Texture2D" uid="uid://dcx0ahu7rnkqn" path="res://sprites/VoxSpine/Charge/VoxSpineCharge4.png" id="11_uli7m"]
+[ext_resource type="Texture2D" uid="uid://cwq8dnef03prh" path="res://sprites/VoxSpine/Charge/VoxSpineCharge5.png" id="12_24cie"]
+[ext_resource type="Texture2D" uid="uid://dhr408co4po3h" path="res://sprites/VoxSpine/Charge/VoxSpineCharge6.png" id="13_4wibq"]
+[ext_resource type="Texture2D" uid="uid://cqljox5yjxbyp" path="res://sprites/VoxSpine/Charge/VoxSpineCharge7.png" id="14_rs0n4"]
+[ext_resource type="Texture2D" uid="uid://bjj4ldao6uqoo" path="res://sprites/VoxSpine/Charge/VoxSpineCharge8.png" id="15_cend7"]
+[ext_resource type="Texture2D" uid="uid://dacod63otalwg" path="res://sprites/VoxSpine/Spin/VoxSpineSpin1.png" id="15_og6c5"]
+[ext_resource type="Texture2D" uid="uid://d4nyvi2e3secj" path="res://sprites/VoxSpine/Spin/VoxSpineSpin2.png" id="16_8418h"]
+[ext_resource type="Texture2D" uid="uid://d332r2c48xsyx" path="res://sprites/VoxSpine/Charge/VoxSpineCharge9.png" id="16_rwkef"]
+[ext_resource type="Texture2D" uid="uid://bk6biv3m272ly" path="res://sprites/VoxSpine/Charge/VoxSpineCharge10.png" id="17_56m7b"]
+[ext_resource type="Texture2D" uid="uid://oeyjjktthrkb" path="res://sprites/VoxSpine/Spin/VoxSpineSpin3.png" id="17_edcaj"]
+[ext_resource type="Texture2D" uid="uid://bathhxuwmto64" path="res://sprites/VoxSpine/Spin/VoxSpineSpin4.png" id="18_kgcux"]
+[ext_resource type="Texture2D" uid="uid://ch18y1kqdi7yi" path="res://sprites/VoxSpine/Charge/VoxSpineCharge11.png" id="18_pdmwv"]
+[ext_resource type="Texture2D" uid="uid://b87edmi372j5d" path="res://sprites/VoxSpine/Charge/VoxSpineCharge12.png" id="19_2wbpe"]
+[ext_resource type="Texture2D" uid="uid://ywrg5lakdorf" path="res://sprites/VoxSpine/Spin/VoxSpineSpin5.png" id="19_phh10"]
+[ext_resource type="Texture2D" uid="uid://bkyadkskw3wr5" path="res://sprites/VoxSpine/Charge/VoxSpineCharge13.png" id="20_3icnt"]
+[ext_resource type="Texture2D" uid="uid://dgvm8a7sg8b63" path="res://sprites/VoxSpine/Spin/VoxSpineSpin6.png" id="20_ytcd1"]
+[ext_resource type="Texture2D" uid="uid://co0x71toq8e2c" path="res://sprites/VoxSpine/Charge/VoxSpineCharge14.png" id="21_4der4"]
+[ext_resource type="Texture2D" uid="uid://dnofi484uxa1y" path="res://sprites/VoxSpine/Spin/VoxSpineSpin7.png" id="21_phbqk"]
+[ext_resource type="Texture2D" uid="uid://dyp2cttxhf7tb" path="res://sprites/VoxSpine/Charge/VoxSpineCharge15.png" id="22_htjuq"]
+[ext_resource type="Texture2D" uid="uid://bcq18e7i6ivfi" path="res://sprites/VoxSpine/Spin/VoxSpineSpin8.png" id="22_kwpij"]
+[ext_resource type="Texture2D" uid="uid://clplkl8c8jwcx" path="res://sprites/VoxSpine/Charge/VoxSpineCharge16.png" id="23_0uwm3"]
+[ext_resource type="Texture2D" uid="uid://jar2lbfj445e" path="res://sprites/VoxSpine/Spin/VoxSpineSpin9.png" id="23_im4vc"]
+[ext_resource type="Texture2D" uid="uid://dst03u0xpmuaj" path="res://sprites/VoxSpine/Charge/VoxSpineCharge17.png" id="24_3sfq1"]
+[ext_resource type="Texture2D" uid="uid://b42kuvyykui22" path="res://sprites/VoxSpine/Spin/VoxSpineSpin10.png" id="24_lsuyv"]
+[ext_resource type="Texture2D" uid="uid://deb5mwtanu7mj" path="res://sprites/VoxSpine/Spin/VoxSpineSpin11.png" id="25_6jdou"]
+[ext_resource type="Texture2D" uid="uid://b0ydy3xtj2haw" path="res://sprites/VoxSpine/Charge/VoxSpineCharge18.png" id="25_hg765"]
+[ext_resource type="Texture2D" uid="uid://rxceb63cxki4" path="res://sprites/VoxSpine/Charge/VoxSpineCharge19.png" id="26_cbkt5"]
+[ext_resource type="Texture2D" uid="uid://bpfk4pqtb1jwt" path="res://sprites/VoxSpine/Spin/VoxSpineSpin12.png" id="26_xmi6f"]
+[ext_resource type="Texture2D" uid="uid://b67a4kbuge3o0" path="res://sprites/VoxSpine/Spin/VoxSpineSpin13.png" id="27_klxkf"]
+[ext_resource type="Texture2D" uid="uid://u10jdqhqn63n" path="res://sprites/VoxSpine/Spin/VoxSpineSpin14.png" id="28_k0y8k"]
+[ext_resource type="Texture2D" uid="uid://c8b4nvcq247ei" path="res://sprites/VoxSpine/Spin/VoxSpineSpin15.png" id="29_l85hp"]
+[ext_resource type="Texture2D" uid="uid://o3x1gbwk8l" path="res://sprites/VoxSpine/Spin/VoxSpineSpin16.png" id="30_r834o"]
+[ext_resource type="Texture2D" uid="uid://d2omg15c54eom" path="res://sprites/VoxSpine/Phase2Roar/VoxSpineRoar2.png" id="34_4der4"]
+[ext_resource type="Texture2D" uid="uid://mss64rmsn6e" path="res://sprites/VoxSpine/Phase2Roar/VoxSpineRoar3.png" id="35_htjuq"]
+[ext_resource type="Texture2D" uid="uid://qj3s2txw74gx" path="res://sprites/VoxSpine/Phase2Roar/VoxSpineRoar4.png" id="36_0uwm3"]
+[ext_resource type="Texture2D" uid="uid://81jkh2tky2qs" path="res://sprites/VoxSpine/Phase2Roar/VoxSpineRoar5.png" id="37_3sfq1"]
+[ext_resource type="Texture2D" uid="uid://kmdu7emsyep1" path="res://sprites/VoxSpine/Phase2Roar/VoxSpineRoar6.png" id="38_hg765"]
+[ext_resource type="Texture2D" uid="uid://d1oi1qfiy7oam" path="res://sprites/VoxSpine/Phase2Roar/VoxSpineRoar7.png" id="39_cbkt5"]
+[ext_resource type="Texture2D" uid="uid://dfbnm04lh2e2g" path="res://sprites/VoxSpine/Phase2Roar/VoxSpineRoar8.png" id="40_4fpe8"]
+[ext_resource type="Texture2D" uid="uid://wk5y2gf471d7" path="res://sprites/VoxSpine/Phase2Roar/VoxSpineRoar9.png" id="41_ak1vq"]
+[ext_resource type="Texture2D" uid="uid://j6jjxnbmn6pr" path="res://sprites/VoxSpine/Phase2Roar/VoxSpineRoar10.png" id="42_q15jn"]
+[ext_resource type="Texture2D" uid="uid://bti8aeydifw01" path="res://sprites/VoxSpine/Phase2Roar/VoxSpineRoar11.png" id="43_7h4hx"]
+[ext_resource type="Texture2D" uid="uid://iu1k688234wr" path="res://sprites/VoxSpine/Phase2Roar/VoxSpineRoar12.png" id="44_7aasi"]
+[ext_resource type="Texture2D" uid="uid://dxsgvvkqaqkh1" path="res://sprites/VoxSpine/Phase2Roar/VoxSpineRoar13.png" id="45_uty64"]
+[ext_resource type="Texture2D" uid="uid://dstvt6rrvybb1" path="res://sprites/VoxSpine/Phase2Roar/VoxSpineRoar14.png" id="46_lw1co"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_edccq"]
 animations = [{
@@ -38,6 +86,68 @@ animations = [{
 }],
 "loop": false,
 "name": &"Bite",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("8_j70oc")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_xym02")
+}, {
+"duration": 3.0,
+"texture": ExtResource("10_uv8u2")
+}, {
+"duration": 3.0,
+"texture": ExtResource("11_uli7m")
+}, {
+"duration": 3.0,
+"texture": ExtResource("12_24cie")
+}, {
+"duration": 3.0,
+"texture": ExtResource("13_4wibq")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_rs0n4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_cend7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_rwkef")
+}, {
+"duration": 1.0,
+"texture": ExtResource("17_56m7b")
+}, {
+"duration": 1.0,
+"texture": ExtResource("18_pdmwv")
+}, {
+"duration": 1.0,
+"texture": ExtResource("19_2wbpe")
+}, {
+"duration": 1.0,
+"texture": ExtResource("20_3icnt")
+}, {
+"duration": 1.0,
+"texture": ExtResource("21_4der4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("22_htjuq")
+}, {
+"duration": 1.0,
+"texture": ExtResource("23_0uwm3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("24_3sfq1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("25_hg765")
+}, {
+"duration": 1.0,
+"texture": ExtResource("26_cbkt5")
+}],
+"loop": false,
+"name": &"Charge",
 "speed": 5.0
 }, {
 "frames": [{
@@ -70,6 +180,103 @@ animations = [{
 "loop": true,
 "name": &"Idle",
 "speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("34_4der4")
+}, {
+"duration": 4.0,
+"texture": ExtResource("35_htjuq")
+}, {
+"duration": 4.0,
+"texture": ExtResource("36_0uwm3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("37_3sfq1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("38_hg765")
+}, {
+"duration": 1.0,
+"texture": ExtResource("39_cbkt5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("40_4fpe8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("41_ak1vq")
+}, {
+"duration": 1.0,
+"texture": ExtResource("42_q15jn")
+}, {
+"duration": 1.0,
+"texture": ExtResource("43_7h4hx")
+}, {
+"duration": 1.0,
+"texture": ExtResource("44_7aasi")
+}, {
+"duration": 1.0,
+"texture": ExtResource("45_uty64")
+}, {
+"duration": 1.0,
+"texture": ExtResource("46_lw1co")
+}],
+"loop": false,
+"name": &"Roar",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("15_og6c5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_8418h")
+}, {
+"duration": 1.0,
+"texture": ExtResource("17_edcaj")
+}, {
+"duration": 1.0,
+"texture": ExtResource("18_kgcux")
+}, {
+"duration": 1.0,
+"texture": ExtResource("19_phh10")
+}, {
+"duration": 1.0,
+"texture": ExtResource("20_ytcd1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("21_phbqk")
+}, {
+"duration": 1.0,
+"texture": ExtResource("22_kwpij")
+}, {
+"duration": 1.0,
+"texture": ExtResource("23_im4vc")
+}, {
+"duration": 1.0,
+"texture": ExtResource("24_lsuyv")
+}, {
+"duration": 1.0,
+"texture": ExtResource("25_6jdou")
+}, {
+"duration": 1.0,
+"texture": ExtResource("26_xmi6f")
+}, {
+"duration": 1.0,
+"texture": ExtResource("27_klxkf")
+}, {
+"duration": 1.0,
+"texture": ExtResource("28_k0y8k")
+}, {
+"duration": 1.0,
+"texture": ExtResource("29_l85hp")
+}, {
+"duration": 1.0,
+"texture": ExtResource("30_r834o")
+}],
+"loop": false,
+"name": &"Spin",
+"speed": 5.0
 }]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_4m671"]
@@ -78,8 +285,7 @@ height = 128.08307
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_aaiw8"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_4m671"]
-size = Vector2(5.997043, 51.746735)
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_4fpe8"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_4m671"]
 radius = 119.117615
@@ -94,10 +300,9 @@ Sprite = NodePath("AnimatedSprite2D")
 IdleAnimName = "Idle"
 ChaseAnimName = "Chase"
 BiteAnimName = "Bite"
-DefaultFacesRight = false
+ChargeAnimName = "Charge"
 BodyCollisionRoot = NodePath("CollisionPolygon2D")
 HurtboxRoot = NodePath("HurtboxArea")
-CollisionDefaultFacesRight = false
 Phase2SpeedMultiplier = 2.0
 BiteRange = 200.0
 TailSweepRange = 240.0
@@ -127,24 +332,27 @@ MaxHealth = 200
 AttackRange = 15.0
 XpReward = 15000
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-light_mask = 15
-visibility_layer = 15
-scale = Vector2(6, 6)
-sprite_frames = SubResource("SpriteFrames_edccq")
-animation = &"Bite"
-autoplay = "Idle"
-
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
 light_mask = 3
 visibility_layer = 3
 position = Vector2(-5, -8)
-scale = Vector2(13.057692, 12.806805)
+scale = Vector2(11.05619, 10.84376)
 polygon = PackedVector2Array(7.429146, 16.698734, 10.130653, 15.493671, 12.325628, 15.149368, 14.520603, 12.911393, 15.871357, 9.296203, 15.702513, 5.1645575, 14.858292, 2.5822787, 12.832161, 0.17215192, 11.819096, -1.7215191, 10.80603, -4.4759493, 10.130653, -7.4025316, 8.688946, -9.8949375, 5.4809055, -10.927849, 2.4417095, -9.034178, -1.2728634, -5.0746837, -2.5326633, -6.5417724, -3.039196, -8.9519, -4.9874363, -9.8949375, -9.039698, -8.689874, -14.442713, -6.7962027, -14.273869, -1.6316454, -9.961809, -1.3772153, -5.403015, -2.7544303, -8.273367, 4.3037977, -6.2472363, 6.8860765, -7.429146, 9.124051, -1.0130653, 16.354431, 2.7015076, 16.354431)
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+light_mask = 15
+visibility_layer = 15
+scale = Vector2(5.0803113, 5.0803113)
+sprite_frames = SubResource("SpriteFrames_edccq")
+animation = &"Roar"
+autoplay = "Idle"
+frame = 12
+frame_progress = 1.0
 
 [node name="HurtboxArea" type="Area2D" parent="."]
 light_mask = 3
 visibility_layer = 3
+scale = Vector2(0.84671855, 0.84671855)
 collision_layer = 11
 collision_mask = 11
 
@@ -156,6 +364,8 @@ scale = Vector2(13.057692, 12.806805)
 polygon = PackedVector2Array(7.429146, 16.698734, 10.130653, 15.493671, 12.325628, 15.149368, 14.520603, 12.911393, 15.871357, 9.296203, 15.702513, 5.1645575, 14.858292, 2.5822787, 12.832161, 0.17215192, 11.819096, -1.7215191, 10.80603, -4.4759493, 10.130653, -7.4025316, 8.688946, -9.8949375, 5.4809055, -10.927849, 2.4417095, -9.034178, -1.2728634, -5.0746837, -2.5326633, -6.5417724, -3.039196, -8.9519, -4.9874363, -9.8949375, -9.039698, -8.689874, -14.442713, -6.7962027, -14.273869, -1.6316454, -9.961809, -1.3772153, -5.403015, -2.7544303, -8.273367, 4.3037977, -6.2472363, 6.8860765, -7.429146, 9.124051, -1.0130653, 16.354431, 2.7015076, 16.354431)
 
 [node name="Attackboxes" type="Node2D" parent="."]
+visible = false
+scale = Vector2(0.84671855, 0.84671855)
 
 [node name="Bite" type="Area2D" parent="Attackboxes"]
 light_mask = 3
@@ -167,18 +377,18 @@ monitoring = false
 [node name="BiteAttack" type="CollisionShape2D" parent="Attackboxes/Bite"]
 light_mask = 3
 visibility_layer = 3
-position = Vector2(-188.99998, -37)
-rotation = -0.30554014
-scale = Vector2(-3.131869, 0.61528426)
+position = Vector2(-188.99998, 10)
+rotation = -0.8220263
+scale = Vector2(-3.5272453, 1.1403716)
 shape = SubResource("CapsuleShape2D_4m671")
 debug_color = Color(0.76862746, 0, 0.16078432, 0.7254902)
 
 [node name="BiteTell" type="CollisionShape2D" parent="Attackboxes/Bite"]
 light_mask = 3
 visibility_layer = 3
-position = Vector2(-191, -36.999992)
-rotation = -0.34173673
-scale = Vector2(-3.131869, 0.61528426)
+position = Vector2(-191, 10.000008)
+rotation = -0.8582229
+scale = Vector2(-3.5272455, 1.1403713)
 shape = SubResource("CapsuleShape2D_4m671")
 debug_color = Color(0.76607066, 0.44327068, 0, 0.8352941)
 
@@ -190,44 +400,45 @@ collision_mask = 3
 monitoring = false
 
 [node name="TailSweepAttack" type="CollisionShape2D" parent="Attackboxes/TailSweep"]
-light_mask = 3
-visibility_layer = 3
-scale = Vector2(23.37586, 20.47389)
+light_mask = 7
+visibility_layer = 7
+scale = Vector2(37.210407, 27.780142)
 shape = SubResource("CircleShape2D_aaiw8")
-debug_color = Color(0.84705883, 0.3764706, 0, 0.62352943)
+debug_color = Color(0, 0.64295864, 0.3101384, 0.62352943)
 
 [node name="TailSweepTell" type="CollisionShape2D" parent="Attackboxes/TailSweep"]
-light_mask = 3
-visibility_layer = 3
-scale = Vector2(23.37586, 20.47389)
+light_mask = 7
+visibility_layer = 7
+scale = Vector2(37.210407, 27.780142)
 shape = SubResource("CircleShape2D_aaiw8")
-debug_color = Color(0.77254903, 0.50980395, 0.043137256, 0.7254902)
+debug_color = Color(0, 0.64295864, 0.3101384, 0.62352943)
 
 [node name="Charge" type="Area2D" parent="Attackboxes"]
-light_mask = 3
-visibility_layer = 3
+light_mask = 7
+visibility_layer = 7
 collision_layer = 3
 collision_mask = 3
 monitoring = false
 
 [node name="ChargeAttack" type="CollisionShape2D" parent="Attackboxes/Charge"]
-light_mask = 3
-visibility_layer = 3
-position = Vector2(-149.85916, 1.9999986)
-scale = Vector2(19.056335, 6.338564)
-shape = SubResource("RectangleShape2D_4m671")
+light_mask = 7
+visibility_layer = 7
+position = Vector2(-125.18918, 59.0515)
+rotation = -1.6538637
+scale = Vector2(16.646841, -4.3525677)
+shape = SubResource("CapsuleShape2D_4fpe8")
 debug_color = Color(0.191638, 0.6419517, 0, 0.62352943)
 
 [node name="ChargeTell" type="CollisionShape2D" parent="Attackboxes/Charge"]
 light_mask = 3
 visibility_layer = 3
-position = Vector2(-149.85916, 1.9999986)
-scale = Vector2(19.056335, 6.338564)
-shape = SubResource("RectangleShape2D_4m671")
+position = Vector2(-125.18918, 59.0515)
+rotation = -1.6538637
+scale = Vector2(16.646841, -4.3525677)
+shape = SubResource("CapsuleShape2D_4fpe8")
 debug_color = Color(0.77254903, 0.50980395, 0.043137256, 0.7254902)
 
 [node name="CollisionDamage" type="Area2D" parent="Attackboxes"]
-visible = false
 light_mask = 3
 visibility_layer = 3
 scale = Vector2(1.0800004, 1)
