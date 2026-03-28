@@ -1,7 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://bdcoq0m6vlp8i"]
+[gd_scene load_steps=2 format=3 uid="uid://bdcoq0m6vlp8i"]
 
 [ext_resource type="Script" uid="uid://bbsj4e3d6eop" path="res://scene/Scenes/InteractPrompt.cs" id="1_yhb3p"]
-[ext_resource type="FontFile" uid="uid://cjhha6sdhxp87" path="res://scene/Fonts/FuturisticFont/Wallpoet-Regular.ttf" id="2_bxd26"]
 
 [node name="Interact" type="Control"]
 layout_mode = 3
@@ -34,5 +33,4 @@ offset_top = 2.0
 offset_right = 106.05078
 offset_bottom = 25.0
 scale = Vector2(0.17718522, 1.5696701)
-theme_override_fonts/font = ExtResource("2_bxd26")
 text = "[E] to Interact"

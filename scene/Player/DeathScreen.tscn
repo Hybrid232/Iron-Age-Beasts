@@ -1,8 +1,6 @@
-[gd_scene load_steps=8 format=3 uid="uid://ct7c6w5tbh3t6"]
+[gd_scene load_steps=6 format=3 uid="uid://ct7c6w5tbh3t6"]
 
 [ext_resource type="Script" uid="uid://bwp53xwtbukhc" path="res://scene/scripts/DeathScreenUI.cs" id="1_mub8j"]
-[ext_resource type="FontFile" uid="uid://b6gecg6ywmtyj" path="res://scene/Fonts/PrimalFont/Bahiana-Regular.ttf" id="2_od43u"]
-[ext_resource type="FontFile" uid="uid://cjhha6sdhxp87" path="res://scene/Fonts/FuturisticFont/Wallpoet-Regular.ttf" id="3_16ns6"]
 
 [sub_resource type="Animation" id="Animation_qg272"]
 resource_name = "Death_Anim"
@@ -158,10 +156,10 @@ _data = {
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_oaxn8"]
 bg_color = Color(0, 0, 0, 0.69411767)
-corner_radius_top_left = 20
-corner_radius_top_right = 20
-corner_radius_bottom_right = 20
-corner_radius_bottom_left = 20
+corner_radius_top_left = 40
+corner_radius_top_right = 3545
+corner_radius_bottom_right = 695
+corner_radius_bottom_left = 275
 shadow_color = Color(1, 0.15294118, 0.10980392, 0.2)
 shadow_size = 150
 shadow_offset = Vector2(0, 129.205)
@@ -187,6 +185,7 @@ libraries = {
 autoplay = "Death_Anim"
 playback_auto_capture = false
 next/Death_Anim = &"Respawning_Anim"
+blend_times = [&"Death_Anim", &"Respawning_Anim", 2.0]
 
 [node name="ColorRect" type="ColorRect" parent="CanvasLayer"]
 anchors_preset = 15
@@ -207,8 +206,7 @@ offset_right = 430.5
 offset_bottom = 259.0
 grow_horizontal = 2
 theme_override_colors/font_color = Color(0.71735644, 0, 0.066216536, 1)
-theme_override_fonts/font = ExtResource("2_od43u")
-theme_override_font_sizes/font_size = 100
+theme_override_font_sizes/font_size = 75
 text = "TIME 
 CLAIMES ANOTHER"
 horizontal_alignment = 1
@@ -237,7 +235,6 @@ offset_left = -1.0
 offset_top = 433.0
 offset_right = 1149.0
 offset_bottom = 496.0
-theme_override_fonts/font = ExtResource("3_16ns6")
 theme_override_font_sizes/font_size = 45
 text = "REWIND"
 horizontal_alignment = 1

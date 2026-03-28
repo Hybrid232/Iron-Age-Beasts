@@ -216,8 +216,7 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 			!meleeSystem.IsAttacking &&
 			!dodgeSystem.IsDodging;
 
-		// UPDATED: tell animation driver when we are dashing/dodging
-		animationDriver?.UpdateFromInput(allowRunAnim, isDashing: dodgeSystem.IsDodging);
+		animationDriver?.UpdateFromInput(allowRunAnim);
 
 		// ===== STUNNED: block input/attacks/dodge/shooting, but ALLOW recoil motion =====
 		if (IsStunned)
