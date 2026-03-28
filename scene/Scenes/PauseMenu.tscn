@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://mgdagjh6wa25"]
+[gd_scene load_steps=4 format=3 uid="uid://mgdagjh6wa25"]
 
 [ext_resource type="Script" uid="uid://buruvl20uirst" path="res://scene/scripts/PauseMenu.cs" id="1_5dxmw"]
+[ext_resource type="FontFile" uid="uid://cjhha6sdhxp87" path="res://scene/Fonts/FuturisticFont/Wallpoet-Regular.ttf" id="2_dtlpa"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3wh6n"]
 bg_color = Color(0, 0, 0, 0.7764706)
@@ -39,6 +40,7 @@ anchor_right = 1.0
 offset_left = -251.0
 offset_bottom = 49.0
 grow_horizontal = 0
+theme_override_fonts/font = ExtResource("2_dtlpa")
 text = "System"
 
 [node name="SystemBar" type="Panel" parent="PauseBar/Menu"]
@@ -113,6 +115,7 @@ offset_left = -488.0
 offset_right = -249.0
 offset_bottom = 49.0
 grow_horizontal = 0
+theme_override_fonts/font = ExtResource("2_dtlpa")
 text = "Inventory"
 
 [node name="InventoryBar" type="Panel" parent="PauseBar/Inventory"]
@@ -162,6 +165,7 @@ offset_left = -726.0
 offset_right = -487.0
 offset_bottom = 49.0
 grow_horizontal = 0
+theme_override_fonts/font = ExtResource("2_dtlpa")
 text = "Armory"
 
 [node name="ArmoryBar" type="Panel" parent="PauseBar/Armory"]

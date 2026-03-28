@@ -1,87 +1,176 @@
 using Godot;
+using System.Collections.Generic;
 
 public partial class RangeEnemy : BaseEnemy
 {
-	// ─── Cone Detection ───────────────────────────────────────────
-	[ExportGroup("Cone Detection")]
-	[Export] public float ConeRange = 200f;
-	[Export] public float ConeHalfAngleDeg = 45f;  // 90° total cone width
+	// ── Inspector Tuning ─────────────────────────────────────────
+	[ExportGroup("Detection")]
+	[Export] public float DetectionRange = 200f;
 
-	// ─── Range Behaviour ──────────────────────────────────────────
 	[ExportGroup("Range Behaviour")]
-	[Export] public float PreferredDistance = 120f;   // ideal shooting distance
-	[Export] public float TooCloseDistance = 60f;     // backs away if player closer than this
-	[Export] public float AlertDuration = 0.6f;       // pause before shooting
-	[Export] public float LoseSightDuration = 2f;     // how long before returning to idle
+	[Export] public float PreferredDistance = 120f;
+	[Export] public float TooCloseDistance  = 60f;
+	[Export] public float AlertDuration     = 0.6f;
+	[Export] public float LoseSightDuration = 2f;
+	
+	[ExportGroup("Combat")]
+	[Export] public PackedScene ProjectileScene;
+	
+	// ── Patrol ───────────────────────────────────────────────────
+	[ExportGroup("Patrol")]
+	[Export] public float PatrolRadius    = 80f;  
+	[Export] public float PatrolSpeed     = 30f;  
+	[Export] public float PatrolWaitTime  = 1.5f;  
 
-	// ─── State Machine ────────────────────────────────────────────
+	private Vector2 _patrolTarget        = Vector2.Zero;
+	private float   _patrolWaitTimer     = 0f;
+	private bool    _waitingAtPoint      = false;
+
+	// ── State Machine ────────────────────────────────────────────
 	private enum State { Idle, Alert, Attack, Reposition, LoseSight, Dead }
 	private State _state = State.Idle;
 
-	// ─── Timers ───────────────────────────────────────────────────
-	private float _alertTimer = 0f;
+	// ── Timers ───────────────────────────────────────────────────
+	private float _alertTimer    = 0f;
 	private float _loseSightTimer = 0f;
 
-	// ─── Nodes ────────────────────────────────────────────────────
-	private Area2D _detectionArea;
+	// ── Nodes ────────────────────────────────────────────────────
+	private Area2D          _detectionArea;
+	private Node2D          _rayCastOrigin;
+	private List<RayCast2D> _rays = new();
+
+	// ── Tracking ─────────────────────────────────────────────────
+	private bool _playerInArea = false;  // broad-phase flag
 
 	public override void _Ready()
 	{
 		base._Ready();
-		_detectionArea = GetNode<Area2D>("detection_area");
+		PickNewPatrolTarget();
+		GD.Print("[RangeEnemy] _Ready called!");
 
-		// Hook up detection signals
+		_detectionArea = GetNode<Area2D>("detection_area");
+		_rayCastOrigin = GetNode<Node2D>("RayCastOrigin");
+
+		GD.Print($"[RangeEnemy] Nodes found: detectionArea={_detectionArea != null}, rayCastOrigin={_rayCastOrigin != null}");
+
+		foreach (Node child in _rayCastOrigin.GetChildren())
+		{
+			if (child is RayCast2D ray)
+				_rays.Add(ray);
+		}
+
+		GD.Print($"[RangeEnemy] {_rays.Count} rays loaded.");
+
 		_detectionArea.BodyEntered += OnDetectionBodyEntered;
 		_detectionArea.BodyExited  += OnDetectionBodyExited;
 	}
 
-	// ─── State Machine Core ───────────────────────────────────────
+	// ── Main Loop ────────────────────────────────────────────────
 	public override void _PhysicsProcess(double delta)
 	{
 		float dt = (float)delta;
 
+		// Only run raycasts if player is in the broad-phase area
+		if (_playerInArea && _player != null)
+			CheckLineOfSight();
+
 		switch (_state)
 		{
-			case State.Idle:
-				HandleIdle();
-				break;
-
-			case State.Alert:
-				HandleAlert(dt);
-				break;
-
-			case State.Attack:
-				HandleAttack(dt);
-				break;
-
-			case State.Reposition:
-				HandleReposition();
-				break;
-
-			case State.LoseSight:
-				HandleLoseSight(dt);
-				break;
-
-			case State.Dead:
-				break;
+			case State.Idle:       HandleIdle();            break;
+			case State.Alert:      HandleAlert(dt);         break;
+			case State.Attack:     HandleAttack(dt);        break;
+			case State.Reposition: HandleReposition();      break;
+			case State.LoseSight:  HandleLoseSight(dt);     break;
+			case State.Dead:                                break;
 		}
 
 		MoveAndSlide();
 	}
 
-	// ─── State Handlers ───────────────────────────────────────────
-
-	private void HandleIdle()
+	// ── Line of Sight (Raycast cone) ─────────────────────────────
+	private void CheckLineOfSight()
 	{
-		Velocity = Vector2.Zero;
-		// Just wait — detection signals will trigger the transition
+		bool seen = false;
+
+		// Rotate the RayCastOrigin to face the player
+		Vector2 toPlayer = _player.GlobalPosition - GlobalPosition;
+		_rayCastOrigin.Rotation = toPlayer.Angle();
+
+		// Check if any ray hits the player
+		foreach (RayCast2D ray in _rays)
+		{
+			if (!ray.IsColliding()) continue;
+			if (ray.GetCollider() is Player)
+			{
+				seen = true;
+				break;
+			}
+		}
+
+		if (seen)
+		{
+			if (_state == State.Idle || _state == State.LoseSight)
+				ChangeState(State.Alert);
+		}
+		else
+		{
+			if (_state == State.Attack || _state == State.Alert)
+				ChangeState(State.LoseSight);
+		}
 	}
 
+	// ── State Handlers ───────────────────────────────────────────
+	private void HandleIdle()
+	{
+		// Waiting at a patrol point
+		if (_waitingAtPoint)
+		{
+			Velocity = Vector2.Zero;
+			_patrolWaitTimer -= (float)GetPhysicsProcessDeltaTime();
+
+			if (_patrolWaitTimer <= 0f)
+			{
+				_waitingAtPoint = false;
+				PickNewPatrolTarget();
+			}
+			return;
+		}
+
+		// Move toward patrol target
+		float distToTarget = GlobalPosition.DistanceTo(_patrolTarget);
+
+		if (distToTarget < 4f)
+		{
+			// Reached the target — wait before picking next
+			Velocity = Vector2.Zero;
+			_waitingAtPoint  = true;
+			_patrolWaitTimer = PatrolWaitTime;
+			return;
+		}
+
+		// Face and move toward patrol target
+		Vector2 dir = (_patrolTarget - GlobalPosition).Normalized();
+		Velocity = dir * PatrolSpeed;
+
+		// Face walking direction
+		_rayCastOrigin.Rotation = dir.Angle();
+	}
+
+	private void PickNewPatrolTarget()
+	{
+		// Pick a random point within PatrolRadius of the start position
+		float angle  = (float)GD.RandRange(0, Mathf.Tau);
+		float radius = (float)GD.RandRange(0, PatrolRadius);
+
+		_patrolTarget = _startPosition + new Vector2(
+			Mathf.Cos(angle) * radius,
+			Mathf.Sin(angle) * radius
+		);
+	}
+	
 	private void HandleAlert(float dt)
 	{
 		Velocity = Vector2.Zero;
-		FacePlayer();
-
 		_alertTimer -= dt;
 		if (_alertTimer <= 0f)
 			ChangeState(State.Attack);
@@ -97,27 +186,16 @@ public partial class RangeEnemy : BaseEnemy
 
 		float distance = GlobalPosition.DistanceTo(_player.GlobalPosition);
 
-		// Player got too close — back away
 		if (distance < TooCloseDistance)
 		{
 			ChangeState(State.Reposition);
 			return;
 		}
 
-		// Player left the cone — start lose sight timer
-		if (!IsPlayerInCone())
-		{
-			ChangeState(State.LoseSight);
-			return;
-		}
+		Velocity = Vector2.Zero;
 
-		FacePlayer();
-
-		// Shoot if cooldown is ready
 		if (CanAttack())
 			Attack(_player);
-
-		Velocity = Vector2.Zero;
 	}
 
 	private void HandleReposition()
@@ -130,16 +208,14 @@ public partial class RangeEnemy : BaseEnemy
 
 		float distance = GlobalPosition.DistanceTo(_player.GlobalPosition);
 
-		// Backed away enough — return to attacking
 		if (distance >= TooCloseDistance + 20f)
 		{
 			ChangeState(State.Attack);
 			return;
 		}
 
-		// Move directly away from the player
-		Vector2 fleeDirection = (GlobalPosition - _player.GlobalPosition).Normalized();
-		Velocity = fleeDirection * Speed;
+		Vector2 fleeDir = (GlobalPosition - _player.GlobalPosition).Normalized();
+		Velocity = fleeDir * Speed;
 	}
 
 	private void HandleLoseSight(float dt)
@@ -147,116 +223,82 @@ public partial class RangeEnemy : BaseEnemy
 		Velocity = Vector2.Zero;
 		_loseSightTimer -= dt;
 
-		// Player came back into cone while we were looking
-		if (_player != null && IsPlayerInCone())
-		{
-			ChangeState(State.Alert);
-			return;
-		}
-
 		if (_loseSightTimer <= 0f)
 		{
-			_player = null;
-			_chasing = false;
+			_player    = null;
+			_chasing   = false;
+			_playerInArea = false;
 			ChangeState(State.Idle);
 		}
 	}
 
-	// ─── State Transition ─────────────────────────────────────────
+	// ── State Transitions ────────────────────────────────────────
 	private void ChangeState(State newState)
 	{
-		// Entry actions
 		switch (newState)
 		{
 			case State.Alert:
 				_alertTimer = AlertDuration;
-				GD.Print("[RangeEnemy] → Alert");
 				break;
-
-			case State.Attack:
-				GD.Print("[RangeEnemy] → Attack");
-				break;
-
-			case State.Reposition:
-				GD.Print("[RangeEnemy] → Reposition");
-				break;
-
 			case State.LoseSight:
 				_loseSightTimer = LoseSightDuration;
-				GD.Print("[RangeEnemy] → LoseSight");
-				break;
-
-			case State.Idle:
-				GD.Print("[RangeEnemy] → Idle");
-				break;
-
-			case State.Dead:
-				GD.Print("[RangeEnemy] → Dead");
 				break;
 		}
 
+		GD.Print($"[RangeEnemy] {_state} → {newState}");
 		_state = newState;
 	}
 
-	// ─── Cone Detection ───────────────────────────────────────────
-	private bool IsPlayerInCone()
-	{
-		if (_player == null || !IsInstanceValid(_player)) return false;
-
-		Vector2 toPlayer = _player.GlobalPosition - GlobalPosition;
-		float distance = toPlayer.Length();
-
-		// Out of range entirely
-		if (distance > ConeRange) return false;
-
-		// Check angle between facing direction and direction to player
-		float angleToPlayer = Mathf.RadToDeg(
-			Mathf.Abs(GlobalTransform.X.AngleTo(toPlayer))
-		);
-
-		return angleToPlayer <= ConeHalfAngleDeg;
-	}
-
-	private void FacePlayer()
-	{
-		if (_player == null) return;
-		Vector2 direction = (_player.GlobalPosition - GlobalPosition).Normalized();
-		Rotation = direction.Angle();
-	}
-
-	// ─── Detection Signals ────────────────────────────────────────
+	// ── Area Signals (broad phase) ────────────────────────────────
 	private void OnDetectionBodyEntered(Node2D body)
 	{
 		if (body is not Player p) return;
 		_player = p;
 		_chasing = true;
-
-		if (_state == State.Idle && IsPlayerInCone())
-			ChangeState(State.Alert);
+		_playerInArea = true;
+		GD.Print("[RangeEnemy] Player entered detection area.");
 	}
 
 	private void OnDetectionBodyExited(Node2D body)
 	{
 		if (body is not Player) return;
+		_playerInArea = false;
 
-		if (_state == State.Attack || _state == State.Alert)
+		if (_state != State.Idle && _state != State.Dead)
 			ChangeState(State.LoseSight);
 	}
 
-	// ─── Override Attack (will add projectile next step) ──────────
+	// ── Attack stub (projectile next) ────────────────────────────
 	protected override void Attack(Node2D target)
 	{
 		_attackCooldownTimer = AttackCooldown;
-		GD.Print("[RangeEnemy] Fired at player! (projectile coming next)");
-		// We'll spawn a projectile here in the next step
+
+		if (ProjectileScene == null)
+		{
+			GD.PrintErr("[RangeEnemy] ProjectileScene not assigned!");
+			return;
+		}
+
+		// Spawn projectile at enemy position
+		var projectile = ProjectileScene.Instantiate<Projectile>();
+		
+		// Add to the scene root (not as child of enemy, so it moves independently)
+		GetTree().CurrentScene.AddChild(projectile);
+		projectile.GlobalPosition = GlobalPosition;
+
+		// Fire towards player
+		Vector2 direction = (target.GlobalPosition - GlobalPosition).Normalized();
+		projectile.Initialize(direction);
+
+		GD.Print("[RangeEnemy] SHOOT!");
 	}
 
-	// ─── Override Die ─────────────────────────────────────────────
+
+	// ── Death ────────────────────────────────────────────────────
 	protected override void Die()
 	{
 		ChangeState(State.Dead);
 		Velocity = Vector2.Zero;
-		// Animation will go here later
-		base.Die(); // grants XP and QueueFree
+		base.Die();
 	}
 }

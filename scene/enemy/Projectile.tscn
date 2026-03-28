@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://dw6fcvhg77jjj"]
+
+[ext_resource type="Script" uid="uid://cuuyoytethni5" path="res://scene/enemy/Projectile.cs" id="1_jp1a3"]
+[ext_resource type="Texture2D" uid="uid://luyl183tkugo" path="res://sprites/test/venomous.png" id="1_mj27r"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_t3yx6"]
+radius = 10.5736065
+
+[node name="Projectile" type="Area2D"]
+script = ExtResource("1_jp1a3")
+
+[node name="Venomous" type="Sprite2D" parent="."]
+position = Vector2(-10.833767, -1.2944298)
+rotation = -1.5742431
+scale = Vector2(0.046053413, 0.050273973)
+texture = ExtResource("1_mj27r")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-2, -0.9999999)
+scale = Vector2(1.1068214, 1.1170703)
+shape = SubResource("CircleShape2D_t3yx6")
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="."]
+position = Vector2(-9.162182, -0.8958664)
+scale = Vector2(1.9907011, 1.1990101)
