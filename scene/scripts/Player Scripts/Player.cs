@@ -143,6 +143,7 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 
 		recoilSystem = new RecoilSystem(hitRecoilDistance, hitRecoilTime, playerRecoilDistance, recoilTime);
 
+		// IMPORTANT: MeleeSystem constructor is the original one (no animationDriver parameter)
 		meleeSystem = new MeleeSystem(
 			attackPivot,
 			attackHitbox,
@@ -184,7 +185,7 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 			GD.PrintErr("[Player] _deathScreenUI is not assigned. Death animation will not play.");
 
 		if (animationDriver == null)
-			GD.PrintErr("[Player] animationDriver is not assigned. Movement animations will not play.");
+			GD.PrintErr("[Player] animationDriver is not assigned. Movement/attack animations will not play.");
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -205,17 +206,6 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 			Velocity = Vector2.Zero;
 			return;
 		}
-
-		// ===== ANIMATION (input-driven, once per frame) =====
-		bool allowRunAnim =
-			CanMove &&
-			!IsStunned &&
-			!recoilSystem.IsInRecoil() &&
-			!meleeSystem.IsAttacking &&
-			!dodgeSystem.IsDodging;
-
-		// UPDATED: tell animation driver when we are dashing/dodging
-		animationDriver?.UpdateFromInput(allowRunAnim, isDashing: dodgeSystem.IsDodging);
 
 		// ===== STUNNED: block input/attacks/dodge/shooting, but ALLOW recoil motion =====
 		if (IsStunned)
@@ -247,6 +237,7 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 			return;
 		}
 
+		// If currently attacking, just tick attack + stop movement
 		if (meleeSystem.IsAttacking)
 		{
 			meleeSystem.UpdateAttack(dt);
@@ -254,40 +245,79 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 
 			if (swingSFX != null && !swingSFX.Playing)
 				swingSFX.Play();
+
+			// Keep animation updated so Attack can auto-end, and keep facing/blend updated
+			animationDriver?.UpdateFromInput(
+				allowRun: false,
+				isDashing: dodgeSystem.IsDodging
+			);
+
+			MoveAndSlide();
+			potionSystem.TryUsePotion();
+			return;
 		}
-		else if (dodgeSystem.IsDodging)
+
+		// Dodge motion
+		if (dodgeSystem.IsDodging)
 		{
 			Velocity = dodgeSystem.UpdateDodge(dt);
+
+			animationDriver?.UpdateFromInput(
+				allowRun: false,
+				isDashing: true
+			);
+
+			MoveAndSlide();
+			potionSystem.TryUsePotion();
+			return;
+		}
+
+		// ===== Normal movement state =====
+		Vector2 moveDirection = movementSystem.HandleInput();
+
+		float speedMultiplier = 1f;
+		if (healthSystem.IsBelowSoftThreshold())
+			speedMultiplier = lowStaminaSpeedMultiplier;
+
+		Velocity = movementSystem.GetVelocity(moveDirection, speedMultiplier);
+
+		// Start dodge (if requested)
+		if (dodgeSystem.TryDodge(moveDirection, healthSystem))
+			Velocity = dodgeSystem.GetDodgeVelocity();
+
+		// Try melee attack, and if it starts, trigger the attack animation state
+		bool attackStarted = meleeSystem.TryAttack(moveDirection, recoilSystem);
+		if (attackStarted)
+			animationDriver?.TriggerAttack();
+
+		// Shooting
+		shootingSystem.TryShoot(moveDirection, GlobalPosition);
+
+		// Walk SFX
+		if (moveDirection != Vector2.Zero)
+		{
+			if (walkSFX != null && !walkSFX.Playing)
+				walkSFX.Play();
 		}
 		else
 		{
-			Vector2 moveDirection = movementSystem.HandleInput();
-
-			float speedMultiplier = 1f;
-			if (healthSystem.IsBelowSoftThreshold())
-				speedMultiplier = lowStaminaSpeedMultiplier;
-
-			Velocity = movementSystem.GetVelocity(moveDirection, speedMultiplier);
-
-			if (dodgeSystem.TryDodge(moveDirection, healthSystem))
-				Velocity = dodgeSystem.GetDodgeVelocity();
-
-			meleeSystem.TryAttack(moveDirection, recoilSystem);
-			shootingSystem.TryShoot(moveDirection, GlobalPosition);
-
-			if (moveDirection != Vector2.Zero)
-			{
-				if (walkSFX != null && !walkSFX.Playing)
-					walkSFX.Play();
-			}
-			else
-			{
-				walkSFX?.Stop();
-			}
+			walkSFX?.Stop();
 		}
 
-		MoveAndSlide();
+		// ===== ANIMATION (after input/attack decisions) =====
+		bool allowRunAnim =
+			CanMove &&
+			!IsStunned &&
+			!recoilSystem.IsInRecoil() &&
+			!meleeSystem.IsAttacking &&
+			!dodgeSystem.IsDodging;
 
+		animationDriver?.UpdateFromInput(
+			allowRun: allowRunAnim,
+			isDashing: dodgeSystem.IsDodging
+		);
+
+		MoveAndSlide();
 		potionSystem.TryUsePotion();
 	}
 
