@@ -403,16 +403,9 @@ _enemyContainerPath = NodePath(".")
 StartDisabled = true
 SpawnOnReady = false
 
-[node name="TutorialBoss" type="Node2D" parent="EnemySpawnPoints"]
-position = Vector2(7106, 106)
-script = ExtResource("16_in1og")
-_enemyScene = ExtResource("10_ujhhv")
-_enemyContainerPath = NodePath(".")
-
 [node name="Encounter" type="Node" parent="."]
 
 [node name="TutorialBoss" parent="." node_paths=PackedStringArray("ArenaTriggerArea", "EntranceGate") groups=["Player", "enemy_hurtbox", "player"] instance=ExtResource("10_ujhhv")]
-visible = false
 light_mask = 15
 visibility_layer = 15
 position = Vector2(7810, -674)
@@ -421,6 +414,7 @@ EntranceGate = NodePath("../StaticBody2D")
 BossUIPath = NodePath("../HUD/BossUI")
 DefaultFacesRight = false
 CollisionDefaultFacesRight = false
+RoarStunSeconds = 1.5
 Phase2SpawnerRootPath = NodePath("../EnemySpawnPoints/BossPhase2Spawns")
 Phase2SpawnersToActivate = 6
 ChargeDamage = 40

@@ -1,4 +1,4 @@
-[gd_scene load_steps=68 format=3 uid="uid://d4heq0i17knph"]
+[gd_scene load_steps=76 format=3 uid="uid://d4heq0i17knph"]
 
 [ext_resource type="Script" uid="uid://bf4f5t0p3v7n6" path="res://scene/scripts/enemy Scripts/TutorialBoss.cs" id="1_4m671"]
 [ext_resource type="Texture2D" uid="uid://dtwbi03s1b2se" path="res://sprites/VoxSpine/Bite/VoxSpineBite1.png" id="2_6487y"]
@@ -48,11 +48,19 @@
 [ext_resource type="Texture2D" uid="uid://b67a4kbuge3o0" path="res://sprites/VoxSpine/Spin/VoxSpineSpin13.png" id="27_klxkf"]
 [ext_resource type="Texture2D" uid="uid://u10jdqhqn63n" path="res://sprites/VoxSpine/Spin/VoxSpineSpin14.png" id="28_k0y8k"]
 [ext_resource type="Texture2D" uid="uid://c8b4nvcq247ei" path="res://sprites/VoxSpine/Spin/VoxSpineSpin15.png" id="29_l85hp"]
+[ext_resource type="Texture2D" uid="uid://bcvqp74mrboe7" path="res://sprites/VoxSpine/Death/VoxSpineDeath1.png" id="30_q15jn"]
 [ext_resource type="Texture2D" uid="uid://o3x1gbwk8l" path="res://sprites/VoxSpine/Spin/VoxSpineSpin16.png" id="30_r834o"]
+[ext_resource type="Texture2D" uid="uid://bq645leleivje" path="res://sprites/VoxSpine/Death/VoxSpineDeath2.png" id="31_7h4hx"]
+[ext_resource type="Texture2D" uid="uid://brdj7io4wgh6e" path="res://sprites/VoxSpine/Death/VoxSpineDeath3.png" id="32_7aasi"]
+[ext_resource type="Texture2D" uid="uid://c8i410fe3nvcl" path="res://sprites/VoxSpine/Death/VoxSpineDeath4.png" id="33_uty64"]
 [ext_resource type="Texture2D" uid="uid://d2omg15c54eom" path="res://sprites/VoxSpine/Phase2Roar/VoxSpineRoar2.png" id="34_4der4"]
+[ext_resource type="Texture2D" uid="uid://dausvoc2vuw3f" path="res://sprites/VoxSpine/Death/VoxSpineDeath5.png" id="34_lw1co"]
 [ext_resource type="Texture2D" uid="uid://mss64rmsn6e" path="res://sprites/VoxSpine/Phase2Roar/VoxSpineRoar3.png" id="35_htjuq"]
+[ext_resource type="Texture2D" uid="uid://db4n5kmnnqyfk" path="res://sprites/VoxSpine/Death/VoxSpineDeath6.png" id="35_x0nvp"]
 [ext_resource type="Texture2D" uid="uid://qj3s2txw74gx" path="res://sprites/VoxSpine/Phase2Roar/VoxSpineRoar4.png" id="36_0uwm3"]
+[ext_resource type="Texture2D" uid="uid://b7lvpc1vchn4e" path="res://sprites/VoxSpine/Death/VoxSpineDeath7.png" id="36_xeluu"]
 [ext_resource type="Texture2D" uid="uid://81jkh2tky2qs" path="res://sprites/VoxSpine/Phase2Roar/VoxSpineRoar5.png" id="37_3sfq1"]
+[ext_resource type="Texture2D" uid="uid://clxq4pnvf1cwb" path="res://sprites/VoxSpine/Death/VoxSpineDeath8.png" id="37_np0k1"]
 [ext_resource type="Texture2D" uid="uid://kmdu7emsyep1" path="res://sprites/VoxSpine/Phase2Roar/VoxSpineRoar6.png" id="38_hg765"]
 [ext_resource type="Texture2D" uid="uid://d1oi1qfiy7oam" path="res://sprites/VoxSpine/Phase2Roar/VoxSpineRoar7.png" id="39_cbkt5"]
 [ext_resource type="Texture2D" uid="uid://dfbnm04lh2e2g" path="res://sprites/VoxSpine/Phase2Roar/VoxSpineRoar8.png" id="40_4fpe8"]
@@ -162,6 +170,35 @@ animations = [{
 }],
 "loop": true,
 "name": &"Chase",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("30_q15jn")
+}, {
+"duration": 1.0,
+"texture": ExtResource("31_7h4hx")
+}, {
+"duration": 1.0,
+"texture": ExtResource("32_7aasi")
+}, {
+"duration": 1.0,
+"texture": ExtResource("33_uty64")
+}, {
+"duration": 1.0,
+"texture": ExtResource("34_lw1co")
+}, {
+"duration": 1.0,
+"texture": ExtResource("35_x0nvp")
+}, {
+"duration": 1.0,
+"texture": ExtResource("36_xeluu")
+}, {
+"duration": 1.0,
+"texture": ExtResource("37_np0k1")
+}],
+"loop": false,
+"name": &"Death",
 "speed": 5.0
 }, {
 "frames": [{
@@ -344,9 +381,9 @@ light_mask = 15
 visibility_layer = 15
 scale = Vector2(5.0803113, 5.0803113)
 sprite_frames = SubResource("SpriteFrames_edccq")
-animation = &"Roar"
+animation = &"Death"
 autoplay = "Idle"
-frame = 12
+frame = 7
 frame_progress = 1.0
 
 [node name="HurtboxArea" type="Area2D" parent="."]

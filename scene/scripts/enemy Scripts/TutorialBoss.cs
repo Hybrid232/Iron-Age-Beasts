@@ -52,6 +52,14 @@ public partial class TutorialBoss : BaseEnemy
 	[Export] public int Phase2RoarActiveStartFrame = 3; // inclusive
 	[Export] public int Phase2RoarActiveEndFrame = 9;   // inclusive
 
+	// Death animation
+	[Export] public string DeathAnimName = "Death";
+
+	// NEW: force corpse pose on a specific frame when death anim ends (0-7 means frame 7 is last pose)
+	[Export] public int DeathFinalFrameIndex = 7;
+
+	private bool _deathAnimStarted = false;
+
 	[Export] public bool DefaultFacesRight = true;
 	[Export] public float FaceDeadzonePx = 2f;
 
@@ -348,6 +356,14 @@ public partial class TutorialBoss : BaseEnemy
 
 	private void UpdateFacingAndAnimation(bool force)
 	{
+		// IMPORTANT: if dead + playing death, do NOT override animation
+		if (state == BossState.Dead && _deathAnimStarted)
+			return;
+
+		// If death has finished, keep the corpse pose and don't change animations anymore.
+		if (state == BossState.Dead && !_deathAnimStarted)
+			return;
+
 		if (_player != null && IsInstanceValid(_player))
 		{
 			float dx = _player.GlobalPosition.X - GlobalPosition.X;
@@ -457,6 +473,14 @@ public partial class TutorialBoss : BaseEnemy
 
 	public override void _PhysicsProcess(double delta)
 	{
+		// If dead: do nothing; allow death animation to finish / corpse to stay
+		if (state == BossState.Dead)
+		{
+			Velocity = Vector2.Zero;
+			MoveAndSlide();
+			return;
+		}
+
 		if (!fightStarted || state == BossState.Idle)
 		{
 			Velocity = Vector2.Zero;
@@ -471,9 +495,6 @@ public partial class TutorialBoss : BaseEnemy
 			_player = GetTree().GetFirstNodeInGroup(PlayerGroup) as Player;
 			_chasing = _player != null;
 		}
-
-		if (state == BossState.Dead)
-			return;
 
 		UpdateState(dt);
 
@@ -1145,6 +1166,18 @@ public partial class TutorialBoss : BaseEnemy
 
 	private void OnSpriteAnimationFinished()
 	{
+		// Death finished: keep corpse on frame 7 and do NOT despawn
+		if (state == BossState.Dead && _deathAnimStarted && Sprite != null && Sprite.Animation == DeathAnimName)
+		{
+			_deathAnimStarted = false;
+
+			Sprite.Stop();
+
+			// Force the corpse pose you want
+			Sprite.Frame = Mathf.Max(0, DeathFinalFrameIndex);
+			return;
+		}
+
 		// If Roar finishes and we haven't transitioned yet, continue fight.
 		if (state == BossState.Roaring && Sprite != null && Sprite.Animation == Phase2RoarAnimName)
 		{
@@ -1202,9 +1235,16 @@ public partial class TutorialBoss : BaseEnemy
 
 	protected override void Die()
 	{
+		// If we already started death animation, don't restart it.
+		if (state == BossState.Dead && _deathAnimStarted)
+			return;
+
+		// Mark dead + stop behavior
 		state = BossState.Dead;
+		fightStarted = false;
 		Velocity = Vector2.Zero;
 
+		// Turn off all damage sources/telegraphs/UI immediately
 		if (_bossUIItem != null)
 			_bossUIItem.Visible = false;
 
@@ -1219,7 +1259,27 @@ public partial class TutorialBoss : BaseEnemy
 
 		UnhookPlayerDeathEvents(_player);
 
-		base.Die();
+		// IMPORTANT: do NOT call base.Die() (it likely QueueFree()s / hides the boss)
+		if (Sprite == null)
+			return;
+
+		if (Sprite.SpriteFrames != null && Sprite.SpriteFrames.HasAnimation(DeathAnimName))
+		{
+			_deathAnimStarted = true;
+			_currentAnim = DeathAnimName;
+
+			// Ensure non-looping so AnimationFinished fires
+			Sprite.SpriteFrames.SetAnimationLoop(DeathAnimName, false);
+
+			Sprite.Visible = true;
+			Sprite.Play(DeathAnimName);
+			GrantXpToPlayer();
+			return;
+		}
+
+		// Fallback: no Death animation, just freeze on frame 7 anyway if possible
+		Sprite.Stop();
+		Sprite.Frame = Mathf.Max(0, DeathFinalFrameIndex);
 	}
 
 	public override void ResetEnemy()
@@ -1235,6 +1295,8 @@ public partial class TutorialBoss : BaseEnemy
 		phase2 = false;
 		_phase2RoarDone = false;
 		Speed = baseSpeed;
+
+		_deathAnimStarted = false;
 
 		biteCd = 0f;
 		tailCd = 0f;
