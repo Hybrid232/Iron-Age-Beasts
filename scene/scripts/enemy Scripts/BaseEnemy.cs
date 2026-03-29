@@ -67,7 +67,7 @@ public partial class BaseEnemy : CharacterBody2D, IDamageable, IAggroable
 		QueueFree();
 	}
 
-	private void GrantXpToPlayer()
+	protected void GrantXpToPlayer()
 	{
 		if (_xpGranted) return;
 		_xpGranted = true;
