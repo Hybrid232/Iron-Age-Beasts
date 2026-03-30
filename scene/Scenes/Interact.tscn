@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://bdcoq0m6vlp8i"]
+[gd_scene load_steps=4 format=3 uid="uid://bdcoq0m6vlp8i"]
 
 [ext_resource type="Script" uid="uid://bbsj4e3d6eop" path="res://scene/Scenes/InteractPrompt.cs" id="1_yhb3p"]
 [ext_resource type="FontFile" uid="uid://cjhha6sdhxp87" path="res://scene/Fonts/FuturisticFont/Wallpoet-Regular.ttf" id="2_bxd26"]
+[ext_resource type="Texture2D" uid="uid://bw1dgmlfubikw" path="res://sprites/test/Interact.png" id="3_7sv87"]
 
 [node name="Interact" type="Control"]
 layout_mode = 3
@@ -29,10 +30,17 @@ scale = Vector2(8.958645, 1)
 
 [node name="Label" type="Label" parent="Panel"]
 layout_mode = 0
-offset_left = 11.050779
-offset_top = 2.0
-offset_right = 106.05078
-offset_bottom = 25.0
+offset_left = 7.4788103
+offset_top = 1.0
+offset_right = 182.4788
+offset_bottom = 24.0
 scale = Vector2(0.17718522, 1.5696701)
 theme_override_fonts/font = ExtResource("2_bxd26")
-text = "[E] to Interact"
+theme_override_font_sizes/font_size = 21
+text = "to Interact"
+horizontal_alignment = 1
+
+[node name="Sprite2D" type="Sprite2D" parent="Panel"]
+position = Vector2(7.2555637, 22)
+scale = Vector2(0.002829402, 0.026870105)
+texture = ExtResource("3_7sv87")

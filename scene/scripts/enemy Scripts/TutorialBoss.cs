@@ -29,6 +29,17 @@ public partial class TutorialBoss : BaseEnemy
 	private bool _playerDeathHooked = false;
 
 	// -----------------------------
+	// Boss Music
+	// -----------------------------
+	[ExportGroup("Boss Music")]
+	[Export] public AudioStreamPlayer BossMusicPlayer; // Assign in Tutorial Boss scene
+	[Export] public float BossMusicFadeInSeconds = 0.25f;
+	[Export] public float BossMusicFadeOutSeconds = 0.6f;
+	[Export] public float BossMusicVolumeDb = 0f;
+
+	private Tween _bossMusicTween;
+
+	// -----------------------------
 	// Animation
 	// -----------------------------
 	[ExportGroup("Animation")]
@@ -77,6 +88,7 @@ public partial class TutorialBoss : BaseEnemy
 	[ExportGroup("Phase 2 (<=40% HP)")]
 	[Export] public float Phase2SpeedMultiplier = 1.35f;
 	[Export] public bool UnlockChargeAt40Percent = true;
+	[Export] public AudioStreamPlayer Phase2Roar;
 
 	[ExportGroup("Phase 2 Roar (on enter)")]
 	[Export] public float Phase2RoarTelegraph = 0.6f; // kept (animation drives timing)
@@ -95,8 +107,6 @@ public partial class TutorialBoss : BaseEnemy
 	[Export] public float BiteRange = 40f;
 	[Export] public float TailSweepRange = 85f;
 	[Export] public float MinChargeRange = 120f;
-	
-	
 
 	[ExportGroup("Damages (vs Player)")]
 	[Export] public int BiteDamage = 20;
@@ -281,6 +291,9 @@ public partial class TutorialBoss : BaseEnemy
 		if (HurtboxRoot == null)
 			HurtboxRoot = GetNodeOrNull<Node2D>("HurtboxArea");
 
+		// Boss music should not be playing at scene start
+		StopBossMusicImmediate();
+
 		UpdateFacingAndAnimation(force: true);
 	}
 
@@ -340,12 +353,18 @@ public partial class TutorialBoss : BaseEnemy
 		if (!fightStarted) return;
 		if (!ResetEncounterWhenPlayerDies) return;
 
+		// Fade out music when the player dies/leaves tree during the fight
+		FadeOutBossMusicAndStop();
+
 		GD.Print("[Boss] Player TreeExiting during fight; resetting encounter.");
 		ForceResetEncounter();
 	}
 
 	public void ForceResetEncounter()
 	{
+		// Ensure music stops on forced reset too
+		FadeOutBossMusicAndStop();
+
 		if (_bossUIItem != null) _bossUIItem.Visible = false;
 		UnhookPlayerDeathEvents(_player);
 		ResetEnemy();
@@ -354,6 +373,70 @@ public partial class TutorialBoss : BaseEnemy
 	public void HideBossUI()
 	{
 		if (_bossUIItem != null) _bossUIItem.Visible = false;
+	}
+
+	// -----------------------------
+	// Boss Music helpers
+	// -----------------------------
+	private void StartBossMusicFromBeginning()
+	{
+		if (BossMusicPlayer == null) return;
+
+		KillBossMusicTween();
+
+		BossMusicPlayer.VolumeDb = -80f;
+		BossMusicPlayer.Stop();
+		BossMusicPlayer.Play(fromPosition: 0f);
+
+		if (BossMusicFadeInSeconds <= 0f)
+		{
+			BossMusicPlayer.VolumeDb = BossMusicVolumeDb;
+			return;
+		}
+
+		_bossMusicTween = CreateTween();
+		_bossMusicTween.TweenProperty(BossMusicPlayer, "volume_db", BossMusicVolumeDb, BossMusicFadeInSeconds);
+	}
+
+	private void FadeOutBossMusicAndStop()
+	{
+		if (BossMusicPlayer == null) return;
+
+		KillBossMusicTween();
+
+		if (!BossMusicPlayer.Playing)
+			return;
+
+		if (BossMusicFadeOutSeconds <= 0f)
+		{
+			StopBossMusicImmediate();
+			return;
+		}
+
+		_bossMusicTween = CreateTween();
+		_bossMusicTween.TweenProperty(BossMusicPlayer, "volume_db", -80f, BossMusicFadeOutSeconds);
+		_bossMusicTween.TweenCallback(Callable.From(() =>
+		{
+			BossMusicPlayer.Stop();
+			BossMusicPlayer.VolumeDb = BossMusicVolumeDb;
+		}));
+	}
+
+	private void StopBossMusicImmediate()
+	{
+		if (BossMusicPlayer == null) return;
+
+		KillBossMusicTween();
+		BossMusicPlayer.Stop();
+		BossMusicPlayer.VolumeDb = BossMusicVolumeDb;
+	}
+
+	private void KillBossMusicTween()
+	{
+		if (_bossMusicTween == null) return;
+		if (IsInstanceValid(_bossMusicTween))
+			_bossMusicTween.Kill();
+		_bossMusicTween = null;
 	}
 
 	private void UpdateFacingAndAnimation(bool force)
@@ -519,6 +602,9 @@ public partial class TutorialBoss : BaseEnemy
 	private void StartBossFight(Player player)
 	{
 		fightStarted = true;
+
+		// Start boss music when fight begins (player enters arena)
+		StartBossMusicFromBeginning();
 
 		if (!_cachedMask)
 		{
@@ -1237,6 +1323,9 @@ public partial class TutorialBoss : BaseEnemy
 
 	protected override void Die()
 	{
+		// Fade out boss music when the boss dies
+		FadeOutBossMusicAndStop();
+
 		// If we already started death animation, don't restart it.
 		if (state == BossState.Dead && _deathAnimStarted)
 			return;
@@ -1286,6 +1375,9 @@ public partial class TutorialBoss : BaseEnemy
 
 	public override void ResetEnemy()
 	{
+		// Ensure music is stopped on reset so re-entry restarts from the beginning
+		StopBossMusicImmediate();
+
 		base.ResetEnemy();
 
 		if (_cachedMask)
