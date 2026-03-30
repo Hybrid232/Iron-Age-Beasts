@@ -61,7 +61,7 @@ size = Vector2(2172, 306.91953)
 [node name="Player" parent="." node_paths=PackedStringArray("uiReference", "_deathScreenUI", "bulletBars") groups=["enemy_hurtbox"] instance=ExtResource("1_00eeo")]
 light_mask = 2
 visibility_layer = 2
-position = Vector2(3008, -1983)
+position = Vector2(6858, -990)
 uiReference = NodePath("../HUD")
 _deathScreenUI = NodePath("../HUD/DeathScreen")
 playerSpeed = 150
@@ -350,6 +350,30 @@ _enemyContainerPath = NodePath(".")
 
 [node name="DiloSpawns" type="Node2D" parent="EnemySpawnPoints"]
 
+[node name="Dilo_1" type="Node2D" parent="EnemySpawnPoints/DiloSpawns"]
+position = Vector2(2186, -701)
+script = ExtResource("16_in1og")
+_enemyScene = ExtResource("21_wajd3")
+_enemyContainerPath = NodePath(".")
+
+[node name="Dilo_2" type="Node2D" parent="EnemySpawnPoints/DiloSpawns"]
+position = Vector2(2015, 309)
+script = ExtResource("16_in1og")
+_enemyScene = ExtResource("21_wajd3")
+_enemyContainerPath = NodePath(".")
+
+[node name="Dilo_3" type="Node2D" parent="EnemySpawnPoints/DiloSpawns"]
+position = Vector2(3629, -447)
+script = ExtResource("16_in1og")
+_enemyScene = ExtResource("21_wajd3")
+_enemyContainerPath = NodePath(".")
+
+[node name="Dilo_4" type="Node2D" parent="EnemySpawnPoints/DiloSpawns"]
+position = Vector2(4573, -345)
+script = ExtResource("16_in1og")
+_enemyScene = ExtResource("21_wajd3")
+_enemyContainerPath = NodePath(".")
+
 [node name="BossPhase2Spawns" type="Node2D" parent="EnemySpawnPoints"]
 position = Vector2(7697, 93)
 
@@ -458,6 +482,3 @@ position = Vector2(4017, -1423)
 
 [node name="Checkpoint2" parent="." instance=ExtResource("16_4rr56")]
 position = Vector2(460, -879)
-
-[node name="RangeEnemy" parent="." instance=ExtResource("21_wajd3")]
-position = Vector2(2841, -1761)
