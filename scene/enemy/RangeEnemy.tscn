@@ -22,6 +22,8 @@ motion_mode = 1
 wall_min_slide_angle = 0.0
 script = ExtResource("1_44mn6")
 ProjectileScene = ExtResource("2_wrxxg")
+MaxHealth = 30
+XpReward = 200
 
 [node name="RangeEnemy" type="Sprite2D" parent="."]
 position = Vector2(3, -10)

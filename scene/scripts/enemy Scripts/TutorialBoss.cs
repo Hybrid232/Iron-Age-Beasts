@@ -285,6 +285,7 @@ public partial class TutorialBoss : BaseEnemy
 			ArenaTriggerArea.Monitorable = true;
 			ArenaTriggerArea.Monitoring = false;
 			ArenaTriggerArea.BodyEntered += OnArenaTriggerBodyEntered;
+			ArenaTriggerArea.BodyExited += OnArenaTriggerBodyExited;
 			CallDeferred(nameof(ArmArenaTriggerNextFrame));
 		}
 		else
@@ -461,6 +462,15 @@ public partial class TutorialBoss : BaseEnemy
 		_bossMusicTween = null;
 	}
 
+	// NEW: quick fade for Death UI
+	public void FadeOutBossMusicQuick()
+	{
+		float oldFade = BossMusicFadeOutSeconds;
+		BossMusicFadeOutSeconds = 0.12f; // quick fade
+		FadeOutBossMusicAndStop();
+		BossMusicFadeOutSeconds = oldFade;
+	}
+
 	// -----------------------------
 	// Phase 2 Roar SFX helpers
 	// -----------------------------
@@ -597,14 +607,48 @@ public partial class TutorialBoss : BaseEnemy
 
 	private async void ArmArenaTriggerNextFrame()
 	{
-		await ToSignal(GetTree(), SceneTree.SignalName.PhysicsFrame);
+		// Wait several physics frames so the player's respawn teleport has time to
+		// move them out of the arena trigger before we re-enable monitoring.
+		// If we arm immediately, BodyEntered fires the instant Monitoring turns true
+		// while the player body is still overlapping, restarting the fight.
+		const int waitFrames = 10;
+		for (int i = 0; i < waitFrames; i++)
+			await ToSignal(GetTree(), SceneTree.SignalName.PhysicsFrame);
 
 		if (fightStarted) return;
 		if (ArenaTriggerArea == null) return;
 
+		// Extra safety: if a player body is still overlapping (e.g. checkpoint is
+		// inside the arena), don't arm yet — retry next frame until they're clear.
 		ArenaTriggerArea.Monitoring = true;
+		await ToSignal(GetTree(), SceneTree.SignalName.PhysicsFrame);
+
+		var overlapping = ArenaTriggerArea.GetOverlappingBodies();
+		foreach (var body in overlapping)
+		{
+			if (body is Player)
+			{
+				// Player still inside — disarm and give up; the trigger will fire
+				// correctly on next genuine entry.
+				ArenaTriggerArea.Monitoring = false;
+				GD.Print("[Boss] Arena trigger: player still overlapping after reset, will arm on next entry.");
+
+				// Arm passively: monitor on, but guard in OnArenaTriggerBodyEntered
+				// will prevent re-triggering until the player exits and re-enters.
+				_awaitingCleanEntry = true;
+				ArenaTriggerArea.Monitoring = true;
+				return;
+			}
+		}
+
+		_awaitingCleanEntry = false;
 		GD.Print("[Boss] Arena trigger armed.");
 	}
+
+	// True when we re-armed the trigger while the player was still overlapping.
+	// We wait for them to exit before allowing the fight to start again.
+	private bool _awaitingCleanEntry = false;
+	private bool _playerWasInsideTrigger = false;
 
 	public override void _PhysicsProcess(double delta)
 	{
@@ -645,8 +689,32 @@ public partial class TutorialBoss : BaseEnemy
 		if (body is not Player player) return;
 		if (!player.IsInGroup(PlayerGroup)) return;
 
+		// If we re-armed while the player was still inside, ignore this entry —
+		// it fired because monitoring turned back on, not because the player
+		// walked in fresh. Wait for them to exit and re-enter.
+		if (_awaitingCleanEntry)
+		{
+			_playerWasInsideTrigger = true;
+			GD.Print("[Boss] Arena trigger: ignoring stale entry (player was inside on re-arm).");
+			return;
+		}
+
 		GD.Print($"[Boss] Arena triggered by Player '{player.Name}'. Starting fight.");
 		StartBossFight(player);
+	}
+
+	private void OnArenaTriggerBodyExited(Node body)
+	{
+		if (body is not Player) return;
+
+		// Player has genuinely left the trigger area after a reset — clear the
+		// stale-entry flag so the next entry starts the fight normally.
+		if (_awaitingCleanEntry && _playerWasInsideTrigger)
+		{
+			_awaitingCleanEntry = false;
+			_playerWasInsideTrigger = false;
+			GD.Print("[Boss] Arena trigger: player exited after reset, next entry will start fight.");
+		}
 	}
 
 	private void StartBossFight(Player player)
@@ -1480,6 +1548,10 @@ public partial class TutorialBoss : BaseEnemy
 
 		// NEW: ensure charge roar state doesn't carry across resets
 		_chargeRoarPlayedThisCharge = false;
+
+		// NEW: reset clean-entry gate so next arena trigger works correctly
+		_awaitingCleanEntry = false;
+		_playerWasInsideTrigger = false;
 
 		if (_bossUIItem != null) _bossUIItem.Visible = false;
 		bossUI?.InitializeBoss(MaxHealth, _currentHealth);

@@ -69,6 +69,27 @@ public partial class DeathScreenUI : Control
 		}
 	}
 
+	// NEW: when death screen starts, fade out boss music quickly
+	private void FadeOutBossMusicQuickAllEncounters()
+	{
+		if (string.IsNullOrEmpty(_bossEncounterGroupName)) return;
+
+		var nodes = GetTree().GetNodesInGroup(_bossEncounterGroupName);
+		if (nodes == null || nodes.Count == 0) return;
+
+		foreach (var n in nodes)
+		{
+			if (n is TutorialBoss boss)
+			{
+				boss.FadeOutBossMusicQuick();
+				continue;
+			}
+
+			if (n is Node node && node.HasMethod("FadeOutBossMusicQuick"))
+				node.Call("FadeOutBossMusicQuick");
+		}
+	}
+
 	public async Task PlayAndWaitAsync(string text = null)
 	{
 		if (_animPlayer == null)
@@ -76,6 +97,9 @@ public partial class DeathScreenUI : Control
 			GD.PrintErr("[DeathScreenUI] Missing _animPlayer export.");
 			return;
 		}
+
+		// Fade boss music quickly so it doesn't play under the death UI animation
+		FadeOutBossMusicQuickAllEncounters();
 
 		_respawnSignalSentThisPlay = false;
 

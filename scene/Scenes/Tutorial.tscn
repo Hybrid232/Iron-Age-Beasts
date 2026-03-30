@@ -63,7 +63,7 @@ size = Vector2(2172, 306.91953)
 [node name="Player" parent="." node_paths=PackedStringArray("uiReference", "_deathScreenUI", "bulletBars") groups=["enemy_hurtbox"] instance=ExtResource("1_00eeo")]
 light_mask = 2
 visibility_layer = 2
-position = Vector2(6858, -990)
+position = Vector2(4147, -1602)
 uiReference = NodePath("../HUD")
 _deathScreenUI = NodePath("../HUD/DeathScreen")
 playerSpeed = 150
@@ -302,13 +302,13 @@ _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
 
 [node name="RaptorSpawn_4" type="Node2D" parent="EnemySpawnPoints/RaptorSpawns"]
-position = Vector2(2329, 33)
+position = Vector2(2208, 53)
 script = ExtResource("16_in1og")
 _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
 
 [node name="RaptorSpawn_5" type="Node2D" parent="EnemySpawnPoints/RaptorSpawns"]
-position = Vector2(2232, -81)
+position = Vector2(2099, -62)
 script = ExtResource("16_in1og")
 _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
@@ -320,7 +320,7 @@ _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
 
 [node name="RaptorSpawn_7" type="Node2D" parent="EnemySpawnPoints/RaptorSpawns"]
-position = Vector2(4258, -1054)
+position = Vector2(4078, -946)
 script = ExtResource("16_in1og")
 _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
@@ -338,13 +338,13 @@ _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
 
 [node name="RaptorSpawn_10" type="Node2D" parent="EnemySpawnPoints/RaptorSpawns"]
-position = Vector2(5582, 7)
+position = Vector2(5813, 59)
 script = ExtResource("16_in1og")
 _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
 
 [node name="RaptorSpawn_11" type="Node2D" parent="EnemySpawnPoints/RaptorSpawns"]
-position = Vector2(5715, 205)
+position = Vector2(6005, 177)
 script = ExtResource("16_in1og")
 _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
@@ -357,26 +357,32 @@ _enemyContainerPath = NodePath(".")
 
 [node name="DiloSpawns" type="Node2D" parent="EnemySpawnPoints"]
 
-[node name="Dilo_1" type="Node2D" parent="EnemySpawnPoints/DiloSpawns"]
-position = Vector2(2186, -701)
+[node name="Dilo_Spawn1" type="Node2D" parent="EnemySpawnPoints/DiloSpawns"]
+position = Vector2(2238, -38)
 script = ExtResource("16_in1og")
 _enemyScene = ExtResource("21_wajd3")
 _enemyContainerPath = NodePath(".")
 
-[node name="Dilo_2" type="Node2D" parent="EnemySpawnPoints/DiloSpawns"]
-position = Vector2(2015, 309)
+[node name="Dilo_Spawn2" type="Node2D" parent="EnemySpawnPoints/DiloSpawns"]
+position = Vector2(2365, -677)
 script = ExtResource("16_in1og")
 _enemyScene = ExtResource("21_wajd3")
 _enemyContainerPath = NodePath(".")
 
-[node name="Dilo_3" type="Node2D" parent="EnemySpawnPoints/DiloSpawns"]
-position = Vector2(3629, -447)
+[node name="Dilo_Spawn3" type="Node2D" parent="EnemySpawnPoints/DiloSpawns"]
+position = Vector2(3650, -851)
 script = ExtResource("16_in1og")
 _enemyScene = ExtResource("21_wajd3")
 _enemyContainerPath = NodePath(".")
 
-[node name="Dilo_4" type="Node2D" parent="EnemySpawnPoints/DiloSpawns"]
-position = Vector2(4573, -345)
+[node name="Dilo_Spawn4" type="Node2D" parent="EnemySpawnPoints/DiloSpawns"]
+position = Vector2(4210, -800)
+script = ExtResource("16_in1og")
+_enemyScene = ExtResource("21_wajd3")
+_enemyContainerPath = NodePath(".")
+
+[node name="Dilo_Spawn5" type="Node2D" parent="EnemySpawnPoints/DiloSpawns"]
+position = Vector2(5084, 26)
 script = ExtResource("16_in1og")
 _enemyScene = ExtResource("21_wajd3")
 _enemyContainerPath = NodePath(".")
@@ -416,18 +422,18 @@ _enemyContainerPath = NodePath(".")
 StartDisabled = true
 SpawnOnReady = false
 
-[node name="Raptor_5" type="Node2D" parent="EnemySpawnPoints/BossPhase2Spawns"]
+[node name="Dilo_1" type="Node2D" parent="EnemySpawnPoints/BossPhase2Spawns"]
 position = Vector2(468, -368)
 script = ExtResource("16_in1og")
-_enemyScene = ExtResource("7_pbiin")
+_enemyScene = ExtResource("21_wajd3")
 _enemyContainerPath = NodePath(".")
 StartDisabled = true
 SpawnOnReady = false
 
-[node name="Raptor_6" type="Node2D" parent="EnemySpawnPoints/BossPhase2Spawns"]
-position = Vector2(932, -294)
+[node name="Dilo_2" type="Node2D" parent="EnemySpawnPoints/BossPhase2Spawns"]
+position = Vector2(475, 241)
 script = ExtResource("16_in1og")
-_enemyScene = ExtResource("7_pbiin")
+_enemyScene = ExtResource("21_wajd3")
 _enemyContainerPath = NodePath(".")
 StartDisabled = true
 SpawnOnReady = false
@@ -447,6 +453,18 @@ RoarStunSeconds = 1.5
 Phase2SpawnerRootPath = NodePath("../EnemySpawnPoints/BossPhase2Spawns")
 ChargeDamage = 40
 MaxHealth = 500
+
+[node name="Raptor_MiniBoss" parent="." instance=ExtResource("7_pbiin")]
+position = Vector2(2471.0002, -583.00006)
+scale = Vector2(2.3961902, 2.3961902)
+AttackAnimationDuration = 0.2
+PatrolRadius = 1000.0
+Speed = 10000.0
+StopDistance = 5.0
+MaxHealth = 300
+AttackRange = 100.0
+AttackCooldown = 0.5
+XpReward = 500
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 position = Vector2(6694.0005, -1005)
