@@ -1,4 +1,4 @@
-[gd_scene load_steps=145 format=3 uid="uid://d38cvt67w5bgb"]
+[gd_scene load_steps=146 format=3 uid="uid://d38cvt67w5bgb"]
 
 [ext_resource type="Script" uid="uid://bdxac0jm2jtt2" path="res://scene/scripts/Player Scripts/Player.cs" id="1_4bggy"]
 [ext_resource type="PackedScene" uid="uid://77e4i6lmd7ih" path="res://scene/Player/Bullet.tscn" id="2_a1q3d"]
@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://cfvqoen8ajl5d" path="res://sprites/MC/MC_Dashes.png" id="6_ve2us"]
 [ext_resource type="Texture2D" uid="uid://j7bspm3fmg3q" path="res://sprites/MC/MC_Runs.png" id="6_wsr1k"]
 [ext_resource type="Script" uid="uid://hwskfynq1rhf" path="res://scene/scripts/Player Scripts/PlayerAnimationDriver.cs" id="7_46pjf"]
+[ext_resource type="AudioStream" uid="uid://b4fe503cswdh" path="res://Audio/SFX/Player/Healing Stim.wav" id="9_k2g04"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ldjkx"]
 atlas = ExtResource("6_k1yjj")
@@ -1296,10 +1297,12 @@ states/Start/position = Vector2(266, 100)
 transitions = ["Start", "Idle", SubResource("AnimationNodeStateMachineTransition_hmv17"), "Idle", "Run", SubResource("AnimationNodeStateMachineTransition_ww526"), "Run", "Idle", SubResource("AnimationNodeStateMachineTransition_r6pp1"), "Run", "Dash", SubResource("AnimationNodeStateMachineTransition_lbuht"), "Dash", "Run", SubResource("AnimationNodeStateMachineTransition_urgyq"), "Run", "Attack", SubResource("AnimationNodeStateMachineTransition_aqrcl"), "Attack", "Run", SubResource("AnimationNodeStateMachineTransition_nots2"), "Idle", "Attack", SubResource("AnimationNodeStateMachineTransition_2604u"), "Attack", "Idle", SubResource("AnimationNodeStateMachineTransition_j4kj4")]
 graph_offset = Vector2(-23, 60)
 
-[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("attackPivot", "attackHitbox", "halberdSFX", "bulletContainer", "bulletBars", "gunSFX", "walkSFX", "swingSFX", "animationDriver") groups=["Player", "player"]]
+[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("HealthStimSFX", "attackPivot", "attackHitbox", "halberdSFX", "bulletContainer", "bulletBars", "gunSFX", "walkSFX", "swingSFX", "animationDriver") groups=["Player", "player"]]
 collision_layer = 3
 collision_mask = 3
 script = ExtResource("1_4bggy")
+HealthStimSFX = NodePath("PlayerSFX/Heal")
+HealthStimFile = ExtResource("9_k2g04")
 resetSceneOnDeath = false
 dodgeSpeed = 900
 dodgeCooldown = 0.5
@@ -1386,6 +1389,9 @@ stream = ExtResource("4_0fwxj")
 [node name="GunSFX" type="AudioStreamPlayer" parent="PlayerSFX"]
 
 [node name="HalberdSwing" type="AudioStreamPlayer" parent="PlayerSFX"]
+
+[node name="Heal" type="AudioStreamPlayer" parent="PlayerSFX"]
+stream = ExtResource("9_k2g04")
 
 [node name="PlayerAnimationDriver" type="Node" parent="." node_paths=PackedStringArray("AnimationTree")]
 script = ExtResource("7_46pjf")
