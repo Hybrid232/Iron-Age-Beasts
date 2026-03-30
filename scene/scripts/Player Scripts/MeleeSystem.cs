@@ -29,7 +29,6 @@ public class MeleeSystem
 	private float verticalBias = 1.25f;
 
 	public bool IsAttacking => isAttacking;
-
 	public int MeleeDamage => meleeDamage;
 
 	public void SetMeleeDamage(int newDamage)
@@ -60,7 +59,6 @@ public class MeleeSystem
 		enemyKnockbackTime = knockbackTime;
 		meleeDamage = damage;
 
-		// FIX: assign parameters to fields correctly
 		this.halberdSFX = halberdSFX;
 		this.halberdSoundFile = halberdSoundFile;
 
@@ -83,15 +81,18 @@ public class MeleeSystem
 		attackHitbox.BodyEntered += OnAttackBodyEntered;
 	}
 
-	public void TryAttack(Vector2 direction, RecoilSystem recoilSystem)
+	/// <summary>
+	/// Returns true if an attack was started this call.
+	/// </summary>
+	public bool TryAttack(Vector2 direction, RecoilSystem recoilSystem)
 	{
 		if (!Input.IsActionJustPressed("attack") || direction == Vector2.Zero)
-			return;
+			return false;
 
 		if (!healthSystem.CanAct())
 		{
 			GD.Print("Not enough Stamina!");
-			return;
+			return false;
 		}
 
 		healthSystem.ChangeStamina(-staminaCost);
@@ -102,6 +103,7 @@ public class MeleeSystem
 		usedHitRecoilThisAttack = false;
 
 		StartAttack(direction);
+		return true;
 	}
 
 	private void StartAttack(Vector2 direction)
