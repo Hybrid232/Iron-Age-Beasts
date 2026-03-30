@@ -9,6 +9,8 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 	[Export] private int maxHealth = 100;
 	[Export] private int maxStamina = 100;
 	[Export] private int potionHealAmount = 30;
+	[Export] private AudioStreamPlayer HealthStimSFX;
+	[Export] private AudioStream HealthStimFile;
 
 	[ExportGroup("Starting Consumables")]
 	[Export] private int startingPotions = 1;
@@ -76,6 +78,8 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 	[Export] private ProgressBar[] bulletBars;
 	[Export] private AudioStreamPlayer gunSFX;
 	[Export] private AudioStream gunSoundFile;
+	[Export] private AudioStreamPlayer reloadSFX;
+	[Export] private AudioStream reloadSoundFile;
 
 	// ======= AUDIO EXPORTS =======
 	[ExportGroup("Audio System")]
@@ -167,7 +171,9 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 			bulletContainer,
 			bulletBars,
 			gunSFX,
-			gunSoundFile
+			gunSoundFile,
+			reloadSFX,
+			reloadSoundFile
 		);
 
 		meleeSystem.Initialize();
@@ -175,6 +181,10 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 		respawnPosition = GlobalPosition;
 
 		potionSystem = new PotionSystem(potionHealAmount, healthSystem, uiReference, startingPotions);
+
+		// NEW: wire up potion SFX
+		if (HealthStimSFX != null && HealthStimFile != null)
+			HealthStimSFX.Stream = HealthStimFile;
 
 		if (uiReference != null)
 			uiReference.UpdatePotionDisplay(potionSystem.CurrentPotions);
@@ -253,7 +263,7 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 			);
 
 			MoveAndSlide();
-			potionSystem.TryUsePotion();
+			TryUsePotionWithSfx();
 			return;
 		}
 
@@ -268,7 +278,7 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 			);
 
 			MoveAndSlide();
-			potionSystem.TryUsePotion();
+			TryUsePotionWithSfx();
 			return;
 		}
 
@@ -318,7 +328,27 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 		);
 
 		MoveAndSlide();
+		TryUsePotionWithSfx();
+	}
+
+	// NEW: play SFX when a potion is actually consumed
+	private void TryUsePotionWithSfx()
+	{
+		int before = potionSystem.CurrentPotions;
 		potionSystem.TryUsePotion();
+		int after = potionSystem.CurrentPotions;
+
+		// Potion was used if count went down by 1
+		if (after < before)
+		{
+			if (HealthStimSFX != null)
+			{
+				if (!HealthStimSFX.Playing)
+					HealthStimSFX.Play();
+				else
+					HealthStimSFX.Stop(); // optional: restart sound if spammed
+			}
+		}
 	}
 
 	// ===== STUN API =====

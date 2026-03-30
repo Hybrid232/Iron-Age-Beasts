@@ -7,37 +7,51 @@ public class ShootingSystem
 	private PackedScene bulletScene;
 	private Node2D bulletContainer;
 	private ProgressBar[] bulletBars;
+
 	private AudioStreamPlayer gunSFX;
 	private AudioStream gunSoundFile;
+
+	// NEW: reload SFX (plays when a shot finishes recharging)
+	private AudioStreamPlayer reloadSFX;
+	private AudioStream reloadSoundFile;
 
 	private int availableShots;
 	private float[] shotTimers;
 
-	public ShootingSystem(int maxShots, float cooldown, PackedScene scene, 
-						  Node2D container, ProgressBar[] bars, 
-						AudioStreamPlayer shootSFX, AudioStream shootFile)
+	public ShootingSystem(
+		int maxShots,
+		float cooldown,
+		PackedScene scene,
+		Node2D container,
+		ProgressBar[] bars,
+		AudioStreamPlayer shootSFX,
+		AudioStream shootFile,
+		AudioStreamPlayer reloadSFX,
+		AudioStream reloadFile)
 	{
 		this.maxShots = maxShots;
 		bulletCooldown = cooldown;
 		bulletScene = scene;
 		bulletContainer = container;
 		bulletBars = bars;
-		
-		// Assigning the audio files
-		gunSFX = shootSFX;
-		gunSoundFile = shootFile;
-		
-		if (gunSFX != null && gunSoundFile != null)
-		{
-			gunSFX.Stream = gunSoundFile;
-		}
+
+		// Shoot audio
+		this.gunSFX = shootSFX;
+		this.gunSoundFile = shootFile;
+		if (this.gunSFX != null && this.gunSoundFile != null)
+			this.gunSFX.Stream = this.gunSoundFile;
+
+		// Reload audio
+		this.reloadSFX = reloadSFX;
+		this.reloadSoundFile = reloadFile;
+		if (this.reloadSFX != null && this.reloadSoundFile != null)
+			this.reloadSFX.Stream = this.reloadSoundFile;
 
 		availableShots = maxShots;
+
 		shotTimers = new float[maxShots];
 		for (int i = 0; i < maxShots; i++)
-		{
 			shotTimers[i] = 0f;
-		}
 	}
 
 	public void TryShoot(Vector2 direction, Vector2 playerPosition)
@@ -47,14 +61,17 @@ public class ShootingSystem
 
 		GD.Print("Shooting bullet! Direction: ", direction);
 		SpawnBullet(direction.Normalized(), playerPosition);
-		
-		if (Input.IsActionJustPressed("shoot"))
+
+		// FIX: braces, and null check
+		if (gunSFX != null)
+		{
 			gunSFX.Play();
 			GD.Print("Gun Sound Played");
+		}
 
 		for (int i = 0; i < maxShots; i++)
 		{
-			if (shotTimers[i] <= 0)
+			if (shotTimers[i] <= 0f)
 			{
 				shotTimers[i] = bulletCooldown;
 				availableShots--;
@@ -67,36 +84,37 @@ public class ShootingSystem
 	{
 		for (int i = 0; i < maxShots; i++)
 		{
-			if (shotTimers[i] > 0)
+			if (shotTimers[i] > 0f)
 			{
 				shotTimers[i] -= dt;
 
-				//  Added null checks here
+				// Update UI
 				if (bulletBars != null && i < bulletBars.Length && bulletBars[i] != null)
 				{
-					float progress = 100f * (1 - (shotTimers[i] / bulletCooldown));
+					float progress = 100f * (1f - (shotTimers[i] / bulletCooldown));
 					bulletBars[i].Value = progress;
 				}
 
-				if (shotTimers[i] <= 0)
+				// Recharge completed THIS FRAME
+				if (shotTimers[i] <= 0f)
 				{
 					availableShots++;
-					shotTimers[i] = 0;
+					shotTimers[i] = 0f;
 
-					//  Added null checks here
+					// UI to full
 					if (bulletBars != null && i < bulletBars.Length && bulletBars[i] != null)
-					{
 						bulletBars[i].Value = 100f;
-					}
+
+					// NEW: play reload SFX once per recharge completion
+					if (reloadSFX != null)
+						reloadSFX.Play();
 				}
 			}
 			else
 			{
-				// Added null checks here
+				// Timer already ready; keep UI full
 				if (bulletBars != null && i < bulletBars.Length && bulletBars[i] != null)
-				{
 					bulletBars[i].Value = 100f;
-				}
 			}
 		}
 	}
@@ -111,8 +129,10 @@ public class ShootingSystem
 
 		Area2D bullet = (Area2D)bulletScene.Instantiate();
 		bullet.SetMeta("direction", direction);
-		Node root =  bulletContainer.GetTree().Root;
+
+		Node root = bulletContainer.GetTree().Root;
 		root.AddChild(bullet);
+
 		bullet.GlobalPosition = spawnPosition;
 
 		GD.Print("Bullet spawned at ", bullet.Position, " with direction ", direction);

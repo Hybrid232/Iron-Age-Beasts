@@ -1,4 +1,4 @@
-[gd_scene load_steps=76 format=3 uid="uid://d4heq0i17knph"]
+[gd_scene load_steps=78 format=3 uid="uid://d4heq0i17knph"]
 
 [ext_resource type="Script" uid="uid://bf4f5t0p3v7n6" path="res://scene/scripts/enemy Scripts/TutorialBoss.cs" id="1_4m671"]
 [ext_resource type="Texture2D" uid="uid://dtwbi03s1b2se" path="res://sprites/VoxSpine/Bite/VoxSpineBite1.png" id="2_6487y"]
@@ -70,6 +70,8 @@
 [ext_resource type="Texture2D" uid="uid://iu1k688234wr" path="res://sprites/VoxSpine/Phase2Roar/VoxSpineRoar12.png" id="44_7aasi"]
 [ext_resource type="Texture2D" uid="uid://dxsgvvkqaqkh1" path="res://sprites/VoxSpine/Phase2Roar/VoxSpineRoar13.png" id="45_uty64"]
 [ext_resource type="Texture2D" uid="uid://dstvt6rrvybb1" path="res://sprites/VoxSpine/Phase2Roar/VoxSpineRoar14.png" id="46_lw1co"]
+[ext_resource type="AudioStream" uid="uid://cbfl6yio4mrph" path="res://Audio/Music/Spinosaurus Boss Theme - Phase 1.mp3" id="71_7h4hx"]
+[ext_resource type="AudioStream" uid="uid://dsgc0jgeobqvf" path="res://Audio/SFX/NPCs/Enemies/Spinosaurus/RoarPhase2.mp3" id="72_7aasi"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_edccq"]
 animations = [{
@@ -327,12 +329,13 @@ height = 128.08307
 [sub_resource type="CircleShape2D" id="CircleShape2D_4m671"]
 radius = 119.117615
 
-[node name="TutorialBoss" type="CharacterBody2D" node_paths=PackedStringArray("Sprite", "BodyCollisionRoot", "HurtboxRoot", "BiteHitbox", "TailHitbox", "ChargeHitbox", "BodyContactDamageArea")]
+[node name="TutorialBoss" type="CharacterBody2D" node_paths=PackedStringArray("BossMusicPlayer", "Sprite", "BodyCollisionRoot", "HurtboxRoot", "BiteHitbox", "TailHitbox", "ChargeHitbox", "BodyContactDamageArea")]
 light_mask = 7
 visibility_layer = 7
 collision_layer = 6
 collision_mask = 6
 script = ExtResource("1_4m671")
+BossMusicPlayer = NodePath("Node/BossMusic")
 Sprite = NodePath("AnimatedSprite2D")
 IdleAnimName = "Idle"
 ChaseAnimName = "Chase"
@@ -490,3 +493,12 @@ shape = SubResource("CircleShape2D_4m671")
 root_node = NodePath("")
 
 [node name="StateTimer" type="Timer" parent="."]
+
+[node name="Node" type="Node" parent="."]
+
+[node name="BossMusic" type="AudioStreamPlayer" parent="Node"]
+stream = ExtResource("71_7h4hx")
+parameters/looping = true
+
+[node name="Phase2Roar" type="AudioStreamPlayer" parent="Node"]
+stream = ExtResource("72_7aasi")
