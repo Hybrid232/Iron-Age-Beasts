@@ -173,28 +173,28 @@ animations = [{
 "speed": 5.0
 }, {
 "frames": [{
-"duration": 1.0,
+"duration": 3.0,
 "texture": ExtResource("30_q15jn")
 }, {
-"duration": 1.0,
+"duration": 3.0,
 "texture": ExtResource("31_7h4hx")
 }, {
-"duration": 1.0,
+"duration": 3.0,
 "texture": ExtResource("32_7aasi")
 }, {
-"duration": 1.0,
+"duration": 3.0,
 "texture": ExtResource("33_uty64")
 }, {
-"duration": 1.0,
+"duration": 3.0,
 "texture": ExtResource("34_lw1co")
 }, {
-"duration": 1.0,
+"duration": 3.0,
 "texture": ExtResource("35_x0nvp")
 }, {
-"duration": 1.0,
+"duration": 3.0,
 "texture": ExtResource("36_xeluu")
 }, {
-"duration": 1.0,
+"duration": 3.0,
 "texture": ExtResource("37_np0k1")
 }],
 "loop": false,
@@ -341,6 +341,7 @@ ChargeAnimName = "Charge"
 BodyCollisionRoot = NodePath("CollisionPolygon2D")
 HurtboxRoot = NodePath("HurtboxArea")
 Phase2SpeedMultiplier = 2.0
+Phase2SpawnersToActivate = 6
 BiteRange = 200.0
 TailSweepRange = 240.0
 MinChargeRange = 300.0
@@ -381,10 +382,8 @@ light_mask = 15
 visibility_layer = 15
 scale = Vector2(5.0803113, 5.0803113)
 sprite_frames = SubResource("SpriteFrames_edccq")
-animation = &"Death"
+animation = &"Charge"
 autoplay = "Idle"
-frame = 7
-frame_progress = 1.0
 
 [node name="HurtboxArea" type="Area2D" parent="."]
 light_mask = 3

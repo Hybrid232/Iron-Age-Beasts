@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://dw6fcvhg77jjj"]
+[gd_scene load_steps=4 format=3 uid="uid://dw6fcvhg77jjj"]
 
 [ext_resource type="Script" uid="uid://cuuyoytethni5" path="res://scene/enemy/Projectile.cs" id="1_jp1a3"]
 [ext_resource type="Texture2D" uid="uid://luyl183tkugo" path="res://sprites/test/venomous.png" id="1_mj27r"]
@@ -8,6 +8,7 @@ radius = 10.5736065
 
 [node name="Projectile" type="Area2D"]
 script = ExtResource("1_jp1a3")
+Speed = 500.0
 
 [node name="Venomous" type="Sprite2D" parent="."]
 position = Vector2(-10.833767, -1.2944298)
