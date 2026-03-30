@@ -6,16 +6,16 @@
 [ext_resource type="Texture2D" uid="uid://d08o5yyd2hgd0" path="res://sprites/test/HealthBar.png" id="4_04kl5"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_jyd3w"]
-radius = 1.6999999
+radius = 2.1000001
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_5tfgd"]
-radius = 1.9416487
+radius = 2.3391473
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_itp1y"]
 radius = 146.02174
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5tfgd"]
-size = Vector2(31, 16)
+size = Vector2(16, 8)
 
 [node name="Dilophosaurus" type="CharacterBody2D" node_paths=PackedStringArray("HitArea") groups=["enemy_hurtbox"]]
 collision_layer = 14
@@ -24,7 +24,6 @@ script = ExtResource("1_ok0wq")
 HitArea = NodePath("HitArea")
 PatrolRadius = 800.0
 Speed = 100.0
-AttackRange = 100.0
 
 [node name="DinoEnemy" type="Sprite2D" parent="."]
 position = Vector2(1.999999, 11)
@@ -34,7 +33,6 @@ texture = ExtResource("2_5tfgd")
 offset = Vector2(-8, 0)
 
 [node name="CollisionBox" type="CollisionShape2D" parent="." groups=["enemy_hurtbox"]]
-visible = false
 light_mask = 15
 visibility_layer = 15
 z_index = 1
@@ -43,7 +41,6 @@ scale = Vector2(9.999999, 9.999999)
 shape = SubResource("CircleShape2D_jyd3w")
 
 [node name="HurtBox" type="Area2D" parent="." groups=["enemy_hurtbox"]]
-visible = false
 light_mask = 3
 visibility_layer = 3
 position = Vector2(4, 11)
@@ -51,6 +48,7 @@ scale = Vector2(8.561469, -8.306856)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox"]
 z_index = 7
+position = Vector2(-0.11680239, 0)
 shape = SubResource("CircleShape2D_5tfgd")
 debug_color = Color(0.68824255, 0.28912774, 0.39706942, 0.41960785)
 
@@ -92,7 +90,7 @@ monitoring = false
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HitArea" groups=["Enemy"]]
 light_mask = 2
 visibility_layer = 2
-position = Vector2(0.5, -2)
+position = Vector2(0, -3)
 shape = SubResource("RectangleShape2D_5tfgd")
 debug_color = Color(0.5531096, 0.4047217, 0.9911578, 0.41960785)
 
