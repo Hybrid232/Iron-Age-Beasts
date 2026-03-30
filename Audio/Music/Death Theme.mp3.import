@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://dwnkvncyeblg8"
+path="res://.godot/imported/Death Theme.mp3-ca8443c882e815d3cffe67eb55c4b12a.mp3str"
+
+[deps]
+
+source_file="res://Audio/Music/Death Theme.mp3"
+dest_files=["res://.godot/imported/Death Theme.mp3-ca8443c882e815d3cffe67eb55c4b12a.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
