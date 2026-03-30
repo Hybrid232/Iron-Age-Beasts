@@ -98,12 +98,12 @@ healthBar = NodePath("PlayerHealthBar")
 staminaBar = NodePath("PlayerStaminaBar")
 _potionIcons = [NodePath("Inventory/PotionIcon"), NodePath("Inventory/PotionIcon2"), NodePath("Inventory/PotionIcon3"), NodePath("Inventory/PotionIcon4"), NodePath("Inventory/PotionIcon5")]
 
-[node name="PauseMenu" parent="HUD" instance=ExtResource("1_w8gwm")]
+[node name="PauseMenu" parent="HUD" unique_id=195639552 instance=ExtResource("1_w8gwm")]
 light_mask = 31
 visibility_layer = 31
 z_index = 20
 
-[node name="BulletBar0" type="ProgressBar" parent="HUD"]
+[node name="BulletBar0" type="ProgressBar" parent="HUD" unique_id=368098778]
 offset_left = 39.0
 offset_top = 53.0
 offset_right = 82.9263
@@ -218,7 +218,7 @@ texture = ExtResource("9_113gb")
 [node name="XPManager" parent="HUD" unique_id=581468052 instance=ExtResource("9_4rr56")]
 CurrentXp = 2000
 
-[node name="PauseMenu" parent="HUD" unique_id=1992387063 instance=ExtResource("1_w8gwm")]
+[node name="PauseMenu2" parent="HUD" unique_id=1992387063 instance=ExtResource("1_w8gwm")]
 z_index = 5
 
 [node name="BossUI" type="Control" parent="HUD" unique_id=148767347]
@@ -406,9 +406,9 @@ _enemyContainerPath = NodePath(".")
 StartDisabled = true
 SpawnOnReady = false
 
-[node name="Encounter" type="Node" parent="."]
+[node name="Encounter" type="Node" parent="." unique_id=991542932]
 
-[node name="TutorialBoss" parent="." node_paths=PackedStringArray("ArenaTriggerArea", "EntranceGate") groups=["Player", "enemy_hurtbox", "player"] instance=ExtResource("10_ujhhv")]
+[node name="TutorialBoss" parent="." unique_id=513962608 node_paths=PackedStringArray("ArenaTriggerArea", "EntranceGate") groups=["Player", "enemy_hurtbox", "player"] instance=ExtResource("10_ujhhv")]
 light_mask = 15
 visibility_layer = 15
 position = Vector2(7810, -674)
