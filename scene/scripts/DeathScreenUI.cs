@@ -15,6 +15,15 @@ public partial class DeathScreenUI : Control
 	[ExportGroup("Text")]
 	[Export] private string _defaultDeathText = "TIME CLAIMS ANOTHER";
 
+	[ExportGroup("Death Music")]
+	[Export] private AudioStreamPlayer _deathMusicPlayer;
+	[Export] private AudioStream _deathMusicStream;
+	[Export] private float _deathMusicFadeInSeconds = 0.5f;
+	[Export] private float _deathMusicFadeOutSeconds = 0.8f;
+	[Export] private float _deathMusicVolumeDb = 0f;
+
+	private Tween _deathMusicTween;
+
 	[ExportGroup("Respawn Reset Hooks")]
 	[Export] private bool _resetBossEncountersOnRespawn = true;
 
@@ -32,6 +41,13 @@ public partial class DeathScreenUI : Control
 	{
 		_animPlayer?.Stop();
 		Visible = false;
+
+		if (_deathMusicPlayer != null && _deathMusicStream != null)
+		{
+			_deathMusicPlayer.Stream = _deathMusicStream;
+			_deathMusicPlayer.VolumeDb = -80f;
+			_deathMusicPlayer.Stop();
+		}
 	}
 
 	// Put a "Call Method Track" keyframe on this method at the black-screen moment.
@@ -69,7 +85,7 @@ public partial class DeathScreenUI : Control
 		}
 	}
 
-	// NEW: when death screen starts, fade out boss music quickly
+	// When death screen starts, fade out boss music quickly
 	private void FadeOutBossMusicQuickAllEncounters()
 	{
 		if (string.IsNullOrEmpty(_bossEncounterGroupName)) return;
@@ -90,6 +106,66 @@ public partial class DeathScreenUI : Control
 		}
 	}
 
+	// -------------------------------------------------------------------------
+	// Death music helpers
+	// -------------------------------------------------------------------------
+
+	private void PlayDeathMusic()
+	{
+		if (_deathMusicPlayer == null || _deathMusicStream == null) return;
+
+		KillDeathMusicTween();
+
+		_deathMusicPlayer.Stream = _deathMusicStream;
+		_deathMusicPlayer.VolumeDb = -80f;
+		_deathMusicPlayer.Stop();
+		_deathMusicPlayer.Play();
+
+		if (_deathMusicFadeInSeconds <= 0f)
+		{
+			_deathMusicPlayer.VolumeDb = _deathMusicVolumeDb;
+			return;
+		}
+
+		_deathMusicTween = CreateTween();
+		_deathMusicTween.TweenProperty(_deathMusicPlayer, "volume_db", _deathMusicVolumeDb, _deathMusicFadeInSeconds)
+			.SetTrans(Tween.TransitionType.Sine)
+			.SetEase(Tween.EaseType.Out);
+	}
+
+	private void StopDeathMusic()
+	{
+		if (_deathMusicPlayer == null || !_deathMusicPlayer.Playing) return;
+
+		KillDeathMusicTween();
+
+		if (_deathMusicFadeOutSeconds <= 0f)
+		{
+			_deathMusicPlayer.Stop();
+			_deathMusicPlayer.VolumeDb = -80f;
+			return;
+		}
+
+		_deathMusicTween = CreateTween();
+		_deathMusicTween.TweenProperty(_deathMusicPlayer, "volume_db", -80f, _deathMusicFadeOutSeconds)
+			.SetTrans(Tween.TransitionType.Sine)
+			.SetEase(Tween.EaseType.In);
+		_deathMusicTween.TweenCallback(Callable.From(() =>
+		{
+			if (_deathMusicPlayer != null)
+				_deathMusicPlayer.Stop();
+		}));
+	}
+
+	private void KillDeathMusicTween()
+	{
+		if (_deathMusicTween == null) return;
+		if (IsInstanceValid(_deathMusicTween)) _deathMusicTween.Kill();
+		_deathMusicTween = null;
+	}
+
+	// -------------------------------------------------------------------------
+
 	public async Task PlayAndWaitAsync(string text = null)
 	{
 		if (_animPlayer == null)
@@ -98,8 +174,10 @@ public partial class DeathScreenUI : Control
 			return;
 		}
 
-		// Fade boss music quickly so it doesn't play under the death UI animation
+		// Fade boss music out quickly, then start the death screen music.
 		FadeOutBossMusicQuickAllEncounters();
+		AudioManager.Instance?.DuckBGM("death");
+		PlayDeathMusic();
 
 		_respawnSignalSentThisPlay = false;
 
@@ -112,6 +190,10 @@ public partial class DeathScreenUI : Control
 		_animPlayer.Play(_animName);
 
 		await ToSignal(_animPlayer, AnimationPlayer.SignalName.AnimationFinished);
+
+		// Fade death music out and restore BGM before the screen hides.
+		StopDeathMusic();
+		AudioManager.Instance?.RestoreBGM("death");
 
 		Visible = false;
 	}
