@@ -65,7 +65,7 @@ size = Vector2(2172, 306.91953)
 [node name="Player" parent="." node_paths=PackedStringArray("uiReference", "_deathScreenUI", "bulletBars") groups=["enemy_hurtbox"] instance=ExtResource("1_00eeo")]
 light_mask = 2
 visibility_layer = 2
-position = Vector2(374, -880)
+position = Vector2(137, -1004)
 uiReference = NodePath("../HUD")
 _deathScreenUI = NodePath("../HUD/DeathScreen")
 playerSpeed = 150
@@ -220,7 +220,6 @@ texture = ExtResource("9_113gb")
 [node name="Interact" parent="HUD" instance=ExtResource("8_ih1j1")]
 
 [node name="XPManager" parent="HUD" instance=ExtResource("9_4rr56")]
-CurrentXp = 2000
 
 [node name="PauseMenu2" parent="HUD" instance=ExtResource("1_w8gwm")]
 z_index = 5
@@ -274,7 +273,7 @@ horizontal_alignment = 1
 [node name="DeathScreen" parent="HUD" instance=ExtResource("14_xvhfl")]
 
 [node name="Boogins" parent="." node_paths=PackedStringArray("_interactPrompt", "_xpManager") instance=ExtResource("5_qjufs")]
-position = Vector2(3908, -1649)
+position = Vector2(2145, -1803)
 _interactPrompt = NodePath("../HUD/Interact")
 _booginsPortraitTexture = null
 _playerPortraitTexture = null
@@ -334,7 +333,7 @@ _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
 
 [node name="RaptorSpawn_9" type="Node2D" parent="EnemySpawnPoints/RaptorSpawns"]
-position = Vector2(4456, -714)
+position = Vector2(3940, -439)
 script = ExtResource("16_in1og")
 _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
@@ -352,7 +351,7 @@ _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
 
 [node name="RaptorSpawn_12" type="Node2D" parent="EnemySpawnPoints/RaptorSpawns"]
-position = Vector2(4943, -121)
+position = Vector2(5208, -14)
 script = ExtResource("16_in1og")
 _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
@@ -366,7 +365,7 @@ _enemyScene = ExtResource("21_wajd3")
 _enemyContainerPath = NodePath(".")
 
 [node name="Dilo_Spawn2" type="Node2D" parent="EnemySpawnPoints/DiloSpawns"]
-position = Vector2(2365, -677)
+position = Vector2(2840, -817)
 script = ExtResource("16_in1og")
 _enemyScene = ExtResource("21_wajd3")
 _enemyContainerPath = NodePath(".")
@@ -384,7 +383,7 @@ _enemyScene = ExtResource("21_wajd3")
 _enemyContainerPath = NodePath(".")
 
 [node name="Dilo_Spawn5" type="Node2D" parent="EnemySpawnPoints/DiloSpawns"]
-position = Vector2(5084, 26)
+position = Vector2(5326, 81)
 script = ExtResource("16_in1og")
 _enemyScene = ExtResource("21_wajd3")
 _enemyContainerPath = NodePath(".")
@@ -512,10 +511,13 @@ scale = Vector2(0.067274496, 0.45061725)
 texture = ExtResource("5_pbiin")
 
 [node name="Checkpoint" parent="." instance=ExtResource("16_4rr56")]
-position = Vector2(4010, -1534)
+position = Vector2(240, -993)
 
 [node name="Checkpoint2" parent="." instance=ExtResource("16_4rr56")]
-position = Vector2(460, -879)
+position = Vector2(2369, -1788)
+
+[node name="Checkpoint3" parent="." instance=ExtResource("16_4rr56")]
+position = Vector2(4609, -1430)
 
 [node name="Audio" type="Node" parent="." node_paths=PackedStringArray("_bgmPlayer")]
 script = ExtResource("23_8bsun")
