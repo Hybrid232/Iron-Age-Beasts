@@ -1,8 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://ct7c6w5tbh3t6"]
+[gd_scene load_steps=10 format=3 uid="uid://ct7c6w5tbh3t6"]
 
 [ext_resource type="Script" uid="uid://bwp53xwtbukhc" path="res://scene/scripts/DeathScreenUI.cs" id="1_mub8j"]
 [ext_resource type="FontFile" uid="uid://b6gecg6ywmtyj" path="res://scene/Fonts/PrimalFont/Bahiana-Regular.ttf" id="2_od43u"]
+[ext_resource type="AudioStream" uid="uid://b4fe503cswdh" path="res://Audio/SFX/Player/Healing Stim.wav" id="3_8yjqg"]
 [ext_resource type="FontFile" uid="uid://cjhha6sdhxp87" path="res://scene/Fonts/FuturisticFont/Wallpoet-Regular.ttf" id="3_16ns6"]
+[ext_resource type="AudioStream" uid="uid://dwnkvncyeblg8" path="res://Audio/Music/Death Theme.mp3" id="4_16ns6"]
 
 [sub_resource type="Animation" id="Animation_qg272"]
 resource_name = "Death_Anim"
@@ -10,7 +12,7 @@ length = 15.0
 markers = [{
 "color": Color(6.256998e-07, 0.5435748, 0.54652673, 1),
 "name": &"Respawn",
-"time": 12.133333
+"time": 12.4
 }]
 tracks/0/type = "value"
 tracks/0/imported = false
@@ -79,13 +81,28 @@ tracks/5/path = NodePath("..")
 tracks/5/interp = 1
 tracks/5/loop_wrap = true
 tracks/5/keys = {
-"times": PackedFloat32Array(12.166667),
+"times": PackedFloat32Array(12.4),
 "transitions": PackedFloat32Array(1),
 "values": [{
 "args": [],
 "method": &"Anim_RequestRespawn"
 }]
 }
+tracks/6/type = "audio"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("../Heal")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"clips": [{
+"end_offset": 0.0,
+"start_offset": 0.0,
+"stream": ExtResource("3_8yjqg")
+}],
+"times": PackedFloat32Array(12.5)
+}
+tracks/6/use_blend = true
 
 [sub_resource type="Animation" id="Animation_mub8j"]
 length = 0.001
@@ -166,7 +183,7 @@ shadow_color = Color(1, 0.15294118, 0.10980392, 0.2)
 shadow_size = 150
 shadow_offset = Vector2(0, 129.205)
 
-[node name="DeathScreen" type="Control" node_paths=PackedStringArray("_label", "_animPlayer")]
+[node name="DeathScreen" type="Control" node_paths=PackedStringArray("_label", "_animPlayer", "_deathMusicPlayer")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -176,6 +193,8 @@ grow_vertical = 2
 script = ExtResource("1_mub8j")
 _label = NodePath("CanvasLayer/Label")
 _animPlayer = NodePath("CanvasLayer/AnimationPlayer")
+_deathMusicPlayer = NodePath("DeathTheme")
+_deathMusicStream = ExtResource("4_16ns6")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 layer = 5
@@ -242,3 +261,8 @@ theme_override_font_sizes/font_size = 45
 text = "REWIND"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="DeathTheme" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_16ns6")
+
+[node name="Heal" type="AudioStreamPlayer" parent="."]
