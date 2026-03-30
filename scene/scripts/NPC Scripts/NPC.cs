@@ -208,6 +208,9 @@ public partial class NPC : Node2D
 			booginsThemeSFX.Play();
 		}
 
+		// Tell the AudioManager to fade down the BGM while we're talking.
+		AudioManager.Instance?.DuckBGM("npc");
+
 		_themeTween = CreateTween();
 		_themeTween.TweenProperty(booginsThemeSFX, "volume_db", _themeVolumeDb, _themeFadeInSeconds)
 			.SetTrans(Tween.TransitionType.Sine)
@@ -221,6 +224,9 @@ public partial class NPC : Node2D
 
 		_themeTween?.Kill();
 		_themeTween = null;
+
+		// Tell the AudioManager to fade the BGM back up.
+		AudioManager.Instance?.RestoreBGM("npc");
 
 		_themeTween = CreateTween();
 		_themeTween.TweenProperty(booginsThemeSFX, "volume_db", _themeSilentDb, _themeFadeOutSeconds)

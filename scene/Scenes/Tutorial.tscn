@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=4 uid="uid://6v4cj26pkfbu"]
+[gd_scene load_steps=32 format=4 uid="uid://6v4cj26pkfbu"]
 
 [ext_resource type="PackedScene" uid="uid://d38cvt67w5bgb" path="res://scene/Player/Player.tscn" id="1_00eeo"]
 [ext_resource type="PackedScene" uid="uid://mgdagjh6wa25" path="res://scene/Scenes/PauseMenu.tscn" id="1_w8gwm"]
@@ -23,6 +23,8 @@
 [ext_resource type="PackedScene" uid="uid://cgihg2mukgcgl" path="res://scene/Scenes/Checkpoint.tscn" id="16_4rr56"]
 [ext_resource type="Script" uid="uid://cdniyvmkxnghi" path="res://scene/scripts/enemy Scripts/EnemySpawner.cs" id="16_in1og"]
 [ext_resource type="PackedScene" uid="uid://cvhh0xi2cb8ee" path="res://scene/enemy/RangeEnemy.tscn" id="21_wajd3"]
+[ext_resource type="Script" uid="uid://cyepiru4n00xg" path="res://scene/Scenes/AudioManager.cs" id="23_8bsun"]
+[ext_resource type="AudioStream" uid="uid://dna8pv8jqwvau" path="res://Audio/Music/Exploration Theme.mp3" id="23_thjlj"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_y7vs7"]
 bg_color = Color(0.79607844, 0.11372549, 0, 0.7294118)
@@ -63,7 +65,7 @@ size = Vector2(2172, 306.91953)
 [node name="Player" parent="." node_paths=PackedStringArray("uiReference", "_deathScreenUI", "bulletBars") groups=["enemy_hurtbox"] instance=ExtResource("1_00eeo")]
 light_mask = 2
 visibility_layer = 2
-position = Vector2(4147, -1602)
+position = Vector2(374, -880)
 uiReference = NodePath("../HUD")
 _deathScreenUI = NodePath("../HUD/DeathScreen")
 playerSpeed = 150
@@ -376,7 +378,7 @@ _enemyScene = ExtResource("21_wajd3")
 _enemyContainerPath = NodePath(".")
 
 [node name="Dilo_Spawn4" type="Node2D" parent="EnemySpawnPoints/DiloSpawns"]
-position = Vector2(4210, -800)
+position = Vector2(4326, -937)
 script = ExtResource("16_in1og")
 _enemyScene = ExtResource("21_wajd3")
 _enemyContainerPath = NodePath(".")
@@ -438,8 +440,6 @@ _enemyContainerPath = NodePath(".")
 StartDisabled = true
 SpawnOnReady = false
 
-[node name="Encounter" type="Node" parent="."]
-
 [node name="TutorialBoss" parent="." node_paths=PackedStringArray("ArenaTriggerArea", "EntranceGate") groups=["Player", "enemy_hurtbox", "player"] instance=ExtResource("10_ujhhv")]
 light_mask = 15
 visibility_layer = 15
@@ -471,10 +471,10 @@ position = Vector2(3815.0002, -781)
 scale = Vector2(2.027851, 2.027851)
 PatrolSpeed = 80.0
 Speed = 150.0
-MaxHealth = 400
+MaxHealth = 300
 AttackDamage = 30
 AttackRange = 80.0
-AttackCooldown = 1.0
+AttackCooldown = 3.0
 XpReward = 1000
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
@@ -511,12 +511,34 @@ position = Vector2(6694.0005, 120)
 scale = Vector2(0.067274496, 0.45061725)
 texture = ExtResource("5_pbiin")
 
-[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource("11_s3mw7")
-autoplay = true
-
 [node name="Checkpoint" parent="." instance=ExtResource("16_4rr56")]
-position = Vector2(4017, -1423)
+position = Vector2(4010, -1534)
 
 [node name="Checkpoint2" parent="." instance=ExtResource("16_4rr56")]
 position = Vector2(460, -879)
+
+[node name="Audio" type="Node" parent="." node_paths=PackedStringArray("_bgmPlayer")]
+script = ExtResource("23_8bsun")
+_bgmPlayer = NodePath("ExplorationTheme")
+_defaultBGM = ExtResource("23_thjlj")
+
+[node name="ExplorationTheme" type="AudioStreamPlayer" parent="Audio"]
+stream = ExtResource("23_thjlj")
+autoplay = true
+parameters/looping = true
+
+[node name="Background" type="Node2D" parent="Audio"]
+
+[node name="Ambiance" type="AudioStreamPlayer2D" parent="Audio/Background"]
+position = Vector2(1652, -1060)
+stream = ExtResource("11_s3mw7")
+autoplay = true
+max_distance = 2991.0
+area_mask = 15
+
+[node name="Ambiance2" type="AudioStreamPlayer2D" parent="Audio/Background"]
+position = Vector2(4238, -1826)
+stream = ExtResource("11_s3mw7")
+autoplay = true
+max_distance = 2991.0
+area_mask = 15

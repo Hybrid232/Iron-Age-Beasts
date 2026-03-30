@@ -1388,8 +1388,12 @@ parameters/Run/TimeScale/scale = 0.29999999999999716
 
 [node name="WalkSFX" type="AudioStreamPlayer" parent="PlayerSFX"]
 stream = ExtResource("4_0fwxj")
+volume_db = -10.0
 
 [node name="GunSFX" type="AudioStreamPlayer" parent="PlayerSFX"]
+stream = ExtResource("3_wsr1k")
+volume_db = -5.0
+pitch_scale = 0.5
 
 [node name="HalberdSwing" type="AudioStreamPlayer" parent="PlayerSFX"]
 
