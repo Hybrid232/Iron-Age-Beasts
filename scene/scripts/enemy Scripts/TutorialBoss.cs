@@ -40,6 +40,29 @@ public partial class TutorialBoss : BaseEnemy
 	private Tween _bossMusicTween;
 
 	// -----------------------------
+	// Phase 2 Roar SFX
+	// -----------------------------
+	[ExportGroup("Phase 2 Roar SFX")]
+	[Export] public AudioStreamPlayer Phase2RoarSfxPlayer; // assign in Tutorial Boss scene
+	[Export] public float Phase2RoarSfxVolumeDb = 0f;
+
+	[ExportGroup("Phase 2 Roar (Playback)")]
+	[Export] public float Phase2RoarSpeedScale = 1.0f; // AnimatedSprite2D.SpeedScale
+
+	// -----------------------------
+	// Charge Roar SFX (NEW)
+	// -----------------------------
+	[ExportGroup("Charge Roar SFX")]
+	[Export] public AudioStreamPlayer ChargeRoarSfxPlayer; // assign in Tutorial Boss scene
+	[Export] public float ChargeRoarSfxVolumeDb = 0f;
+
+	// Frames are 0-18 for your charge animation; play roar during frames 1-5
+	[Export] public int ChargeRoarStartFrame = 1; // inclusive
+	[Export] public int ChargeRoarEndFrame = 5;   // inclusive
+
+	private bool _chargeRoarPlayedThisCharge = false;
+
+	// -----------------------------
 	// Animation
 	// -----------------------------
 	[ExportGroup("Animation")]
@@ -66,7 +89,7 @@ public partial class TutorialBoss : BaseEnemy
 	// Death animation
 	[Export] public string DeathAnimName = "Death";
 
-	// NEW: force corpse pose on a specific frame when death anim ends (0-7 means frame 7 is last pose)
+	// force corpse pose on a specific frame when death anim ends (0-7 means frame 7 is last pose)
 	[Export] public int DeathFinalFrameIndex = 7;
 
 	private bool _deathAnimStarted = false;
@@ -88,7 +111,6 @@ public partial class TutorialBoss : BaseEnemy
 	[ExportGroup("Phase 2 (<=40% HP)")]
 	[Export] public float Phase2SpeedMultiplier = 1.35f;
 	[Export] public bool UnlockChargeAt40Percent = true;
-	[Export] public AudioStreamPlayer Phase2Roar;
 
 	[ExportGroup("Phase 2 Roar (on enter)")]
 	[Export] public float Phase2RoarTelegraph = 0.6f; // kept (animation drives timing)
@@ -263,6 +285,7 @@ public partial class TutorialBoss : BaseEnemy
 			ArenaTriggerArea.Monitorable = true;
 			ArenaTriggerArea.Monitoring = false;
 			ArenaTriggerArea.BodyEntered += OnArenaTriggerBodyEntered;
+			ArenaTriggerArea.BodyExited += OnArenaTriggerBodyExited;
 			CallDeferred(nameof(ArmArenaTriggerNextFrame));
 		}
 		else
@@ -439,6 +462,43 @@ public partial class TutorialBoss : BaseEnemy
 		_bossMusicTween = null;
 	}
 
+	// NEW: quick fade for Death UI
+	public void FadeOutBossMusicQuick()
+	{
+		float oldFade = BossMusicFadeOutSeconds;
+		BossMusicFadeOutSeconds = 0.12f; // quick fade
+		FadeOutBossMusicAndStop();
+		BossMusicFadeOutSeconds = oldFade;
+	}
+
+	// -----------------------------
+	// Phase 2 Roar SFX helpers
+	// -----------------------------
+	private void PlayPhase2RoarSfx()
+	{
+		if (Phase2RoarSfxPlayer == null) return;
+
+		Phase2RoarSfxPlayer.VolumeDb = Phase2RoarSfxVolumeDb;
+
+		// Restart in case it was already playing
+		Phase2RoarSfxPlayer.Stop();
+		Phase2RoarSfxPlayer.Play();
+	}
+
+	// -----------------------------
+	// Charge Roar SFX helpers (NEW)
+	// -----------------------------
+	private void PlayChargeRoarSfx()
+	{
+		if (ChargeRoarSfxPlayer == null) return;
+
+		ChargeRoarSfxPlayer.VolumeDb = ChargeRoarSfxVolumeDb;
+
+		// Restart in case it was already playing
+		ChargeRoarSfxPlayer.Stop();
+		ChargeRoarSfxPlayer.Play();
+	}
+
 	private void UpdateFacingAndAnimation(bool force)
 	{
 		// IMPORTANT: if dead + playing death, do NOT override animation
@@ -547,14 +607,48 @@ public partial class TutorialBoss : BaseEnemy
 
 	private async void ArmArenaTriggerNextFrame()
 	{
-		await ToSignal(GetTree(), SceneTree.SignalName.PhysicsFrame);
+		// Wait several physics frames so the player's respawn teleport has time to
+		// move them out of the arena trigger before we re-enable monitoring.
+		// If we arm immediately, BodyEntered fires the instant Monitoring turns true
+		// while the player body is still overlapping, restarting the fight.
+		const int waitFrames = 10;
+		for (int i = 0; i < waitFrames; i++)
+			await ToSignal(GetTree(), SceneTree.SignalName.PhysicsFrame);
 
 		if (fightStarted) return;
 		if (ArenaTriggerArea == null) return;
 
+		// Extra safety: if a player body is still overlapping (e.g. checkpoint is
+		// inside the arena), don't arm yet — retry next frame until they're clear.
 		ArenaTriggerArea.Monitoring = true;
+		await ToSignal(GetTree(), SceneTree.SignalName.PhysicsFrame);
+
+		var overlapping = ArenaTriggerArea.GetOverlappingBodies();
+		foreach (var body in overlapping)
+		{
+			if (body is Player)
+			{
+				// Player still inside — disarm and give up; the trigger will fire
+				// correctly on next genuine entry.
+				ArenaTriggerArea.Monitoring = false;
+				GD.Print("[Boss] Arena trigger: player still overlapping after reset, will arm on next entry.");
+
+				// Arm passively: monitor on, but guard in OnArenaTriggerBodyEntered
+				// will prevent re-triggering until the player exits and re-enters.
+				_awaitingCleanEntry = true;
+				ArenaTriggerArea.Monitoring = true;
+				return;
+			}
+		}
+
+		_awaitingCleanEntry = false;
 		GD.Print("[Boss] Arena trigger armed.");
 	}
+
+	// True when we re-armed the trigger while the player was still overlapping.
+	// We wait for them to exit before allowing the fight to start again.
+	private bool _awaitingCleanEntry = false;
+	private bool _playerWasInsideTrigger = false;
 
 	public override void _PhysicsProcess(double delta)
 	{
@@ -595,8 +689,32 @@ public partial class TutorialBoss : BaseEnemy
 		if (body is not Player player) return;
 		if (!player.IsInGroup(PlayerGroup)) return;
 
+		// If we re-armed while the player was still inside, ignore this entry —
+		// it fired because monitoring turned back on, not because the player
+		// walked in fresh. Wait for them to exit and re-enter.
+		if (_awaitingCleanEntry)
+		{
+			_playerWasInsideTrigger = true;
+			GD.Print("[Boss] Arena trigger: ignoring stale entry (player was inside on re-arm).");
+			return;
+		}
+
 		GD.Print($"[Boss] Arena triggered by Player '{player.Name}'. Starting fight.");
 		StartBossFight(player);
+	}
+
+	private void OnArenaTriggerBodyExited(Node body)
+	{
+		if (body is not Player) return;
+
+		// Player has genuinely left the trigger area after a reset — clear the
+		// stale-entry flag so the next entry starts the fight normally.
+		if (_awaitingCleanEntry && _playerWasInsideTrigger)
+		{
+			_awaitingCleanEntry = false;
+			_playerWasInsideTrigger = false;
+			GD.Print("[Boss] Arena trigger: player exited after reset, next entry will start fight.");
+		}
 	}
 
 	private void StartBossFight(Player player)
@@ -696,6 +814,12 @@ public partial class TutorialBoss : BaseEnemy
 
 		state = BossState.Roaring;
 		_roarPulseFiredThisRoar = false;
+		if (Sprite != null)
+		{
+			Sprite.SpeedScale = Phase2RoarSpeedScale;
+			_currentAnim = Phase2RoarAnimName;
+			Sprite.Play(Phase2RoarAnimName);
+		}
 
 		GD.Print("[Boss] PHASE 2 ROAR starting...");
 	}
@@ -737,8 +861,11 @@ public partial class TutorialBoss : BaseEnemy
 		}
 	}
 
+	// pulse does NOT change state; it only does gameplay + SFX.
 	private void DoRoarPulseAndStartPhase2Adds()
 	{
+		PlayPhase2RoarSfx();
+
 		GD.Print("[Boss] ROAR pulse (global knockback + stun + phase2 adds).");
 
 		if (_player != null && IsInstanceValid(_player))
@@ -757,9 +884,6 @@ public partial class TutorialBoss : BaseEnemy
 			KnockbackNearbyEnemiesFromRoar();
 
 		ActivatePhase2SpawnersAndForceHunt(Phase2SpawnersToActivate);
-
-		state = BossState.Recover;
-		stateTimer = Phase2RoarRecover;
 	}
 
 	private void KnockbackNearbyEnemiesFromRoar()
@@ -865,6 +989,10 @@ public partial class TutorialBoss : BaseEnemy
 		_biteHitboxEnabledThisBite = false;
 		_tailHitboxEnabledThisSpin = false;
 		_chargeActiveWindowOpen = false;
+
+		// NEW: reset per-charge roar SFX gate
+		if (attack == BossAttack.Charge)
+			_chargeRoarPlayedThisCharge = false;
 
 		if (_player != null && attack == BossAttack.Charge)
 			chargeDir = (_player.GlobalPosition - GlobalPosition).Normalized();
@@ -1188,6 +1316,9 @@ public partial class TutorialBoss : BaseEnemy
 		// Roar window (Roaring state)
 		if (state == BossState.Roaring && Sprite != null && Sprite.IsPlaying() && Sprite.Animation == Phase2RoarAnimName)
 		{
+			// Debug: verify the roar animation is actually advancing frames
+			GD.Print($"[Boss] Roar anim='{Sprite.Animation}' frame={Sprite.Frame} playing={Sprite.IsPlaying()} speed={Sprite.SpeedScale}");
+
 			bool inActive = Sprite.Frame >= Phase2RoarActiveStartFrame && Sprite.Frame <= Phase2RoarActiveEndFrame;
 
 			if (inActive && !_roarPulseFiredThisRoar)
@@ -1235,6 +1366,14 @@ public partial class TutorialBoss : BaseEnemy
 		// Charge
 		if (currentAttack == BossAttack.Charge && Sprite.Animation == ChargeAnimName)
 		{
+			// NEW: play a small roar during frames 1-5 (inclusive), once per charge
+			bool inChargeRoarWindow = Sprite.Frame >= ChargeRoarStartFrame && Sprite.Frame <= ChargeRoarEndFrame;
+			if (inChargeRoarWindow && !_chargeRoarPlayedThisCharge)
+			{
+				_chargeRoarPlayedThisCharge = true;
+				PlayChargeRoarSfx();
+			}
+
 			bool inActive = Sprite.Frame >= ChargeActiveStartFrame && Sprite.Frame <= ChargeActiveEndFrame;
 
 			if (inActive && !_chargeActiveWindowOpen)
@@ -1266,11 +1405,15 @@ public partial class TutorialBoss : BaseEnemy
 			return;
 		}
 
-		// If Roar finishes and we haven't transitioned yet, continue fight.
+		// If Roar finishes, transition to Recover and continue the fight.
 		if (state == BossState.Roaring && Sprite != null && Sprite.Animation == Phase2RoarAnimName)
 		{
+			// Safety: if somehow the pulse never fired, fire it now.
 			if (!_roarPulseFiredThisRoar)
 				DoRoarPulseAndStartPhase2Adds();
+
+			state = BossState.Recover;
+			stateTimer = Phase2RoarRecover;
 			return;
 		}
 
@@ -1402,6 +1545,13 @@ public partial class TutorialBoss : BaseEnemy
 		_tailHitboxEnabledThisSpin = false;
 		_chargeActiveWindowOpen = false;
 		_roarPulseFiredThisRoar = false;
+
+		// NEW: ensure charge roar state doesn't carry across resets
+		_chargeRoarPlayedThisCharge = false;
+
+		// NEW: reset clean-entry gate so next arena trigger works correctly
+		_awaitingCleanEntry = false;
+		_playerWasInsideTrigger = false;
 
 		if (_bossUIItem != null) _bossUIItem.Visible = false;
 		bossUI?.InitializeBoss(MaxHealth, _currentHealth);
