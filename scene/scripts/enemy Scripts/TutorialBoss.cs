@@ -87,6 +87,8 @@ public partial class TutorialBoss : BaseEnemy
 	[Export] public float BiteRange = 40f;
 	[Export] public float TailSweepRange = 85f;
 	[Export] public float MinChargeRange = 120f;
+	
+	
 
 	[ExportGroup("Damages (vs Player)")]
 	[Export] public int BiteDamage = 20;
