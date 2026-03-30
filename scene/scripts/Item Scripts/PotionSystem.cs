@@ -5,6 +5,8 @@ public class PotionSystem
 	private int maxPotions = 5;
 	private int currentPotions;
 	private int healAmount;
+	private AudioStreamPlayer HealthStimSFX;
+	private AudioStream HealthStimFile;
 
 	// How many potions the player has permanently unlocked (refill amount)
 	private int unlockedPotions;
