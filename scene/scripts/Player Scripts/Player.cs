@@ -120,6 +120,9 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 	private float _stunTimer = 0f;
 	public bool IsStunned => _stunTimer > 0f;
 
+	// NEW: last checkpoint the player actually rested at (interacted)
+	private Checkpoint _lastRestedCheckpoint;
+
 	public override void _Ready()
 	{
 		AddToGroup(BaseEnemy.PLAYER_GROUP);
@@ -431,10 +434,14 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 
 		if (_deathScreenUI != null)
 		{
+			// DeathScreenUI handles boss reset + emits RespawnRequested internally
+			// (via Anim_RequestRespawn keyframe → ResetBossEncounters → EmitSignal)
 			await _deathScreenUI.PlayAndWaitAsync("TIME CLAIMS ANOTHER");
 		}
 		else
 		{
+			// No death screen: manually reset all boss encounters before respawning
+			ResetAllBossEncounters();
 			await ToSignal(GetTree().CreateTimer(1.5f), SceneTreeTimer.SignalName.Timeout);
 			RespawnAndReset();
 		}
@@ -443,15 +450,56 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 		_isDying = false;
 	}
 
+	/// <summary>
+	/// Resets all nodes in the BossEncounter group. Mirrors what DeathScreenUI does,
+	/// used as a fallback when no death screen UI is assigned.
+	/// </summary>
+	private void ResetAllBossEncounters()
+	{
+		var nodes = GetTree().GetNodesInGroup(TutorialBoss.BOSS_ENCOUNTER_GROUP);
+		if (nodes == null || nodes.Count == 0) return;
+
+		foreach (var n in nodes)
+		{
+			if (n is TutorialBoss boss)
+			{
+				boss.ForceResetEncounter();
+				continue;
+			}
+
+			// Duck-typed fallback for other boss scripts
+			if (n is Node node && node.HasMethod("ForceResetEncounter"))
+				node.Call("ForceResetEncounter");
+		}
+	}
+
 	private void OnDeathScreenRespawnRequested()
 	{
 		if (!_isDying) return;
+
+		if (_lastRestedCheckpoint != null && IsInstanceValid(_lastRestedCheckpoint))
+		{
+			// Respawn at last rested checkpoint: heals, refills potions, respawns normal enemies.
+			// Boss was already reset by DeathScreenUI (via Anim_RequestRespawn) before this fires.
+			_lastRestedCheckpoint.RestHere(this);
+			return;
+		}
+
+		// No checkpoint rested at: fall back to origin respawn.
+		// Boss was already reset by DeathScreenUI before this signal fired.
 		RespawnAndReset();
 	}
 
 	public void SetRespawnPoint(Vector2 pos)
 	{
 		respawnPosition = pos;
+	}
+
+	// NEW: called by Checkpoint when player rests
+	public void SetLastRestedCheckpoint(Checkpoint cp)
+	{
+		if (cp == null || !IsInstanceValid(cp)) return;
+		_lastRestedCheckpoint = cp;
 	}
 
 	public void RespawnAndReset()

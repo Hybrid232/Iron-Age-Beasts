@@ -53,19 +53,32 @@ public partial class Checkpoint : Area2D
 		if (!@event.IsActionPressed("interact")) return;
 		if (_activePlayer == null) return;
 
-		_activePlayer.SetRespawnPoint(GlobalPosition);
-
-		// Heal + refill potions (your Player handles this)
-		_activePlayer.RespawnAndReset();
-
-		// Dark Souls rest: respawn normal enemies
-		if (_respawnEnemiesOnRest)
-			RespawnAllEnemySpawners();
+		RestHere(_activePlayer);
 
 		// Prevent "interact" from leaking and triggering boss/UI logic elsewhere
 		GetViewport().SetInputAsHandled();
 
 		GD.Print("Checkpoint activated!");
+	}
+
+	/// <summary>
+	/// Same behavior as interacting with the checkpoint, but callable directly (ex: on death respawn).
+	/// </summary>
+	public void RestHere(Player player)
+	{
+		if (player == null || !IsInstanceValid(player)) return;
+
+		// NEW: record this as the last rested checkpoint
+		player.SetLastRestedCheckpoint(this);
+
+		player.SetRespawnPoint(GlobalPosition);
+
+		// Heal + refill potions (your Player handles this)
+		player.RespawnAndReset();
+
+		// Dark Souls rest: respawn normal enemies
+		if (_respawnEnemiesOnRest)
+			RespawnAllEnemySpawners();
 	}
 
 	private void RespawnAllEnemySpawners()
