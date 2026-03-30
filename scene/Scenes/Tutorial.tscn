@@ -63,10 +63,29 @@ light_mask = 2
 visibility_layer = 2
 position = Vector2(3008, -1983)
 uiReference = NodePath("../HUD")
+maxHealth = null
+maxStamina = null
+potionHealAmount = null
+startingPotions = null
 _deathScreenUI = NodePath("../HUD/DeathScreen")
+enableAttackerRecoilOnHit = null
 playerSpeed = 150
+exhaustedSpeedMultiplier = null
+softExhaustThreshold = null
+hardExhaustThreshold = null
+lowStaminaSpeedMultiplier = null
+dodgeTime = null
+dodgeStaminaCost = null
 dodgeIFrameStartNormalized = 0.45
 dodgeIFrameDurationNormalized = 0.85
+hitRecoilTime = null
+attackDuration = null
+enemyKnockbackDistance = null
+enemyKnockbackTime = null
+meleeDamage = null
+staminaCost = null
+maxShots = null
+bulletCooldown = null
 bulletBars = [NodePath("../HUD/BulletBar0"), NodePath("../HUD/BulletBar1"), NodePath("../HUD/BulletBar2")]
 walkSoundFile = null
 swingSoundFile = null
@@ -214,6 +233,8 @@ offset_bottom = 86.0
 texture = ExtResource("9_113gb")
 
 [node name="Interact" parent="HUD" unique_id=1761801812 instance=ExtResource("8_ih1j1")]
+ActionName = null
+VerbText = null
 
 [node name="XPManager" parent="HUD" unique_id=581468052 instance=ExtResource("9_4rr56")]
 CurrentXp = 2000
@@ -268,13 +289,23 @@ text = "VOXSPINE"
 horizontal_alignment = 1
 
 [node name="DeathScreen" parent="HUD" unique_id=1682248362 instance=ExtResource("14_xvhfl")]
+_animName = null
+_defaultDeathText = null
+_resetBossEncountersOnRespawn = null
+_bossEncounterGroupName = null
 
 [node name="Boogins" parent="." unique_id=1325861069 node_paths=PackedStringArray("_interactPrompt", "_xpManager") instance=ExtResource("5_qjufs")]
 position = Vector2(3908, -1649)
 _interactPrompt = NodePath("../HUD/Interact")
 _booginsPortraitTexture = null
 _playerPortraitTexture = null
+_themeFadeInSeconds = null
+_themeFadeOutSeconds = null
+_themeVolumeDb = null
+_themeSilentDb = null
 _xpManager = NodePath("../HUD/XPManager")
+_scaleUpgradeCostsByLevel = null
+_randomDialogues = null
 
 [node name="EnemySpawnPoints" type="Node2D" parent="." unique_id=1913443480]
 position = Vector2(0, -1125)
@@ -286,72 +317,120 @@ position = Vector2(943, 129)
 script = ExtResource("16_in1og")
 _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
+StartDisabled = null
+SpawnOnReady = null
+_isBossSpawner = null
+Overrides = null
 
 [node name="RaptorSpawn_2" type="Node2D" parent="EnemySpawnPoints/RaptorSpawns" unique_id=1012251267]
 position = Vector2(1412, 5)
 script = ExtResource("16_in1og")
 _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
+StartDisabled = null
+SpawnOnReady = null
+_isBossSpawner = null
+Overrides = null
 
 [node name="RaptorSpawn_3" type="Node2D" parent="EnemySpawnPoints/RaptorSpawns" unique_id=1031868324]
 position = Vector2(1742, 537)
 script = ExtResource("16_in1og")
 _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
+StartDisabled = null
+SpawnOnReady = null
+_isBossSpawner = null
+Overrides = null
 
 [node name="RaptorSpawn_4" type="Node2D" parent="EnemySpawnPoints/RaptorSpawns" unique_id=362781173]
 position = Vector2(2329, 33)
 script = ExtResource("16_in1og")
 _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
+StartDisabled = null
+SpawnOnReady = null
+_isBossSpawner = null
+Overrides = null
 
 [node name="RaptorSpawn_5" type="Node2D" parent="EnemySpawnPoints/RaptorSpawns" unique_id=731740984]
 position = Vector2(2232, -81)
 script = ExtResource("16_in1og")
 _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
+StartDisabled = null
+SpawnOnReady = null
+_isBossSpawner = null
+Overrides = null
 
 [node name="RaptorSpawn_6" type="Node2D" parent="EnemySpawnPoints/RaptorSpawns" unique_id=1865376409]
 position = Vector2(3684, -1188)
 script = ExtResource("16_in1og")
 _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
+StartDisabled = null
+SpawnOnReady = null
+_isBossSpawner = null
+Overrides = null
 
 [node name="RaptorSpawn_7" type="Node2D" parent="EnemySpawnPoints/RaptorSpawns" unique_id=1174828170]
 position = Vector2(4258, -1054)
 script = ExtResource("16_in1og")
 _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
+StartDisabled = null
+SpawnOnReady = null
+_isBossSpawner = null
+Overrides = null
 
 [node name="RaptorSpawn_8" type="Node2D" parent="EnemySpawnPoints/RaptorSpawns" unique_id=132199950]
 position = Vector2(3068, -489)
 script = ExtResource("16_in1og")
 _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
+StartDisabled = null
+SpawnOnReady = null
+_isBossSpawner = null
+Overrides = null
 
 [node name="RaptorSpawn_9" type="Node2D" parent="EnemySpawnPoints/RaptorSpawns" unique_id=1688714645]
 position = Vector2(4456, -714)
 script = ExtResource("16_in1og")
 _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
+StartDisabled = null
+SpawnOnReady = null
+_isBossSpawner = null
+Overrides = null
 
 [node name="RaptorSpawn_10" type="Node2D" parent="EnemySpawnPoints/RaptorSpawns" unique_id=548803967]
 position = Vector2(5582, 7)
 script = ExtResource("16_in1og")
 _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
+StartDisabled = null
+SpawnOnReady = null
+_isBossSpawner = null
+Overrides = null
 
 [node name="RaptorSpawn_11" type="Node2D" parent="EnemySpawnPoints/RaptorSpawns" unique_id=671111811]
 position = Vector2(5715, 205)
 script = ExtResource("16_in1og")
 _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
+StartDisabled = null
+SpawnOnReady = null
+_isBossSpawner = null
+Overrides = null
 
 [node name="RaptorSpawn_12" type="Node2D" parent="EnemySpawnPoints/RaptorSpawns" unique_id=825903635]
 position = Vector2(4943, -121)
 script = ExtResource("16_in1og")
 _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
+StartDisabled = null
+SpawnOnReady = null
+_isBossSpawner = null
+Overrides = null
 
 [node name="DiloSpawns" type="Node2D" parent="EnemySpawnPoints" unique_id=1779365456]
 
@@ -365,6 +444,8 @@ _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
 StartDisabled = true
 SpawnOnReady = false
+_isBossSpawner = null
+Overrides = null
 
 [node name="Raptor_2" type="Node2D" parent="EnemySpawnPoints/BossPhase2Spawns" unique_id=1162365696]
 position = Vector2(-48, -343)
@@ -373,6 +454,8 @@ _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
 StartDisabled = true
 SpawnOnReady = false
+_isBossSpawner = null
+Overrides = null
 
 [node name="Raptor_3" type="Node2D" parent="EnemySpawnPoints/BossPhase2Spawns" unique_id=842427567]
 position = Vector2(-673, 516)
@@ -381,6 +464,8 @@ _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
 StartDisabled = true
 SpawnOnReady = false
+_isBossSpawner = null
+Overrides = null
 
 [node name="Raptor_4" type="Node2D" parent="EnemySpawnPoints/BossPhase2Spawns" unique_id=1198335234]
 position = Vector2(711, 248)
@@ -389,6 +474,8 @@ _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
 StartDisabled = true
 SpawnOnReady = false
+_isBossSpawner = null
+Overrides = null
 
 [node name="Raptor_5" type="Node2D" parent="EnemySpawnPoints/BossPhase2Spawns" unique_id=2113355492]
 position = Vector2(468, -368)
@@ -397,6 +484,8 @@ _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
 StartDisabled = true
 SpawnOnReady = false
+_isBossSpawner = null
+Overrides = null
 
 [node name="Raptor_6" type="Node2D" parent="EnemySpawnPoints/BossPhase2Spawns" unique_id=437762833]
 position = Vector2(932, -294)
@@ -405,6 +494,8 @@ _enemyScene = ExtResource("7_pbiin")
 _enemyContainerPath = NodePath(".")
 StartDisabled = true
 SpawnOnReady = false
+_isBossSpawner = null
+Overrides = null
 
 [node name="Encounter" type="Node" parent="." unique_id=991542932]
 
@@ -414,16 +505,68 @@ visibility_layer = 15
 position = Vector2(7810, -674)
 ArenaTriggerArea = NodePath("../BossStart")
 EntranceGate = NodePath("../StaticBody2D")
+LockEntranceOnStart = null
+UseBossUIGroupLookup = null
 BossUIPath = NodePath("../HUD/BossUI")
-ChargeAnimName = "charge"
+ResetEncounterWhenPlayerDies = null
+BiteDamageFrameIndex = null
+TailSweepAnimName = null
+TailSweepActiveStartFrame = null
+TailSweepActiveEndFrame = null
+ChargeAnimName = null
+ChargeActiveStartFrame = null
+ChargeActiveEndFrame = null
+ChargeSpeedMultiplier = null
+Phase2RoarAnimName = null
+Phase2RoarActiveStartFrame = null
+Phase2RoarActiveEndFrame = null
+DeathAnimName = null
+DeathFinalFrameIndex = null
 DefaultFacesRight = false
+FaceDeadzonePx = null
 CollisionDefaultFacesRight = false
+UnlockChargeAt40Percent = null
+Phase2RoarTelegraph = null
+Phase2RoarRecover = null
+RoarKnockbackDistance = null
+RoarKnockbackTime = null
 RoarStunSeconds = 1.5
 Phase2SpawnerRootPath = NodePath("../EnemySpawnPoints/BossPhase2Spawns")
 Phase2SpawnersToActivate = 6
+BiteDamage = null
+TailDamage = null
 ChargeDamage = 40
+DamageToEnemiesMultiplier = null
+DamageToEnemiesFlatOverride = null
+BiteActive = null
+BiteRecover = null
+TailActive = null
 ChargeActive = 2.5
+BiteKnockbackDistance = null
+BiteKnockbackTime = null
+TailKnockbackTime = null
+BossAttacksKnockbackEnemies = null
+TailEnemyKnockbackDistance = null
+TailEnemyKnockbackTime = null
+TailEnemyStunSeconds = null
+ChargeEnemyKnockbackDistance = null
+ChargeEnemyKnockbackTime = null
+ChargeEnemyStunSeconds = null
+FlipAttackDirection = null
+ContactDamage = null
+ContactKnockbackDistance = null
+ContactKnockbackTime = null
+ContactDamageCooldown = null
+Phase2RoarAffectsEnemies = null
+EnemyRoarKnockbackDistance = null
+EnemyRoarKnockbackTime = null
+EnemyRoarStunSeconds = null
+IgnoreEnemyBodyCollisionsInPhase2 = null
+EnemyPhysicsLayerNumber = null
+StopDistance = null
 MaxHealth = 500
+AttackCooldown = null
+PlayerGroup = null
 
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=1289369827]
 position = Vector2(6694.0005, -1005)
@@ -464,10 +607,29 @@ autoplay = true
 
 [node name="Checkpoint" parent="." unique_id=107419599 instance=ExtResource("16_4rr56")]
 position = Vector2(4017, -1423)
+_respawnEnemiesOnRest = null
+_respawnBossOnRest = null
 
 [node name="Checkpoint2" parent="." unique_id=1983493152 instance=ExtResource("16_4rr56")]
 position = Vector2(460, -879)
+_respawnEnemiesOnRest = null
+_respawnBossOnRest = null
 
 [node name="RangeEnemy" parent="." unique_id=2027868479 instance=ExtResource("21_wajd3")]
 position = Vector2(2841, -1761)
+DetectionRange = null
+PreferredDistance = null
+TooCloseDistance = null
+AlertDuration = null
+LoseSightDuration = null
 ProjectileScene = null
+PatrolRadius = null
+PatrolSpeed = null
+PatrolWaitTime = null
+Speed = null
+StopDistance = null
+MaxHealth = null
+AttackRange = null
+AttackCooldown = null
+PlayerGroup = null
+XpReward = null
