@@ -1,4 +1,4 @@
-[gd_scene load_steps=79 format=3 uid="uid://d4heq0i17knph"]
+[gd_scene load_steps=82 format=3 uid="uid://d4heq0i17knph"]
 
 [ext_resource type="Script" uid="uid://bf4f5t0p3v7n6" path="res://scene/scripts/enemy Scripts/TutorialBoss.cs" id="1_4m671"]
 [ext_resource type="Texture2D" uid="uid://dtwbi03s1b2se" path="res://sprites/VoxSpine/Bite/VoxSpineBite1.png" id="2_6487y"]
@@ -73,6 +73,9 @@
 [ext_resource type="AudioStream" uid="uid://cbfl6yio4mrph" path="res://Audio/Music/Spinosaurus Boss Theme - Phase 1.mp3" id="71_7h4hx"]
 [ext_resource type="AudioStream" uid="uid://dsgc0jgeobqvf" path="res://Audio/SFX/NPCs/Enemies/Spinosaurus/RoarPhase2.mp3" id="72_7aasi"]
 [ext_resource type="AudioStream" uid="uid://cfcqbny5sg24m" path="res://Audio/SFX/NPCs/Enemies/Spinosaurus/SpinosaurusMiniRoar.mp3" id="73_uty64"]
+[ext_resource type="AudioStream" uid="uid://csylpx2smunop" path="res://Audio/SFX/NPCs/Enemies/Spinosaurus/BiteAttackSFX.wav" id="74_xeluu"]
+[ext_resource type="AudioStream" uid="uid://beqf8vih0yk26" path="res://Audio/SFX/NPCs/Enemies/Spinosaurus/TailSwingSFX.mp3" id="75_np0k1"]
+[ext_resource type="AudioStream" uid="uid://ylmrlchbo8xn" path="res://Audio/SFX/NPCs/Enemies/Spinosaurus/Stomp.mp3" id="76_f6q6j"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_edccq"]
 animations = [{
@@ -80,7 +83,7 @@ animations = [{
 "duration": 2.0,
 "texture": ExtResource("2_6487y")
 }, {
-"duration": 1.0,
+"duration": 3.0,
 "texture": ExtResource("3_nu0ba")
 }, {
 "duration": 1.0,
@@ -391,8 +394,6 @@ scale = Vector2(5.0803113, 5.0803113)
 sprite_frames = SubResource("SpriteFrames_edccq")
 animation = &"Charge"
 autoplay = "Idle"
-frame = 4
-frame_progress = 0.5870504
 
 [node name="HurtboxArea" type="Area2D" parent="."]
 light_mask = 3
@@ -511,3 +512,12 @@ stream = ExtResource("72_7aasi")
 
 [node name="ChargeRoar" type="AudioStreamPlayer" parent="Node"]
 stream = ExtResource("73_uty64")
+
+[node name="Bite" type="AudioStreamPlayer" parent="Node"]
+stream = ExtResource("74_xeluu")
+
+[node name="Sweep" type="AudioStreamPlayer" parent="Node"]
+stream = ExtResource("75_np0k1")
+
+[node name="ChargeStomp" type="AudioStreamPlayer" parent="Node"]
+stream = ExtResource("76_f6q6j")

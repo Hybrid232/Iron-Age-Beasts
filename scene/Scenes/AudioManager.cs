@@ -57,6 +57,8 @@ public partial class AudioManager : Node
 	[ExportGroup("BGM Fade Timings (seconds)")]
 	[Export] private float _bgmFadeOutTime = 1.0f; // how long to fade down when ducking
 	[Export] private float _bgmFadeInTime  = 1.5f; // how long to fade back up on restore
+	
+	
 
 	// -------------------------------------------------------------------------
 	// Internal state

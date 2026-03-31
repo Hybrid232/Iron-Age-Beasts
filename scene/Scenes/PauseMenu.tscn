@@ -7,6 +7,8 @@
 bg_color = Color(0, 0, 0, 0.7764706)
 
 [node name="PauseMenu" type="Control" node_paths=PackedStringArray("_armoryPanel", "_inventoryPanel", "_settingsPanel", "_pauseBar")]
+light_mask = 15
+visibility_layer = 15
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -29,6 +31,7 @@ anchors_preset = 10
 anchor_right = 1.0
 offset_bottom = 51.0
 grow_horizontal = 2
+mouse_filter = 2
 
 [node name="Menu" type="Button" parent="PauseBar"]
 light_mask = 3
@@ -54,9 +57,10 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = -455.0
 offset_top = 50.0
-offset_bottom = 596.0
+offset_bottom = 623.0
 grow_horizontal = 0
 grow_vertical = 2
+mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_3wh6n")
 
 [node name="Resume" type="Button" parent="PauseBar/Menu/SystemBar"]
@@ -77,18 +81,13 @@ layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -37.5
-offset_top = 188.0
-offset_right = 267.0
-offset_bottom = 231.0
+offset_left = -13.5
+offset_top = 187.0
+offset_right = 291.0
+offset_bottom = 230.0
 grow_horizontal = 2
 text = "Options"
 alignment = 0
-
-[node name="OptionsBar" type="Panel" parent="PauseBar/Menu/SystemBar/Options"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
 
 [node name="Menu" type="Button" parent="PauseBar/Menu/SystemBar"]
 layout_mode = 1
@@ -134,6 +133,7 @@ offset_right = 249.0
 offset_bottom = 596.0
 grow_horizontal = 0
 grow_vertical = 2
+mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_3wh6n")
 
 [node name="Halberd" type="Button" parent="PauseBar/Inventory/InventoryBar"]
@@ -184,6 +184,7 @@ offset_right = 488.0
 offset_bottom = 595.0
 grow_horizontal = 0
 grow_vertical = 2
+mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_3wh6n")
 
 [node name="Helmet" type="Button" parent="PauseBar/Armory/ArmoryBar"]

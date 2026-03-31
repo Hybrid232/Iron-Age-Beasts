@@ -8,6 +8,16 @@ public partial class UI : CanvasLayer
 
 	[ExportGroup("Consumables")]
 	[Export] private TextureRect[] _potionIcons;
+	
+	private AnimationPlayer _fadeAnim;
+
+	public override void _Ready()
+	{
+		_fadeAnim = GetNode<AnimationPlayer>("FadeLayer/AnimationPlayer");
+
+		// Start black → fade into game
+		_fadeAnim.Play("Fade_Out");
+	}
 
 	public void InitializeHealth(int maxHealth, int currentHealth)
 	{
