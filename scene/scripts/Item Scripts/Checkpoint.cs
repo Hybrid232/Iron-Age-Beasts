@@ -7,6 +7,8 @@ public partial class Checkpoint : Area2D
 
 	[ExportGroup("Respawn")]
 	[Export] private bool _respawnEnemiesOnRest = true;
+	
+	[Export] private AudioStreamPlayer CheckpointSFX;
 
 	// Keep this FALSE so the tutorial boss doesn't get re-instanced or reset on rest.
 	[Export] private bool _respawnBossOnRest = false;
@@ -65,21 +67,20 @@ public partial class Checkpoint : Area2D
 	/// Same behavior as interacting with the checkpoint, but callable directly (ex: on death respawn).
 	/// </summary>
 	public void RestHere(Player player)
-	{
-		if (player == null || !IsInstanceValid(player)) return;
+{
+	if (player == null || !IsInstanceValid(player)) return;
 
-		// NEW: record this as the last rested checkpoint
-		player.SetLastRestedCheckpoint(this);
+	player.SetLastRestedCheckpoint(this);
+	player.SetRespawnPoint(GlobalPosition);
+	player.RespawnAndReset();
 
-		player.SetRespawnPoint(GlobalPosition);
+	// Play checkpoint sound
+	if (CheckpointSFX != null)
+		CheckpointSFX.Play();
 
-		// Heal + refill potions (your Player handles this)
-		player.RespawnAndReset();
-
-		// Dark Souls rest: respawn normal enemies
-		if (_respawnEnemiesOnRest)
-			RespawnAllEnemySpawners();
-	}
+	if (_respawnEnemiesOnRest)
+		RespawnAllEnemySpawners();
+}
 
 	private void RespawnAllEnemySpawners()
 	{

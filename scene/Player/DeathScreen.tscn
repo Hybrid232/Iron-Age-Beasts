@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bwp53xwtbukhc" path="res://scene/scripts/DeathScreenUI.cs" id="1_mub8j"]
 [ext_resource type="FontFile" uid="uid://b6gecg6ywmtyj" path="res://scene/Fonts/PrimalFont/Bahiana-Regular.ttf" id="2_od43u"]
-[ext_resource type="AudioStream" uid="uid://b4fe503cswdh" path="res://Audio/SFX/Player/Healing Stim.wav" id="3_8yjqg"]
+[ext_resource type="AudioStream" uid="uid://b4wbq7mge5pdw" path="res://Audio/SFX/Ambient/TimeWarp.wav" id="3_8yjqg"]
 [ext_resource type="FontFile" uid="uid://cjhha6sdhxp87" path="res://scene/Fonts/FuturisticFont/Wallpoet-Regular.ttf" id="3_16ns6"]
 [ext_resource type="AudioStream" uid="uid://dwnkvncyeblg8" path="res://Audio/Music/Death Theme.mp3" id="4_16ns6"]
 
@@ -60,7 +60,7 @@ tracks/3/path = NodePath("../Panel/Label2:self_modulate")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
-"times": PackedFloat32Array(0.4, 11.933333, 12.8, 14.088103),
+"times": PackedFloat32Array(0.4, 11.933333, 12.8, 14.633333),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 0,
 "values": [Color(1, 1, 1, 0), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
@@ -72,7 +72,7 @@ tracks/4/path = NodePath("../Panel/BlackScreen:self_modulate")
 tracks/4/interp = 1
 tracks/4/loop_wrap = true
 tracks/4/keys = {
-"times": PackedFloat32Array(-0.3333335, 4.633333, 8.166666, 9.233333, 10.066667, 12.366667, 12.833333, 13.8),
+"times": PackedFloat32Array(-0.3333335, 4.633333, 8.166666, 9.233333, 10.066667, 12.366667, 12.833333, 14.5),
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
 "update": 0,
 "values": [Color(0, 0, 0, 0), Color(0.28235295, 0, 0.03137255, 0), Color(0.4536891, 0, 0.04770936, 1), Color(0.4536891, 0, 0.04770936, 1), Color(0, 0, 0, 1), Color(0, 0, 0, 1), Color(0, 0.62352943, 0.69411767, 0.16862746), Color(1, 1, 1, 0)]
@@ -94,7 +94,7 @@ tracks/5/keys = {
 tracks/6/type = "audio"
 tracks/6/imported = false
 tracks/6/enabled = true
-tracks/6/path = NodePath("../Heal")
+tracks/6/path = NodePath("../Rewind")
 tracks/6/interp = 1
 tracks/6/loop_wrap = true
 tracks/6/keys = {
@@ -103,7 +103,7 @@ tracks/6/keys = {
 "start_offset": 0.0,
 "stream": ExtResource("3_8yjqg")
 }],
-"times": PackedFloat32Array(12.5)
+"times": PackedFloat32Array(11.766666)
 }
 tracks/6/use_blend = true
 
@@ -204,7 +204,7 @@ _deathMusicStream = ExtResource("4_16ns6")
 [node name="DeathTheme" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("4_16ns6")
 
-[node name="Heal" type="AudioStreamPlayer" parent="."]
+[node name="Rewind" type="AudioStreamPlayer" parent="."]
 
 [node name="Panel" type="Panel" parent="."]
 z_index = 5
