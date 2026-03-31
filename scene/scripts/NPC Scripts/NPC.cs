@@ -82,11 +82,12 @@ public partial class NPC : Node2D
 	[Export(PropertyHint.MultilineText)]
 	private string[] _randomDialogues =
 	{
-		"Hello! I am CHUNKY boogins!",
-		"I am so FAT, but I love you buddy!",
-		"Pick an upgrade, lil bro.",
-		"Potions max at 5. Don’t be greedy.",
-		"Spend that XP. I know you got it."
+		"Heyo! It's your favorite dino pal, Boogins!",
+		"You look like you could use some help. Good thing I am here!",
+		"Does my helmet make me look fat?",
+		"You know how hard it is to be a vegan T-Rex? I can barely reach the leaves!",
+		"I'm not like other dinosaurs, I wear clothes.",
+		"Oh yeah, spend that XP. I know you got it."
 	};
 
 	private readonly RandomNumberGenerator _rng = new();
@@ -151,6 +152,7 @@ public partial class NPC : Node2D
 			{
 				SetMenuState(MenuState.Dialogue);
 				ShowPortraits(true);
+				ShowRandomDialogue();
 				_speakButton?.GrabFocus();
 				PlayThemeWithFadeIn();
 			}
@@ -315,15 +317,15 @@ public partial class NPC : Node2D
 
 	private void OnSpeakPressed()
 	{
-		if (_randomDialogues == null || _randomDialogues.Length == 0)
-		{
-			if (_dialogueLabel != null) _dialogueLabel.Text = "...";
-			return;
-		}
+		// if (_randomDialogues == null || _randomDialogues.Length == 0)
+		// {
+		// 	if (_dialogueLabel != null) _dialogueLabel.Text = "...";
+		// 	return;
+		// }
 
-		int i = _rng.RandiRange(0, _randomDialogues.Length - 1);
-		if (_dialogueLabel != null) _dialogueLabel.Text = _randomDialogues[i];
-		ShowPortraits(true);
+		// int i = _rng.RandiRange(0, _randomDialogues.Length - 1);
+		// if (_dialogueLabel != null) _dialogueLabel.Text = _randomDialogues[i];
+		// ShowPortraits(true);
 	}
 
 	private void OnPurchasePressed()
@@ -337,6 +339,18 @@ public partial class NPC : Node2D
 	private void OnExitPressed()
 	{
 		CloseMenu();
+	}
+
+	private void ShowRandomDialogue()
+	{
+		if (_randomDialogues == null || _randomDialogues.Length == 0)
+		{
+			if (_dialogueLabel != null) _dialogueLabel.Text = "...";
+			return;
+		}
+
+		int i = _rng.RandiRange(0, _randomDialogues.Length - 1);
+		if (_dialogueLabel != null) _dialogueLabel.Text = _randomDialogues[i].Trim();
 	}
 
 	// ===== Shop panel buttons =====
