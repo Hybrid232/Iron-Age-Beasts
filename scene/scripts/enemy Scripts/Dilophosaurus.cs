@@ -13,6 +13,7 @@ public partial class Dilophosaurus : BaseEnemy
 	private bool _isPerformingAttack = false;
 	private float _attackAnimationTimer = 0f;
 	private Vector2 _lungeDirection = Vector2.Zero;
+	private Sprite2D _sprite;
 
 	private Vector2 _lastSeenPosition;
 	private float _searchTimer = 0f;
@@ -28,6 +29,8 @@ public partial class Dilophosaurus : BaseEnemy
 		AttackDamage = 5;
 		AttackCooldown = 1.5f;
 		_attackCooldownTimer = 1.5f;
+		_sprite = GetNode<Sprite2D>("DinoEnemy");
+
 
 		_startPosition = GlobalPosition;
 
@@ -38,6 +41,12 @@ public partial class Dilophosaurus : BaseEnemy
 			HitArea.Monitorable = false;
 			HitArea.BodyEntered += OnHitAreaBodyEntered;
 		}
+	}
+
+	private void UpdateFacingDirection(Vector2 targetPosition)
+	{
+		if (_sprite == null) return;
+		_sprite.FlipH = targetPosition.X < GlobalPosition.X;
 	}
 
 	// ===== IMPORTANT: let boss force this enemy to chase immediately =====
@@ -98,6 +107,7 @@ public partial class Dilophosaurus : BaseEnemy
 
 		Vector2 direction = (target - GlobalPosition).Normalized();
 		Velocity = direction * (Speed * 0.5f);
+		UpdateFacingDirection(target); 
 		MoveAndSlide();
 	}
 
@@ -123,6 +133,7 @@ public partial class Dilophosaurus : BaseEnemy
 
 		Vector2 direction = (_startPosition - GlobalPosition).Normalized();
 		Velocity = direction * Speed;
+		UpdateFacingDirection(_startPosition);
 		MoveAndSlide();
 	}
 
@@ -208,5 +219,11 @@ public partial class Dilophosaurus : BaseEnemy
 	{
 		base.ResetEnemy();
 		_currentState = State.Patrol;
+	}
+	
+	protected override void MoveTowardsTarget(Node2D target, double delta)
+	{
+		UpdateFacingDirection(target.GlobalPosition); // ← add this
+		base.MoveTowardsTarget(target, delta);
 	}
 }
