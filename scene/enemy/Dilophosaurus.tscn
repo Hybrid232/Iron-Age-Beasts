@@ -70,12 +70,12 @@ offset_left = -7.0
 offset_top = -10.0
 offset_right = 1145.0
 offset_bottom = 638.0
-scale = Vector2(0.01952623, 0.0015463252)
+scale = Vector2(0.036263607, -0.010199503)
 value = 100.0
 rounded = true
 texture_under = ExtResource("3_5tfgd")
 texture_progress = ExtResource("4_04kl5")
-tint_under = Color(0.82090443, 0.2227655, 0.13294452, 1)
+tint_over = Color(1, 1, 0.93333334, 1)
 metadata/_edit_use_anchors_ = true
 
 [node name="HitArea" type="Area2D" parent="."]
