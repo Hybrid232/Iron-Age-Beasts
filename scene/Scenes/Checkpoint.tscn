@@ -1,14 +1,16 @@
-[gd_scene load_steps=5 format=3 uid="uid://cgihg2mukgcgl"]
+[gd_scene load_steps=6 format=3 uid="uid://cgihg2mukgcgl"]
 
 [ext_resource type="Script" uid="uid://diti8u11jj286" path="res://scene/scripts/Item Scripts/Checkpoint.cs" id="1_v2wh0"]
 [ext_resource type="Texture2D" uid="uid://bhqtxfglepkxa" path="res://sprites/test/checkpoint.png" id="2_v2wh0"]
 [ext_resource type="PackedScene" uid="uid://bdcoq0m6vlp8i" path="res://scene/Scenes/Interact.tscn" id="3_v2wh0"]
+[ext_resource type="AudioStream" uid="uid://cw3woqncvunct" path="res://Audio/SFX/Ambient/CheckPoints.mp3" id="4_vcn3x"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_vcn3x"]
 
-[node name="Checkpoint" type="Area2D" node_paths=PackedStringArray("_interactPrompt")]
+[node name="Checkpoint" type="Area2D" node_paths=PackedStringArray("_interactPrompt", "CheckpointSFX")]
 script = ExtResource("1_v2wh0")
 _interactPrompt = NodePath("CanvasLayer/Interact")
+CheckpointSFX = NodePath("AudioStreamPlayer")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_v2wh0")
@@ -20,3 +22,6 @@ shape = SubResource("CapsuleShape2D_vcn3x")
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="Interact" parent="CanvasLayer" instance=ExtResource("3_v2wh0")]
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_vcn3x")
