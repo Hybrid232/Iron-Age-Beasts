@@ -14,6 +14,12 @@ public partial class PlayerAnimationDriver : Node
 	// Attack state BlendSpace2D blend_position
 	[Export] public string AttackBlendPositionKey = "parameters/Attack/BlendSpace2D/blend_position";
 
+	// Shoot state BlendSpace2D blend_position
+	[Export] public string ShootBlendPositionKey  = "parameters/Shoot/BlendSpace2D/blend_position";
+
+	// Death state BlendSpace2D blend_position
+	[Export] public string DeathBlendPositionKey  = "parameters/Death/BlendSpace2D/blend_position";
+
 	[ExportGroup("StateMachine")]
 	[Export] public bool UseStateMachine = true;
 	[Export] public string PlaybackKey = "parameters/playback";
@@ -21,6 +27,8 @@ public partial class PlayerAnimationDriver : Node
 	[Export] public string RunStateName = "Run";
 	[Export] public string DashStateName = "Dash";
 	[Export] public string AttackStateName = "Attack";
+	[Export] public string ShootStateName  = "Shoot";
+	[Export] public string DeathStateName  = "Death";
 
 	[ExportGroup("BlendSpace Convention")]
 	[Export] public bool InvertYForBlendSpace = false;
@@ -33,14 +41,20 @@ public partial class PlayerAnimationDriver : Node
 
 	[ExportGroup("Attack")]
 	[Export] public bool AttackOverridesOtherStates = true;
-
-	// If true, we automatically leave Attack after AttackDurationSeconds.
-	// If false, you must call EndAttack() (e.g., from an animation signal).
 	[Export] public bool AutoEndAttack = true;
-
-	// Tune to your animation length if AutoEndAttack is enabled.
 	[Export(PropertyHint.Range, "0.01,5.0,0.01")]
 	public float AttackDurationSeconds = 0.35f;
+
+	[ExportGroup("Shoot")]
+	[Export(PropertyHint.Range, "0.01,5.0,0.01")]
+	public float ShootDurationSeconds = 0.25f;
+
+	[ExportGroup("Death")]
+	// DeathDurationSeconds should match your death animation clip length.
+	// Once triggered, the driver locks in the Death state and never exits automatically —
+	// HandleDeath in Player.cs owns the actual respawn timing.
+	[Export(PropertyHint.Range, "0.01,10.0,0.01")]
+	public float DeathDurationSeconds = 1.0f;
 
 	[ExportGroup("Debug")]
 	[Export] public bool PrintDebug = false;
@@ -52,8 +66,22 @@ public partial class PlayerAnimationDriver : Node
 
 	// Attack bookkeeping
 	private bool _attackRequested = false;
-	private bool _isAttacking = false;
+	private bool _isAttacking    = false;
 	private double _attackEndsAt = 0.0;
+
+	// Shoot bookkeeping
+	private bool _shootRequested = false;
+	private bool _isShooting    = false;
+	private double _shootEndsAt = 0.0;
+
+	/// <summary>True while the shoot animation is running. Player.cs reads this to block movement.</summary>
+	public bool IsShootAnimating => _isShooting;
+
+	// Death bookkeeping
+	private bool _deathTriggered = false;
+
+	/// <summary>True once TriggerDeath() has been called. Never resets to false — death is permanent until respawn resets the node.</summary>
+	public bool IsDeathAnimating => _deathTriggered;
 
 	public override void _Ready()
 	{
@@ -104,8 +132,44 @@ public partial class PlayerAnimationDriver : Node
 	/// </summary>
 	public void EndAttack()
 	{
-		_isAttacking = false;
+		_isAttacking    = false;
 		_attackRequested = false;
+	}
+
+	/// <summary>
+	/// Call this the frame the player fires a shot to begin the shoot animation.
+	/// </summary>
+	public void TriggerShoot()
+	{
+		_shootRequested = true;
+	}
+
+	/// <summary>
+	/// Ends the shoot animation early (e.g. from an animation signal).
+	/// Not needed when the timer drives exit automatically.
+	/// </summary>
+	public void EndShoot()
+	{
+		_isShooting     = false;
+		_shootRequested = false;
+	}
+
+	/// <summary>
+	/// Locks the animation tree into the Death state. Call once from HandleDeath().
+	/// The driver stays in Death permanently — call ResetDeath() on respawn.
+	/// </summary>
+	public void TriggerDeath()
+	{
+		_deathTriggered = true;
+		TrySetState(DeathStateName);
+	}
+
+	/// <summary>
+	/// Clears the death lock so the driver can resume normal state selection on respawn.
+	/// </summary>
+	public void ResetDeath()
+	{
+		_deathTriggered = false;
 	}
 
 	/// <summary>
@@ -132,18 +196,27 @@ public partial class PlayerAnimationDriver : Node
 			blendDir.Y *= -1f;
 
 		// Update blend positions for all states (safe even if not currently active)
-		AnimationTree.Set(new StringName(IdleBlendPositionKey), blendDir);
-		AnimationTree.Set(new StringName(RunBlendPositionKey), blendDir);
-		AnimationTree.Set(new StringName(DashBlendPositionKey), blendDir);
-		AnimationTree.Set(new StringName(AttackBlendPositionKey), blendDir);
+		AnimationTree.Set(new StringName(IdleBlendPositionKey),    blendDir);
+		AnimationTree.Set(new StringName(RunBlendPositionKey),     blendDir);
+		AnimationTree.Set(new StringName(DashBlendPositionKey),    blendDir);
+		AnimationTree.Set(new StringName(AttackBlendPositionKey),  blendDir);
+		AnimationTree.Set(new StringName(ShootBlendPositionKey),   blendDir);
+		AnimationTree.Set(new StringName(DeathBlendPositionKey),   blendDir);
 
 		if (!UseStateMachine)
 			return;
 
+		// Death overrides everything — once triggered, nothing else can change the state
+		if (_deathTriggered)
+		{
+			TrySetState(DeathStateName);
+			return;
+		}
+
 		// Handle attack request -> enter Attack
 		if (_attackRequested && !_isAttacking)
 		{
-			_isAttacking = true;
+			_isAttacking     = true;
 			_attackRequested = false;
 
 			TrySetState(AttackStateName);
@@ -168,6 +241,28 @@ public partial class PlayerAnimationDriver : Node
 			// While attacking (and overriding), don't switch to Dash/Run/Idle.
 			if (AttackOverridesOtherStates)
 				return;
+		}
+
+		// Handle shoot request -> enter Shoot
+		if (_shootRequested && !_isShooting)
+		{
+			_isShooting     = true;
+			_shootRequested = false;
+
+			TrySetState(ShootStateName);
+			_shootEndsAt = Time.GetTicksMsec() / 1000.0 + ShootDurationSeconds;
+		}
+
+		// Keep state machine in Shoot and block other state transitions until animation ends
+		if (_isShooting)
+		{
+			TrySetState(ShootStateName);
+
+			double now = Time.GetTicksMsec() / 1000.0;
+			if (now >= _shootEndsAt)
+				_isShooting = false;
+			else
+				return; // block Dash / Run / Idle while shooting
 		}
 
 		// State selection: Dash overrides Run/Idle (when not overridden by attack)

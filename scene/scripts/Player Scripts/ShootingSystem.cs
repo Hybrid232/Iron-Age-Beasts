@@ -18,6 +18,14 @@ public class ShootingSystem
 	private int availableShots;
 	private float[] shotTimers;
 
+	// Delayed bullet spawn: bullet fires on frame 4 of a 7-frame animation.
+	// bulletSpawnDelay is set by Player as (4f / 7f) * ShootDurationSeconds.
+	private bool _pendingShot = false;
+	private float _pendingBulletTimer = 0f;
+	private float _pendingBulletDelay = 0f;
+	private Vector2 _pendingDirection = Vector2.Zero;
+	private Vector2 _pendingPosition = Vector2.Zero;
+
 	public ShootingSystem(
 		int maxShots,
 		float cooldown,
@@ -54,21 +62,23 @@ public class ShootingSystem
 			shotTimers[i] = 0f;
 	}
 
-	public void TryShoot(Vector2 direction, Vector2 playerPosition)
+	/// <summary>
+	/// Returns true if the shoot animation should begin this frame.
+	/// The bullet itself is spawned later via UpdatePendingShot().
+	/// </summary>
+	public bool TryShoot(Vector2 direction, Vector2 playerPosition, float bulletSpawnDelay)
 	{
 		if (!Input.IsActionJustPressed("shoot") || availableShots <= 0 || direction == Vector2.Zero)
-			return;
+			return false;
 
-		GD.Print("Shooting bullet! Direction: ", direction);
-		SpawnBullet(direction.Normalized(), playerPosition);
+		// Queue the bullet — it spawns after bulletSpawnDelay seconds (frame 4 of the animation)
+		_pendingShot = true;
+		_pendingBulletTimer = bulletSpawnDelay;
+		_pendingBulletDelay = bulletSpawnDelay;
+		_pendingDirection = direction.Normalized();
+		_pendingPosition = playerPosition;
 
-		// FIX: braces, and null check
-		if (gunSFX != null)
-		{
-			gunSFX.Play();
-			GD.Print("Gun Sound Played");
-		}
-
+		// Consume a shot charge immediately so UI reflects it at once
 		for (int i = 0; i < maxShots; i++)
 		{
 			if (shotTimers[i] <= 0f)
@@ -77,6 +87,31 @@ public class ShootingSystem
 				availableShots--;
 				break;
 			}
+		}
+
+		return true;
+	}
+
+	/// <summary>
+	/// Tick the pending bullet timer. Call once per physics frame.
+	/// Pass the player's current GlobalPosition so the spawn origin stays accurate.
+	/// </summary>
+	public void UpdatePendingShot(float dt, Vector2 playerPosition)
+	{
+		if (!_pendingShot)
+			return;
+
+		_pendingBulletTimer -= dt;
+
+		if (_pendingBulletTimer <= 0f)
+		{
+			_pendingShot = false;
+
+			// Use latest player position so the bullet origin is never stale
+			SpawnBullet(_pendingDirection, playerPosition);
+
+			if (gunSFX != null)
+				gunSFX.Play();
 		}
 	}
 
