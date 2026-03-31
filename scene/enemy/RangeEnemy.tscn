@@ -39,16 +39,15 @@ scale = Vector2(9.999999, 9.999999)
 shape = SubResource("CircleShape2D_dgp13")
 
 [node name="HealthBar" type="TextureProgressBar" parent="."]
-offset_left = 2.0
-offset_top = -30.0
-offset_right = 1154.0
-offset_bottom = 618.0
-scale = Vector2(0.01952623, 0.0015463252)
+offset_left = -18.0
+offset_top = -28.999998
+offset_right = 1134.0
+offset_bottom = 619.0
+scale = Vector2(0.031391274, 0.007810322)
 value = 100.0
 rounded = true
 texture_under = ExtResource("2_44mn6")
 texture_progress = ExtResource("3_wrxxg")
-tint_under = Color(0.82090443, 0.2227655, 0.13294452, 1)
 metadata/_edit_use_anchors_ = true
 
 [node name="HurtBox" type="Area2D" parent="." groups=["enemy_hurtbox"]]

@@ -14,6 +14,7 @@ public partial class Dilophosaurus : BaseEnemy
 	private float _attackAnimationTimer = 0f;
 	private Vector2 _lungeDirection = Vector2.Zero;
 	private Sprite2D _sprite;
+	private TextureProgressBar _healthBar;
 
 	private Vector2 _lastSeenPosition;
 	private float _searchTimer = 0f;
@@ -30,7 +31,9 @@ public partial class Dilophosaurus : BaseEnemy
 		AttackCooldown = 1.5f;
 		_attackCooldownTimer = 1.5f;
 		_sprite = GetNode<Sprite2D>("DinoEnemy");
-
+		_healthBar = GetNode<TextureProgressBar>("HealthBar");
+		_healthBar.MaxValue = MaxHealth;
+		_healthBar.Value = MaxHealth;
 
 		_startPosition = GlobalPosition;
 
@@ -185,6 +188,15 @@ public partial class Dilophosaurus : BaseEnemy
 				}
 			};
 		}
+	}
+
+	public override void TakeDamage(int damage)
+	{
+		base.TakeDamage(damage);
+		GD.Print($"[Dilophosaurus] TakeDamage called, health={_currentHealth}, bar={_healthBar != null}");
+
+		if (_healthBar != null)
+			_healthBar.Value = _currentHealth;
 	}
 
 	private void OnHitAreaBodyEntered(Node2D body)
