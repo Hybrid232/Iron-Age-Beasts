@@ -472,7 +472,7 @@ PatrolRadius = 1000.0
 Speed = 10000.0
 StopDistance = 5.0
 MaxHealth = 300
-AttackRange = 100.0
+AttackRange = 150.0
 AttackCooldown = 0.5
 XpReward = 500
 
