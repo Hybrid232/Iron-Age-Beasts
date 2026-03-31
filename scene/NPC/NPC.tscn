@@ -244,6 +244,7 @@ offset_bottom = 96.0
 grow_horizontal = 2
 theme_override_fonts/font = ExtResource("6_4qg82")
 theme_override_font_sizes/font_size = 30
+horizontal_alignment = 1
 
 [node name="SpeakButton" type="Button" parent="CanvasLayer/BooginsShopUI/Panel"]
 layout_mode = 1
@@ -457,7 +458,6 @@ offset_bottom = 584.0
 
 [node name="BooginsTheme" type="AudioStreamPlayer" parent="."]
 
-[connection signal="body_entered" from="Area2D" to="." method="OnAreadBodyEntered"]
 [connection signal="body_entered" from="Area2D" to="." method="OnAreaBodyEntered"]
 [connection signal="body_exited" from="Area2D" to="." method="OnAreaBodyExited"]
 [connection signal="pressed" from="CanvasLayer/BooginsShopUI/Panel/SpeakButton" to="." method="OnSpeakPressed"]
