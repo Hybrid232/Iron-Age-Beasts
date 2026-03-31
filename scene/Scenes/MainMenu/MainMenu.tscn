@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://cl43r3q2hw3hh"]
+[gd_scene load_steps=19 format=3 uid="uid://cl43r3q2hw3hh"]
 
 [ext_resource type="Script" uid="uid://6bn28qiwm8k4" path="res://scene/scripts/MainMenu.cs" id="1_4755a"]
 [ext_resource type="Texture2D" uid="uid://bcmoio2xyu6ft" path="res://sprites/background/poster_final.png" id="2_u6gsd"]
@@ -73,11 +73,218 @@ thickness = 10
 color = Color(0.58695936, 0.10834391, 0.20244285, 1)
 thickness = 10
 
+[sub_resource type="Animation" id="Animation_4755a"]
+resource_name = "MenuStartUp"
+length = 15.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("IronAge/Beasts:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(5.266667, 6.6),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("IronAge:self_modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(3.8666666, 7.859786),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("OptionsButton:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(9.733334, 10.1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(-417.765, 465), Vector2(-66.735, 465)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("QuitButton:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(10, 10.466666),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(-626.845, 545), Vector2(-118.25, 545)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("OptionsButton:self_modulate")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(3.6, 9.133333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("QuitButton:self_modulate")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(3.4333334, 9.559786),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("StartButton:position")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(8.666667, 9.1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(-418, 386), Vector2(-42.195, 386)]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("FadeLayer:color")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0.06666667, 3.8333333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(0, 0, 0, 1), Color(0, 0, 0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_u6gsd"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("IronAge/Beasts:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("IronAge:self_modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("OptionsButton:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-79, 465)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("QuitButton:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-79, 545)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("OptionsButton:self_modulate")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("QuitButton:self_modulate")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("StartButton:position")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-418, 386)]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("FadeLayer:color")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(0, 0, 0, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_h20nb"]
+_data = {
+&"MenuStartUp": SubResource("Animation_4755a"),
+&"RESET": SubResource("Animation_u6gsd")
+}
+
 [node name="MainMenu" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_top = 2.0
+offset_bottom = 2.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_4755a")
@@ -85,6 +292,7 @@ script = ExtResource("1_4755a")
 [node name="FadeLayer" parent="." instance=ExtResource("6_csw5f")]
 z_index = 1
 layout_mode = 1
+offset_top = -15.0
 
 [node name="fade_timer" type="Timer" parent="FadeLayer"]
 
@@ -97,16 +305,12 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_fufy3")
 
-[node name="MenuContainer" type="VBoxContainer" parent="."]
+[node name="StartButton" type="Button" parent="."]
 layout_mode = 0
-offset_left = -79.0
-offset_top = 385.0
-offset_right = 320.0
-offset_bottom = 641.0
-theme_override_constants/separation = 34
-
-[node name="StartButton" type="Button" parent="MenuContainer"]
-layout_mode = 2
+offset_left = -418.0
+offset_top = 386.0
+offset_right = -19.0
+offset_bottom = 432.00006
 theme_override_colors/font_pressed_color = Color(0.29324415, 0.2453025, 0.15559536, 1)
 theme_override_colors/font_hover_color = Color(0.7058236, 0.303274, 0.2497719, 1)
 theme_override_fonts/font = ExtResource("3_h20nb")
@@ -116,8 +320,12 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_aufxo")
 theme_override_styles/hover = SubResource("StyleBoxFlat_ri2lj")
 text = "Start"
 
-[node name="OptionsButton" type="Button" parent="MenuContainer"]
-layout_mode = 2
+[node name="OptionsButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = -79.0
+offset_top = 465.0
+offset_right = 320.00012
+offset_bottom = 511.0
 theme_override_colors/font_pressed_color = Color(0.29324415, 0.2453025, 0.15559536, 1)
 theme_override_colors/font_hover_color = Color(0.7058236, 0.303274, 0.2497719, 1)
 theme_override_fonts/font = ExtResource("3_h20nb")
@@ -127,8 +335,12 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_aufxo")
 theme_override_styles/hover = SubResource("StyleBoxFlat_ri2lj")
 text = "Options"
 
-[node name="QuitButton" type="Button" parent="MenuContainer"]
-layout_mode = 2
+[node name="QuitButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = -79.0
+offset_top = 545.0
+offset_right = 320.0
+offset_bottom = 591.0
 theme_override_colors/font_pressed_color = Color(0.29324415, 0.2453025, 0.15559536, 1)
 theme_override_colors/font_hover_color = Color(0.7058236, 0.303274, 0.2497719, 1)
 theme_override_fonts/font = ExtResource("3_h20nb")
@@ -154,10 +366,10 @@ vertical_alignment = 1
 
 [node name="Beasts" type="Label" parent="IronAge"]
 layout_mode = 0
-offset_left = 189.0
-offset_top = 105.0
-offset_right = 458.0
-offset_bottom = 278.0
+offset_left = 174.0
+offset_top = 106.0
+offset_right = 443.0
+offset_bottom = 279.0
 theme_override_colors/font_color = Color(0.59128594, 0.0062953215, 3.85046e-07, 1)
 theme_override_colors/font_shadow_color = Color(0, 0.40392157, 0.03529412, 0.43529412)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
@@ -250,3 +462,6 @@ stream = ExtResource("5_td1gt")
 autoplay = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_h20nb")
+}
