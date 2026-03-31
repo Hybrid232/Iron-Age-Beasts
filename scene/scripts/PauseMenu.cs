@@ -178,6 +178,6 @@ public partial class PauseMenu : Control
 
 	public void OnMainMenuPressed()
 	{
-		GetTree().ChangeSceneToFile("res://scene/Scenes/MainMenu.tscn");
+		GetTree().ChangeSceneToFile("res://scene/Scenes/MainMenu/MainMenu.tscn");
 	}
 }
