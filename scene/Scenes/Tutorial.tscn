@@ -64,17 +64,17 @@ size = Vector2(2172, 306.91953)
 [node name="Tutorial" type="Node2D"]
 
 [node name="HUD" type="CanvasLayer" parent="." node_paths=PackedStringArray("healthBar", "staminaBar", "_potionIcons")]
-layer = 15
 script = ExtResource("3_fkj6s")
 healthBar = NodePath("PlayerHealthBar")
 staminaBar = NodePath("PlayerStaminaBar")
 _potionIcons = [NodePath("Inventory/PotionIcon"), NodePath("Inventory/PotionIcon2"), NodePath("Inventory/PotionIcon3"), NodePath("Inventory/PotionIcon4"), NodePath("Inventory/PotionIcon5")]
 
 [node name="PauseMenu" parent="HUD" instance=ExtResource("1_w8gwm")]
-light_mask = 31
-visibility_layer = 31
-z_index = 4096
+light_mask = 2
+visibility_layer = 2
 offset_bottom = 31.0
+
+[node name="DeathScreen" parent="HUD" instance=ExtResource("14_xvhfl")]
 
 [node name="BulletBar0" type="ProgressBar" parent="HUD"]
 offset_left = 39.0
@@ -245,16 +245,13 @@ theme_override_styles/normal = SubResource("StyleBoxEmpty_4as48")
 text = "VOXSPINE"
 horizontal_alignment = 1
 
-[node name="DeathScreen" parent="HUD" instance=ExtResource("14_xvhfl")]
-mouse_filter = 2
-
 [node name="FadeLayer" parent="HUD" instance=ExtResource("17_lracc")]
 mouse_filter = 2
 
 [node name="Player" parent="." node_paths=PackedStringArray("uiReference", "_deathScreenUI", "bulletBars") groups=["enemy_hurtbox"] instance=ExtResource("1_00eeo")]
 light_mask = 2
 visibility_layer = 2
-position = Vector2(137, -1004)
+position = Vector2(107, -1022)
 uiReference = NodePath("../HUD")
 HealthStimFile = null
 _deathScreenUI = NodePath("../HUD/DeathScreen")
@@ -458,7 +455,7 @@ light_mask = 15
 visibility_layer = 15
 position = Vector2(7810, -674)
 ArenaTriggerArea = NodePath("../BossStart")
-EntranceGate = NodePath("../StaticBody2D")
+EntranceGate = NodePath("../EnteranceGate")
 BossUIPath = NodePath("../HUD/BossUI")
 DefaultFacesRight = false
 CollisionDefaultFacesRight = false
@@ -489,20 +486,26 @@ AttackRange = 80.0
 AttackCooldown = 3.0
 XpReward = 1000
 
-[node name="StaticBody2D" type="StaticBody2D" parent="."]
+[node name="EnteranceGate" type="StaticBody2D" parent="."]
 position = Vector2(6694.0005, -1005)
 scale = Vector2(0.067274496, 0.45061725)
-collision_layer = 7
-collision_mask = 7
+collision_layer = 6
+collision_mask = 5
 physics_material_override = SubResource("PhysicsMaterial_4as48")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EnteranceGate"]
 light_mask = 7
 visibility_layer = 7
 position = Vector2(-22.304688, 1.1095581)
 scale = Vector2(0.9999997, 1)
 shape = SubResource("RectangleShape2D_ih1j1")
-disabled = true
+
+[node name="Sprite2D" type="Sprite2D" parent="EnteranceGate" groups=["Player", "player"]]
+light_mask = 7
+visibility_layer = 7
+position = Vector2(-59.465164, -13.315132)
+scale = Vector2(0.99999994, 1)
+texture = ExtResource("5_pbiin")
 
 [node name="BossStart" type="Area2D" parent="." groups=["Player", "player"]]
 position = Vector2(7669, -1130)
@@ -514,14 +517,6 @@ position = Vector2(159, 138.5)
 scale = Vector2(1, 4.4800014)
 shape = SubResource("RectangleShape2D_pv4dj")
 debug_color = Color(0.94219804, 0.24054438, 0, 0.003921569)
-
-[node name="Sprite2D" type="Sprite2D" parent="." groups=["Player", "player"]]
-visible = false
-light_mask = 7
-visibility_layer = 7
-position = Vector2(6694.0005, 120)
-scale = Vector2(0.067274496, 0.45061725)
-texture = ExtResource("5_pbiin")
 
 [node name="Checkpoint" parent="." instance=ExtResource("16_4rr56")]
 position = Vector2(240, -993)

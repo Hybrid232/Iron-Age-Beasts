@@ -83,7 +83,7 @@ animations = [{
 "duration": 2.0,
 "texture": ExtResource("2_6487y")
 }, {
-"duration": 3.0,
+"duration": 1.0,
 "texture": ExtResource("3_nu0ba")
 }, {
 "duration": 1.0,
@@ -278,19 +278,19 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("17_edcaj")
 }, {
-"duration": 1.0,
+"duration": 0.5,
 "texture": ExtResource("18_kgcux")
 }, {
-"duration": 1.0,
+"duration": 0.5,
 "texture": ExtResource("19_phh10")
 }, {
-"duration": 1.0,
+"duration": 0.5,
 "texture": ExtResource("20_ytcd1")
 }, {
-"duration": 1.0,
+"duration": 0.5,
 "texture": ExtResource("21_phbqk")
 }, {
-"duration": 1.0,
+"duration": 0.5,
 "texture": ExtResource("22_kwpij")
 }, {
 "duration": 1.0,
@@ -333,7 +333,7 @@ height = 128.08307
 [sub_resource type="CircleShape2D" id="CircleShape2D_4m671"]
 radius = 119.117615
 
-[node name="TutorialBoss" type="CharacterBody2D" node_paths=PackedStringArray("BossMusicPlayer", "Phase2RoarSfxPlayer", "ChargeRoarSfxPlayer", "Sprite", "BodyCollisionRoot", "HurtboxRoot", "BiteHitbox", "TailHitbox", "ChargeHitbox", "BodyContactDamageArea")]
+[node name="TutorialBoss" type="CharacterBody2D" node_paths=PackedStringArray("BossMusicPlayer", "Phase2RoarSfxPlayer", "ChargeRoarSfxPlayer", "BiteSfxPlayer", "SweepSfxPlayer", "ChargeStompSfxPlayer", "Sprite", "BodyCollisionRoot", "HurtboxRoot", "BiteHitbox", "TailHitbox", "ChargeHitbox", "BodyContactDamageArea")]
 light_mask = 7
 visibility_layer = 7
 collision_layer = 6
@@ -342,6 +342,9 @@ script = ExtResource("1_4m671")
 BossMusicPlayer = NodePath("Node/BossMusic")
 Phase2RoarSfxPlayer = NodePath("Node/Phase2Roar")
 ChargeRoarSfxPlayer = NodePath("Node/ChargeRoar")
+BiteSfxPlayer = NodePath("Node/Bite")
+SweepSfxPlayer = NodePath("Node/Sweep")
+ChargeStompSfxPlayer = NodePath("Node/ChargeStomp")
 Sprite = NodePath("AnimatedSprite2D")
 IdleAnimName = "Idle"
 ChaseAnimName = "Chase"
@@ -392,7 +395,7 @@ light_mask = 15
 visibility_layer = 15
 scale = Vector2(5.0803113, 5.0803113)
 sprite_frames = SubResource("SpriteFrames_edccq")
-animation = &"Charge"
+animation = &"Bite"
 autoplay = "Idle"
 
 [node name="HurtboxArea" type="Area2D" parent="."]
@@ -521,3 +524,4 @@ stream = ExtResource("75_np0k1")
 
 [node name="ChargeStomp" type="AudioStreamPlayer" parent="Node"]
 stream = ExtResource("76_f6q6j")
+parameters/looping = true

@@ -63,6 +63,32 @@ public partial class TutorialBoss : BaseEnemy
 	private bool _chargeRoarPlayedThisCharge = false;
 
 	// -----------------------------
+	// Bite SFX
+	// -----------------------------
+	[ExportGroup("Bite SFX")]
+	[Export] public AudioStreamPlayer BiteSfxPlayer;
+	[Export] public float BiteSfxVolumeDb = 0f;
+
+	private bool _biteSfxPlayedThisAttack = false;
+
+	// -----------------------------
+	// Sweep SFX
+	// -----------------------------
+	[ExportGroup("Sweep SFX")]
+	[Export] public AudioStreamPlayer SweepSfxPlayer;
+	[Export] public float SweepSfxVolumeDb = 0f;
+
+	private bool _sweepSfxPlayedThisAttack = false;
+
+	// -----------------------------
+	// Charge Stomp SFX (loops during frames 6-18)
+	// -----------------------------
+	[ExportGroup("Charge Stomp SFX")]
+	[Export] public AudioStreamPlayer ChargeStompSfxPlayer;
+	[Export] public float ChargeStompSfxVolumeDb = 0f;
+	[Export] public int ChargeStompStartFrame = 6;  // inclusive — when stomp loop begins
+
+	// -----------------------------
 	// Animation
 	// -----------------------------
 	[ExportGroup("Animation")]
@@ -238,6 +264,7 @@ public partial class TutorialBoss : BaseEnemy
 	private bool _chargeActiveWindowOpen = false;
 
 	private bool _roarPulseFiredThisRoar = false;
+	private bool _chargeStompPlaying = false;
 
 	public override void _EnterTree()
 	{
@@ -508,6 +535,74 @@ public partial class TutorialBoss : BaseEnemy
 		ChargeRoarSfxPlayer.Play();
 	}
 
+	// -----------------------------
+	// Bite SFX helpers
+	// -----------------------------
+	private void PlayBiteSfx()
+	{
+		if (BiteSfxPlayer == null) return;
+		BiteSfxPlayer.VolumeDb = BiteSfxVolumeDb;
+		BiteSfxPlayer.Stop();
+		BiteSfxPlayer.Play();
+	}
+
+	// -----------------------------
+	// Sweep SFX helpers
+	// -----------------------------
+	private void PlaySweepSfx()
+	{
+		if (SweepSfxPlayer == null) return;
+		SweepSfxPlayer.VolumeDb = SweepSfxVolumeDb;
+		SweepSfxPlayer.Stop();
+		SweepSfxPlayer.Play();
+	}
+
+	// -----------------------------
+	// Charge Stomp SFX helpers (loops frames 6-18)
+	// -----------------------------
+	private void StartChargeStompLoop()
+	{
+		if (ChargeStompSfxPlayer == null) return;
+
+		// Connect the finished signal so the sound restarts itself every time
+		// it ends, giving a true repeat for the full duration of the charge.
+		if (!ChargeStompSfxPlayer.IsConnected(
+				AudioStreamPlayer.SignalName.Finished,
+				Callable.From(OnChargeStompFinished)))
+		{
+			ChargeStompSfxPlayer.Finished += OnChargeStompFinished;
+		}
+
+		ChargeStompSfxPlayer.VolumeDb = ChargeStompSfxVolumeDb;
+		ChargeStompSfxPlayer.Stop();
+		ChargeStompSfxPlayer.Play();
+	}
+
+	private void OnChargeStompFinished()
+	{
+		// Only replay while the charge is still active.
+		if (!_chargeStompPlaying || ChargeStompSfxPlayer == null) return;
+		ChargeStompSfxPlayer.Play();
+	}
+
+	private void StopChargeStompLoop()
+	{
+		_chargeStompPlaying = false;
+
+		if (ChargeStompSfxPlayer == null) return;
+
+		// Disconnect before stopping so the finished signal doesn't trigger
+		// one final replay after we've told it to stop.
+		if (ChargeStompSfxPlayer.IsConnected(
+				AudioStreamPlayer.SignalName.Finished,
+				Callable.From(OnChargeStompFinished)))
+		{
+			ChargeStompSfxPlayer.Finished -= OnChargeStompFinished;
+		}
+
+		ChargeStompSfxPlayer.Stop();
+	}
+
 	private void UpdateFacingAndAnimation(bool force)
 	{
 		// IMPORTANT: if dead + playing death, do NOT override animation
@@ -714,10 +809,21 @@ public partial class TutorialBoss : BaseEnemy
 			return;
 		}
 
-		foreach (var node in EntranceGate.GetChildren())
+		// Defer the shape enable/disable so it never runs mid-physics-step,
+		// which is the most common reason re-enabling silently fails in Godot 4.
+		CallDeferred(nameof(ApplyGateLock), locked);
+	}
+
+	private void ApplyGateLock(bool locked)
+	{
+		if (EntranceGate == null) return;
+
+		// Search all descendants, not just direct children, in case shapes are
+		// nested inside a child Node2D or similar.
+		foreach (var node in EntranceGate.FindChildren("*", "", true, false))
 		{
-			if (node is CollisionShape2D cs) cs.Disabled = !locked;
-			else if (node is CollisionPolygon2D cp) cp.Disabled = !locked;
+			if (node is CollisionShape2D cs)   cs.Disabled   = !locked;
+			if (node is CollisionPolygon2D cp) cp.Disabled   = !locked;
 		}
 	}
 
@@ -941,12 +1047,19 @@ public partial class TutorialBoss : BaseEnemy
 		_tailHitboxEnabledThisSpin = false;
 		_chargeActiveWindowOpen = false;
 
-		// NEW: reset per-charge roar SFX gate
+		// Reset per-attack SFX gates
 		if (attack == BossAttack.Charge)
+		{
 			_chargeRoarPlayedThisCharge = false;
-
-		if (_player != null && attack == BossAttack.Charge)
-			chargeDir = (_player.GlobalPosition - GlobalPosition).Normalized();
+			_chargeStompPlaying = false;
+			// chargeDir is intentionally NOT set here — we lock it at frame 6
+			// (ChargeStompStartFrame) so the boss aims at where the player
+			// actually is when the charge launches, not when the telegraph starts.
+		}
+		if (attack == BossAttack.Bite)
+			_biteSfxPlayedThisAttack = false;
+		if (attack == BossAttack.TailSweep)
+			_sweepSfxPlayedThisAttack = false;
 
 		SetHitboxEnabled(BiteHitbox, false);
 		SetHitboxEnabled(TailHitbox, false);
@@ -1288,6 +1401,13 @@ public partial class TutorialBoss : BaseEnemy
 		// Bite
 		if (currentAttack == BossAttack.Bite && Sprite.Animation == BiteAnimName)
 		{
+			// Play bite SFX the moment the animation starts (frame 0).
+			if (!_biteSfxPlayedThisAttack && Sprite.Frame == 0)
+			{
+				_biteSfxPlayedThisAttack = true;
+				PlayBiteSfx();
+			}
+
 			if (!_biteHitboxEnabledThisBite && Sprite.Frame == BiteDamageFrameIndex)
 			{
 				_biteHitboxEnabledThisBite = true;
@@ -1299,6 +1419,13 @@ public partial class TutorialBoss : BaseEnemy
 		// Tail sweep
 		if (currentAttack == BossAttack.TailSweep && Sprite.Animation == TailSweepAnimName)
 		{
+			// Play sweep SFX the moment the animation starts (frame 0).
+			if (!_sweepSfxPlayedThisAttack && Sprite.Frame == 0)
+			{
+				_sweepSfxPlayedThisAttack = true;
+				PlaySweepSfx();
+			}
+
 			bool inActive = Sprite.Frame >= TailSweepActiveStartFrame && Sprite.Frame <= TailSweepActiveEndFrame;
 
 			if (inActive && !_tailHitboxEnabledThisSpin)
@@ -1317,12 +1444,26 @@ public partial class TutorialBoss : BaseEnemy
 		// Charge
 		if (currentAttack == BossAttack.Charge && Sprite.Animation == ChargeAnimName)
 		{
-			// NEW: play a small roar during frames 1-5 (inclusive), once per charge
+			// Charge roar plays during frames 1-5.
 			bool inChargeRoarWindow = Sprite.Frame >= ChargeRoarStartFrame && Sprite.Frame <= ChargeRoarEndFrame;
 			if (inChargeRoarWindow && !_chargeRoarPlayedThisCharge)
 			{
 				_chargeRoarPlayedThisCharge = true;
 				PlayChargeRoarSfx();
+			}
+
+			// At frame 6 (ChargeStompStartFrame): lock direction onto the player's
+			// CURRENT position and start the stomp loop. This gives the player the
+			// full frames 0-5 wind-up to dodge before the boss commits to a direction.
+			if (Sprite.Frame >= ChargeStompStartFrame && !_chargeStompPlaying)
+			{
+				_chargeStompPlaying = true;
+
+				// Lock chargeDir NOW — after the telegraph, at the moment of launch.
+				if (_player != null && IsInstanceValid(_player))
+					chargeDir = (_player.GlobalPosition - GlobalPosition).Normalized();
+
+				StartChargeStompLoop();
 			}
 
 			bool inActive = Sprite.Frame >= ChargeActiveStartFrame && Sprite.Frame <= ChargeActiveEndFrame;
@@ -1401,6 +1542,7 @@ public partial class TutorialBoss : BaseEnemy
 			ShowTelegraph(BossAttack.Charge, false);
 
 			_chargeActiveWindowOpen = false;
+			StopChargeStompLoop();
 
 			Velocity = Vector2.Zero;
 			state = BossState.Recover;
@@ -1497,8 +1639,11 @@ public partial class TutorialBoss : BaseEnemy
 		_chargeActiveWindowOpen = false;
 		_roarPulseFiredThisRoar = false;
 
-		// NEW: ensure charge roar state doesn't carry across resets
+		// ensure charge roar state doesn't carry across resets
 		_chargeRoarPlayedThisCharge = false;
+		_biteSfxPlayedThisAttack = false;
+		_sweepSfxPlayedThisAttack = false;
+		StopChargeStompLoop();
 
 		if (_bossUIItem != null) _bossUIItem.Visible = false;
 		bossUI?.InitializeBoss(MaxHealth, _currentHealth);
