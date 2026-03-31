@@ -5,9 +5,15 @@ public partial class MainMenu : Control
 {
 	private Control _menuContainer;
 	private Control _optionsBG;
+	private AnimationPlayer _fadeAnim;
 
 	public override void _Ready()
 	{
+		_fadeAnim = GetNode<AnimationPlayer>("FadeLayer/AnimationPlayer");
+		
+		//Play animation when menu starts.
+		_fadeAnim.Play("Fade_Out");
+		
 		_menuContainer = GetNode<Control>("MenuContainer");
 		_optionsBG = GetNode<Control>("OptionsBG");
 
@@ -26,8 +32,12 @@ public partial class MainMenu : Control
 		backButton.Pressed += OnBackPressed;
 	}
 
-	private void OnStartPressed()
+	private async void OnStartPressed()
 	{
+		_fadeAnim.Play("Fade_In");
+		
+		await ToSignal(_fadeAnim, "animation_finished");
+		
 		GetTree().ChangeSceneToFile("res://scene/Scenes/Tutorial.tscn");
 	}
 
@@ -37,9 +47,10 @@ public partial class MainMenu : Control
 		_optionsBG.Visible = true;
 	}
 
-	private void OnQuitPressed()
+	private async void OnQuitPressed()
 	{
-		GD.Print("Quitting Game...");
+		_fadeAnim.Play("Fade_In");
+		await ToSignal(_fadeAnim, "animation_finished");
 		GetTree().Quit();
 	}
 	

@@ -431,6 +431,8 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 
 		CanMove = false;
 		Velocity = Vector2.Zero;
+		StopAllPlayerAudio();
+		AudioManager.Instance?.SilenceBGMImmediate();
 
 		if (_deathScreenUI != null)
 		{
@@ -471,6 +473,15 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 			if (n is Node node && node.HasMethod("ForceResetEncounter"))
 				node.Call("ForceResetEncounter");
 		}
+	}
+	
+	private void StopAllPlayerAudio()
+	{
+		walkSFX?.Stop();
+		swingSFX?.Stop();
+		gunSFX?.Stop();
+		reloadSFX?.Stop();
+		halberdSFX?.Stop();
 	}
 
 	private void OnDeathScreenRespawnRequested()

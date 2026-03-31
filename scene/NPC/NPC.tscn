@@ -186,7 +186,7 @@ _playerPortraitTexture = ExtResource("4_ts6i4")
 booginsThemeSFX = NodePath("BooginsTheme")
 booginsThemeFile = ExtResource("2_p5v3q")
 _itemCosts = {
-0: 150,
+0: 200,
 1: 1000,
 2: 500,
 3: 500
@@ -355,7 +355,7 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_rkm81")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_4qg82")
 theme_override_styles/hover = SubResource("StyleBoxFlat_1e8w8")
 text = "Health Potion
-150 XP
+200 XP
 "
 icon = ExtResource("5_kevq5")
 
