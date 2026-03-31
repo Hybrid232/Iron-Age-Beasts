@@ -1,0 +1,235 @@
+[gd_scene load_steps=5 format=3 uid="uid://b3mf52e6cgple"]
+
+[ext_resource type="FontFile" uid="uid://cjhha6sdhxp87" path="res://scene/Fonts/FuturisticFont/Wallpoet-Regular.ttf" id="1_4n60e"]
+[ext_resource type="FontFile" uid="uid://b6gecg6ywmtyj" path="res://scene/Fonts/PrimalFont/Bahiana-Regular.ttf" id="2_6v1nw"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4j5ds"]
+bg_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4n60e"]
+bg_color = Color(0, 0.7019608, 0.5529412, 0.34901962)
+
+[node name="Credits" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_4j5ds")
+
+[node name="Thanks" type="Label" parent="Panel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -284.0
+offset_top = 16.0
+offset_right = 287.0
+offset_bottom = 97.0
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("1_4n60e")
+theme_override_font_sizes/font_size = 50
+text = "Thanks for Playing"
+horizontal_alignment = 1
+
+[node name="IronAge" type="Label" parent="."]
+layout_mode = 0
+offset_left = 347.0
+offset_top = 75.0
+offset_right = 789.0
+offset_bottom = 179.0
+theme_override_colors/font_color = Color(0.7315904, 0.70224166, 0.68139046, 1)
+theme_override_colors/font_shadow_color = Color(0, 0.8399902, 0.7338868, 0.99607843)
+theme_override_colors/font_outline_color = Color(0.65421736, 0, 0.27344424, 1)
+theme_override_fonts/font = ExtResource("1_4n60e")
+theme_override_font_sizes/font_size = 90
+text = "Iron Age"
+vertical_alignment = 1
+
+[node name="Beasts" type="Label" parent="IronAge"]
+layout_mode = 0
+offset_left = 174.0
+offset_top = 106.0
+offset_right = 443.0
+offset_bottom = 279.0
+theme_override_colors/font_color = Color(0.59128594, 0.0062953215, 3.85046e-07, 1)
+theme_override_colors/font_shadow_color = Color(0, 0.40392157, 0.03529412, 0.43529412)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 9
+theme_override_constants/shadow_offset_y = 10
+theme_override_constants/outline_size = 19
+theme_override_fonts/font = ExtResource("2_6v1nw")
+theme_override_font_sizes/font_size = 150
+text = "Beasts"
+
+[node name="ProgramPanel" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 472.0
+offset_right = 391.0
+offset_bottom = 629.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_4n60e")
+
+[node name="Programmers" type="Label" parent="ProgramPanel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -188.5
+offset_right = 186.5
+offset_bottom = 34.0
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("1_4n60e")
+theme_override_font_sizes/font_size = 30
+text = "Program Engineers"
+horizontal_alignment = 1
+
+[node name="Emmitt" type="Label" parent="ProgramPanel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -75.5
+offset_top = 37.0
+offset_right = 91.5
+offset_bottom = 78.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.9998837, 0.21026406, 0.29865927, 1)
+theme_override_colors/font_outline_color = Color(0.99116415, 0.99116427, 0.99116415, 1)
+theme_override_constants/outline_size = 15
+theme_override_fonts/font = ExtResource("2_6v1nw")
+theme_override_font_sizes/font_size = 35
+text = "Emmitt Stevenson"
+horizontal_alignment = 1
+
+[node name="Jared" type="Label" parent="ProgramPanel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -85.5
+offset_top = 76.0
+offset_right = 81.5
+offset_bottom = 117.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.9998837, 0.21026406, 0.29865927, 1)
+theme_override_colors/font_outline_color = Color(0.99116415, 0.99116427, 0.99116415, 1)
+theme_override_constants/outline_size = 15
+theme_override_fonts/font = ExtResource("2_6v1nw")
+theme_override_font_sizes/font_size = 35
+text = "Jared garcia"
+horizontal_alignment = 1
+
+[node name="Neil" type="Label" parent="ProgramPanel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -86.5
+offset_top = 113.0
+offset_right = 80.5
+offset_bottom = 154.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.9998837, 0.21026406, 0.29865927, 1)
+theme_override_colors/font_outline_color = Color(0.99116415, 0.99116427, 0.99116415, 1)
+theme_override_constants/outline_size = 15
+theme_override_fonts/font = ExtResource("2_6v1nw")
+theme_override_font_sizes/font_size = 35
+text = "Neil Pack"
+horizontal_alignment = 1
+
+[node name="ArtPanel" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 467.0
+offset_top = 472.0
+offset_right = 756.0
+offset_bottom = 629.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_4n60e")
+
+[node name="LeadArtist" type="Label" parent="ArtPanel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -188.5
+offset_right = 186.5
+offset_bottom = 34.0
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("1_4n60e")
+theme_override_font_sizes/font_size = 30
+text = "Lead Artist"
+horizontal_alignment = 1
+
+[node name="Lily" type="Label" parent="ArtPanel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -93.0
+offset_top = -20.5
+offset_right = 93.0
+offset_bottom = 20.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.9998837, 0.21026406, 0.29865927, 1)
+theme_override_colors/font_outline_color = Color(0.99116415, 0.99116427, 0.99116415, 1)
+theme_override_constants/outline_size = 15
+theme_override_fonts/font = ExtResource("2_6v1nw")
+theme_override_font_sizes/font_size = 35
+text = "Lily Benson-Andrus"
+horizontal_alignment = 1
+
+[node name="MusicSFXPanel" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 802.0
+offset_top = 472.0
+offset_right = 1091.0
+offset_bottom = 629.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_4n60e")
+
+[node name="MscSFX" type="Label" parent="MusicSFXPanel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -143.5
+offset_right = 143.5
+offset_bottom = 65.0
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("1_4n60e")
+theme_override_font_sizes/font_size = 30
+text = "Original Music 
+& Custom SFX"
+horizontal_alignment = 1
+
+[node name="Micha" type="Label" parent="MusicSFXPanel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -93.0
+offset_top = -2.5
+offset_right = 93.0
+offset_bottom = 43.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.9998837, 0.21026406, 0.29865927, 1)
+theme_override_colors/font_outline_color = Color(0.99116415, 0.99116427, 0.99116415, 1)
+theme_override_constants/outline_size = 15
+theme_override_fonts/font = ExtResource("2_6v1nw")
+theme_override_font_sizes/font_size = 40
+text = "Micha DeGraw"
+horizontal_alignment = 1
