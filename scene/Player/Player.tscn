@@ -1,4 +1,4 @@
-[gd_scene load_steps=190 format=3 uid="uid://d38cvt67w5bgb"]
+[gd_scene load_steps=206 format=3 uid="uid://d38cvt67w5bgb"]
 
 [ext_resource type="Script" uid="uid://bdxac0jm2jtt2" path="res://scene/scripts/Player Scripts/Player.cs" id="1_4bggy"]
 [ext_resource type="PackedScene" uid="uid://77e4i6lmd7ih" path="res://scene/Player/Bullet.tscn" id="2_a1q3d"]
@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://j7bspm3fmg3q" path="res://sprites/MC/MC_Runs.png" id="6_wsr1k"]
 [ext_resource type="Script" uid="uid://hwskfynq1rhf" path="res://scene/scripts/Player Scripts/PlayerAnimationDriver.cs" id="7_46pjf"]
 [ext_resource type="AudioStream" uid="uid://b4fe503cswdh" path="res://Audio/SFX/Player/Healing Stim.wav" id="9_k2g04"]
+[ext_resource type="Texture2D" uid="uid://c6ddlpo8it23v" path="res://sprites/MC/MC_Dead.png" id="10_0wc3o"]
 [ext_resource type="AudioStream" uid="uid://cuu1mu28gei2n" path="res://Audio/SFX/Weapon/Gun/Reload.wav" id="10_cpuyg"]
 [ext_resource type="AudioStream" uid="uid://c4dum0wod6kx2" path="res://Audio/SFX/Player/Dash.mp3" id="11_5pcdv"]
 [ext_resource type="Texture2D" uid="uid://cnps13soquroq" path="res://sprites/MC/MC_Shoot.png" id="12_ossat"]
@@ -205,6 +206,30 @@ region = Rect2(640, 352, 160, 176)
 [sub_resource type="AtlasTexture" id="AtlasTexture_fny1t"]
 atlas = ExtResource("6_ve2us")
 region = Rect2(800, 352, 160, 176)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_68jvs"]
+atlas = ExtResource("10_0wc3o")
+region = Rect2(0, 0, 160, 176)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_g3lc6"]
+atlas = ExtResource("10_0wc3o")
+region = Rect2(160, 0, 160, 176)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kb5tf"]
+atlas = ExtResource("10_0wc3o")
+region = Rect2(320, 0, 160, 176)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4qoqa"]
+atlas = ExtResource("10_0wc3o")
+region = Rect2(480, 0, 160, 176)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3eg13"]
+atlas = ExtResource("10_0wc3o")
+region = Rect2(640, 0, 160, 176)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pqlnq"]
+atlas = ExtResource("10_0wc3o")
+region = Rect2(800, 0, 160, 176)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_46pjf"]
 atlas = ExtResource("6_wsr1k")
@@ -618,6 +643,29 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_68jvs")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_g3lc6")
+}, {
+"duration": 5.0,
+"texture": SubResource("AtlasTexture_kb5tf")
+}, {
+"duration": 3.0,
+"texture": SubResource("AtlasTexture_4qoqa")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3eg13")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pqlnq")
+}],
+"loop": true,
+"name": &"Death",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_46pjf")
 }],
 "loop": true,
@@ -762,7 +810,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_60h0j")
 }],
-"loop": true,
+"loop": false,
 "name": &"Shoot_Down",
 "speed": 5.0
 }, {
@@ -788,7 +836,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_aqrcl")
 }],
-"loop": true,
+"loop": false,
 "name": &"Shoot_Left",
 "speed": 5.0
 }, {
@@ -814,7 +862,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_pffo0")
 }],
-"loop": true,
+"loop": false,
 "name": &"Shoot_Right",
 "speed": 5.0
 }, {
@@ -840,7 +888,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_s30mh")
 }],
-"loop": true,
+"loop": false,
 "name": &"Shoot_Up",
 "speed": 5.0
 }]
@@ -1058,6 +1106,33 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 1,
 "values": [&"Dash_Up"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("AnimatedSprite2D:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.033333335, 0.06666667, 0.10000001, 0.13333334, 0.16666667),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5]
+}
+
+[sub_resource type="Animation" id="Animation_g1vpj"]
+resource_name = "Death"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AnimatedSprite2D:animation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [&"Death"]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -1354,6 +1429,33 @@ tracks/1/keys = {
 "values": [0, 1, 2, 3, 4, 5, 6]
 }
 
+[sub_resource type="Animation" id="Animation_ossat"]
+resource_name = "Shoot_Left"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AnimatedSprite2D:animation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [&"Shoot_Left"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("AnimatedSprite2D:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.033333335, 0.06666667, 0.10000001, 0.13333334, 0.16666667, 0.20000002),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6]
+}
+
 [sub_resource type="Animation" id="Animation_g3lc6"]
 resource_name = "Shoot_Right"
 tracks/0/type = "value"
@@ -1408,33 +1510,6 @@ tracks/1/keys = {
 "values": [0, 1, 2, 3, 4, 5, 6]
 }
 
-[sub_resource type="Animation" id="Animation_ossat"]
-resource_name = "Shoot_Left"
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("AnimatedSprite2D:animation")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [&"Shoot_Left"]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("AnimatedSprite2D:frame")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.033333335, 0.06666667, 0.10000001, 0.13333334, 0.16666667, 0.20000002),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [0, 1, 2, 3, 4, 5, 6]
-}
-
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_r2k8o"]
 _data = {
 &"Attack_Down": SubResource("Animation_klao7"),
@@ -1445,6 +1520,7 @@ _data = {
 &"Dash_Left": SubResource("Animation_cpuyg"),
 &"Dash_Right": SubResource("Animation_k2g04"),
 &"Dash_Up": SubResource("Animation_k1yjj"),
+&"Death": SubResource("Animation_g1vpj"),
 &"Idle_Down": SubResource("Animation_wneb6"),
 &"Idle_Left": SubResource("Animation_wgxy5"),
 &"Idle_Right": SubResource("Animation_tlwrw"),
@@ -1524,6 +1600,39 @@ nodes/TimeScale/node = SubResource("AnimationNodeTimeScale_4b7p4")
 nodes/TimeScale/position = Vector2(100, 60)
 nodes/BlendSpace2D/node = SubResource("AnimationNodeBlendSpace2D_2nqpd")
 nodes/BlendSpace2D/position = Vector2(-120, 40)
+node_connections = [&"output", 0, &"TimeScale", &"TimeScale", 0, &"BlendSpace2D"]
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_urgyq"]
+animation = &"Death"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_vr8hq"]
+animation = &"Death"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_nj8hl"]
+animation = &"Death"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_5m5di"]
+animation = &"Death"
+
+[sub_resource type="AnimationNodeBlendSpace2D" id="AnimationNodeBlendSpace2D_i1dte"]
+blend_point_0/node = SubResource("AnimationNodeAnimation_urgyq")
+blend_point_0/pos = Vector2(-1, 0)
+blend_point_1/node = SubResource("AnimationNodeAnimation_vr8hq")
+blend_point_1/pos = Vector2(0, 1)
+blend_point_2/node = SubResource("AnimationNodeAnimation_nj8hl")
+blend_point_2/pos = Vector2(1, 0)
+blend_point_3/node = SubResource("AnimationNodeAnimation_5m5di")
+blend_point_3/pos = Vector2(0, -1)
+blend_mode = 1
+
+[sub_resource type="AnimationNodeTimeScale" id="AnimationNodeTimeScale_f4txc"]
+
+[sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_ebkhn"]
+graph_offset = Vector2(39.133713, 331.0783)
+nodes/TimeScale/node = SubResource("AnimationNodeTimeScale_f4txc")
+nodes/TimeScale/position = Vector2(140, 120)
+nodes/BlendSpace2D/node = SubResource("AnimationNodeBlendSpace2D_i1dte")
+nodes/BlendSpace2D/position = Vector2(-40, 100)
 node_connections = [&"output", 0, &"TimeScale", &"TimeScale", 0, &"BlendSpace2D"]
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_15vgb"]
@@ -1619,7 +1728,7 @@ blend_mode = 1
 [sub_resource type="AnimationNodeTimeScale" id="AnimationNodeTimeScale_urgyq"]
 
 [sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_vr8hq"]
-graph_offset = Vector2(-274.8531, 8.119514)
+graph_offset = Vector2(-155, 103)
 nodes/BlendSpace2D/node = SubResource("AnimationNodeBlendSpace2D_lbuht")
 nodes/BlendSpace2D/position = Vector2(-60, 80)
 nodes/TimeScale/node = SubResource("AnimationNodeTimeScale_urgyq")
@@ -1649,15 +1758,18 @@ switch_mode = 2
 advance_mode = 2
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_vr8hq"]
-switch_mode = 2
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_nj8hl"]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_analy"]
 
 [sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_i2brr"]
 states/Attack/node = SubResource("AnimationNodeBlendTree_7a3kw")
 states/Attack/position = Vector2(519, 100)
 states/Dash/node = SubResource("AnimationNodeBlendTree_5q605")
 states/Dash/position = Vector2(519, 220)
+states/Death/node = SubResource("AnimationNodeBlendTree_ebkhn")
+states/Death/position = Vector2(234, 159.28516)
 states/Idle/node = SubResource("AnimationNodeBlendTree_qgie5")
 states/Idle/position = Vector2(377, 100)
 states/Run/node = SubResource("AnimationNodeBlendTree_lp5qi")
@@ -1665,8 +1777,8 @@ states/Run/position = Vector2(377, 220)
 states/Shoot/node = SubResource("AnimationNodeBlendTree_vr8hq")
 states/Shoot/position = Vector2(234, 220)
 states/Start/position = Vector2(266, 100)
-transitions = ["Start", "Idle", SubResource("AnimationNodeStateMachineTransition_hmv17"), "Idle", "Run", SubResource("AnimationNodeStateMachineTransition_ww526"), "Run", "Idle", SubResource("AnimationNodeStateMachineTransition_r6pp1"), "Run", "Dash", SubResource("AnimationNodeStateMachineTransition_lbuht"), "Dash", "Run", SubResource("AnimationNodeStateMachineTransition_urgyq"), "Run", "Attack", SubResource("AnimationNodeStateMachineTransition_aqrcl"), "Attack", "Run", SubResource("AnimationNodeStateMachineTransition_nots2"), "Idle", "Attack", SubResource("AnimationNodeStateMachineTransition_2604u"), "Attack", "Idle", SubResource("AnimationNodeStateMachineTransition_j4kj4"), "Shoot", "Run", SubResource("AnimationNodeStateMachineTransition_vr8hq"), "Run", "Shoot", SubResource("AnimationNodeStateMachineTransition_nj8hl")]
-graph_offset = Vector2(-103, -52)
+transitions = ["Start", "Idle", SubResource("AnimationNodeStateMachineTransition_hmv17"), "Idle", "Run", SubResource("AnimationNodeStateMachineTransition_ww526"), "Run", "Idle", SubResource("AnimationNodeStateMachineTransition_r6pp1"), "Run", "Dash", SubResource("AnimationNodeStateMachineTransition_lbuht"), "Dash", "Run", SubResource("AnimationNodeStateMachineTransition_urgyq"), "Run", "Attack", SubResource("AnimationNodeStateMachineTransition_aqrcl"), "Attack", "Run", SubResource("AnimationNodeStateMachineTransition_nots2"), "Idle", "Attack", SubResource("AnimationNodeStateMachineTransition_2604u"), "Attack", "Idle", SubResource("AnimationNodeStateMachineTransition_j4kj4"), "Shoot", "Run", SubResource("AnimationNodeStateMachineTransition_vr8hq"), "Run", "Shoot", SubResource("AnimationNodeStateMachineTransition_nj8hl"), "Idle", "Death", SubResource("AnimationNodeStateMachineTransition_analy")]
+graph_offset = Vector2(-103, 67.28515)
 
 [node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("HealthStimSFX", "dodgeSFX", "attackPivot", "attackHitbox", "halberdSFX", "bulletContainer", "bulletBars", "gunSFX", "reloadSFX", "walkSFX", "swingSFX", "animationDriver") groups=["Player", "player"]]
 collision_layer = 3
@@ -1751,12 +1863,14 @@ parameters/Attack/BlendSpace2D/blend_position = Vector2(0.0022370815, 0.00996685
 parameters/Attack/TimeScale/scale = 0.5
 parameters/Dash/TimeScale/scale = 0.7000000000000028
 parameters/Dash/BlendSpace2D/blend_position = Vector2(0.0044742823, 0.027989864)
+parameters/Death/TimeScale/scale = 0.29999999999999716
+parameters/Death/BlendSpace2D/blend_position = Vector2(0, 0)
 parameters/Idle/TimeScale/scale = 1.0
 parameters/Idle/BlendSpace2D/blend_position = Vector2(0.0030030012, 0.59641254)
 parameters/Run/BlendSpace2D/blend_position = Vector2(-0.007007003, 0.049327374)
 parameters/Run/TimeScale/scale = 0.29999999999999716
 parameters/Shoot/BlendSpace2D/blend_position = Vector2(0.0072689056, 0.01382494)
-parameters/Shoot/TimeScale/scale = 1.0
+parameters/Shoot/TimeScale/scale = 0.3999999999999986
 
 [node name="PlayerSFX" type="Node" parent="."]
 
@@ -1783,3 +1897,4 @@ stream = ExtResource("11_5pcdv")
 [node name="PlayerAnimationDriver" type="Node" parent="." node_paths=PackedStringArray("AnimationTree")]
 script = ExtResource("7_46pjf")
 AnimationTree = NodePath("../AnimationTree")
+ShootDurationSeconds = 0.7

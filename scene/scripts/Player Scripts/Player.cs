@@ -281,6 +281,23 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 			return;
 		}
 
+		// If the shoot animation is playing, tick the pending bullet and block movement
+		if (animationDriver != null && animationDriver.IsShootAnimating)
+		{
+			float bulletSpawnDelay = animationDriver.ShootDurationSeconds * (4f / 7f);
+			shootingSystem.UpdatePendingShot(dt, GlobalPosition);
+			Velocity = Vector2.Zero;
+
+			animationDriver.UpdateFromInput(
+				allowRun: false,
+				isDashing: false
+			);
+
+			MoveAndSlide();
+			TryUsePotionWithSfx();
+			return;
+		}
+
 		// Dodge motion
 		if (dodgeSystem.IsDodging)
 		{
@@ -314,8 +331,18 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 		if (attackStarted)
 			animationDriver?.TriggerAttack();
 
-		// Shooting
-		shootingSystem.TryShoot(moveDirection, GlobalPosition);
+		// Shooting — TryShoot returns true the frame input is accepted and queues the bullet
+		float spawnDelay = animationDriver != null
+			? animationDriver.ShootDurationSeconds * (4f / 7f)
+			: 0f;
+		bool shotFired = shootingSystem.TryShoot(moveDirection, GlobalPosition, spawnDelay);
+		if (shotFired)
+			animationDriver?.TriggerShoot();
+
+		// Tick any pending bullet even from the normal movement path
+		// (covers the edge case where animationDriver is null)
+		if (animationDriver == null)
+			shootingSystem.UpdatePendingShot(dt, GlobalPosition);
 
 		// Walk SFX
 		if (moveDirection != Vector2.Zero)
@@ -447,6 +474,9 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 		CanMove = false;
 		Velocity = Vector2.Zero;
 
+		// Play death animation immediately — driver locks in Death state until ResetDeath()
+		animationDriver?.TriggerDeath();
+
 		StopAllPlayerAudio();
 		AudioManager.Instance?.SilenceBGMImmediate();
 
@@ -538,6 +568,9 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 		_stunTimer = 0f;
 
 		CanMove = true;
+
+		// Allow the animation driver to resume normal state selection
+		animationDriver?.ResetDeath();
 
 		var enemies = GetTree().GetNodesInGroup("Enemy");
 		foreach (Node node in enemies)
