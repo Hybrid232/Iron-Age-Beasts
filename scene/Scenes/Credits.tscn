@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://b3mf52e6cgple"]
+[gd_scene load_steps=5 format=3 uid="uid://b3mf52e6cgple"]
 
 [ext_resource type="FontFile" uid="uid://cjhha6sdhxp87" path="res://scene/Fonts/FuturisticFont/Wallpoet-Regular.ttf" id="1_4n60e"]
 [ext_resource type="FontFile" uid="uid://b6gecg6ywmtyj" path="res://scene/Fonts/PrimalFont/Bahiana-Regular.ttf" id="2_6v1nw"]
