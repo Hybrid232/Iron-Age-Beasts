@@ -122,6 +122,11 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 
 	// NEW: last checkpoint the player actually rested at (interacted)
 	private Checkpoint _lastRestedCheckpoint;
+	
+	
+	
+	public bool IsDead => _isDying;
+
 
 	public override void _Ready()
 	{
@@ -427,10 +432,15 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 		if (_isDying) return;
 		_isDying = true;
 
+		// 🔥 FORCE CLOSE PAUSE MENU
+		var pauseMenu = GetTree().GetFirstNodeInGroup("pause_menu") as PauseMenu;
+		pauseMenu?.ForceClose();
+
 		_stunTimer = 0f;
 
 		CanMove = false;
 		Velocity = Vector2.Zero;
+
 		StopAllPlayerAudio();
 		AudioManager.Instance?.SilenceBGMImmediate();
 

@@ -9,6 +9,7 @@ bg_color = Color(0, 0, 0, 0.7764706)
 [node name="PauseMenu" type="Control" node_paths=PackedStringArray("_armoryPanel", "_inventoryPanel", "_settingsPanel", "_pauseBar")]
 light_mask = 15
 visibility_layer = 15
+z_index = 2
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
