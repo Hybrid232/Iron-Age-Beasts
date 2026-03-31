@@ -39,6 +39,7 @@ public partial class RangeEnemy : BaseEnemy
 	private Node2D          _rayCastOrigin;
 	private List<RayCast2D> _rays = new();
 	private Sprite2D _sprite;
+	private TextureProgressBar _healthBar;
 
 	// ── Tracking ─────────────────────────────────────────────────
 	private bool _playerInArea = false;  // broad-phase flag
@@ -51,6 +52,9 @@ public partial class RangeEnemy : BaseEnemy
 		_detectionArea = GetNode<Area2D>("detection_area");
 		_rayCastOrigin = GetNode<Node2D>("RayCastOrigin");
 		_sprite = GetNode<Sprite2D>("RangeEnemy");
+		_healthBar = GetNode<TextureProgressBar>("HealthBar");
+		_healthBar.MaxValue = MaxHealth;
+		_healthBar.Value = MaxHealth;
 
 		GD.Print($"[RangeEnemy] Nodes found: detectionArea={_detectionArea != null}, rayCastOrigin={_rayCastOrigin != null}");
 
@@ -70,7 +74,15 @@ public partial class RangeEnemy : BaseEnemy
 	{
 		_sprite.FlipH = targetPosition.X > GlobalPosition.X;
 	}
-
+	
+	public override void TakeDamage(int damage)
+	{
+		base.TakeDamage(damage);
+		
+		if (_healthBar != null)
+			_healthBar.Value = _currentHealth;
+	}
+	
 	// ── Main Loop ────────────────────────────────────────────────
 	public override void _PhysicsProcess(double delta)
 	{
