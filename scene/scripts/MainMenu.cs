@@ -7,6 +7,9 @@ public partial class MainMenu : Control
 	private Control _optionsBG;
 	private AnimationPlayer _fadeAnim;
 	private AnimationPlayer _menuAnim;
+	
+	[ExportGroup("SFX Buttons")]
+	[Export] private AudioStreamPlayer startSFX;
 
 	public override async void _Ready()
 	{
@@ -35,6 +38,7 @@ public partial class MainMenu : Control
 
 	private async void OnStartPressed()
 	{
+		
 		_fadeAnim.Play("Fade_In");
 		await ToSignal(_fadeAnim, "animation_finished");
 		GetTree().ChangeSceneToFile("res://scene/Scenes/Tutorial.tscn");

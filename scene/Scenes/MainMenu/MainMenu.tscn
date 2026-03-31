@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://cl43r3q2hw3hh"]
+[gd_scene load_steps=20 format=3 uid="uid://cl43r3q2hw3hh"]
 
 [ext_resource type="Script" uid="uid://6bn28qiwm8k4" path="res://scene/scripts/MainMenu.cs" id="1_4755a"]
 [ext_resource type="Texture2D" uid="uid://bcmoio2xyu6ft" path="res://sprites/background/poster_final.png" id="2_u6gsd"]
@@ -6,6 +6,7 @@
 [ext_resource type="FontFile" uid="uid://b6gecg6ywmtyj" path="res://scene/Fonts/PrimalFont/Bahiana-Regular.ttf" id="4_ur81v"]
 [ext_resource type="AudioStream" uid="uid://dkx68rf36ydf0" path="res://Audio/Music/Main Theme - IAG.mp3" id="5_td1gt"]
 [ext_resource type="PackedScene" uid="uid://dpyii7smwund3" path="res://scene/Scenes/MainMenu/FadeTransition.tscn" id="6_csw5f"]
+[ext_resource type="AudioStream" uid="uid://dwgxhhs7oxknf" path="res://Audio/SFX/UI/Menu/StartGame.mp3" id="7_u6gsd"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_fufy3"]
 texture = ExtResource("2_u6gsd")
@@ -460,6 +461,9 @@ text = "SFX"
 [node name="MainTheme" type="AudioStreamPlayer" parent="Audio"]
 stream = ExtResource("5_td1gt")
 autoplay = true
+
+[node name="Start" type="AudioStreamPlayer" parent="Audio"]
+stream = ExtResource("7_u6gsd")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {

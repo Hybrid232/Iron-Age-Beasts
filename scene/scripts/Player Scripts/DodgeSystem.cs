@@ -10,6 +10,7 @@ public class DodgeSystem
 	private float dodgeTimer;
 	private float cooldownTimer;
 	private Vector2 dodgeDirection;
+	private AudioStreamPlayer dodgeSFX;
 
 	// ===== I-FRAMES (Dark Souls style) =====
 	// Normalized to the dodge duration (0..1)
@@ -38,7 +39,8 @@ public class DodgeSystem
 		float cooldown,
 		int staminaCost,
 		float iFrameStartNormalized = 0.10f,
-		float iFrameDurationNormalized = 0.50f
+		float iFrameDurationNormalized = 0.50f,
+		AudioStreamPlayer dodgeSFX = null // UPDATED: added sfx parameter
 	)
 	{
 		dodgeSpeed = speed;
@@ -48,6 +50,8 @@ public class DodgeSystem
 
 		this.iFrameStartNormalized = Mathf.Clamp(iFrameStartNormalized, 0f, 1f);
 		this.iFrameDurationNormalized = Mathf.Clamp(iFrameDurationNormalized, 0f, 1f);
+
+		this.dodgeSFX = dodgeSFX; // assign sfx
 	}
 
 	public void UpdateCooldown(float dt)
@@ -69,6 +73,15 @@ public class DodgeSystem
 			dodgeDirection = direction;
 			dodgeTimer = dodgeTime;
 			cooldownTimer = dodgeCooldown;
+
+			// NEW: Play dodge SFX if set
+			if (dodgeSFX != null)
+			{
+				if (dodgeSFX.Playing)
+					dodgeSFX.Stop(); // Avoid overlap
+				dodgeSFX.Play();
+			}
+
 			return true;
 		}
 		return false;

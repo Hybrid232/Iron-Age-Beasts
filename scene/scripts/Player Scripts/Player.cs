@@ -48,6 +48,10 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 	[Export(PropertyHint.Range, "0,1,0.01")]
 	private float dodgeIFrameDurationNormalized = 0.50f;
 
+	// NEW: Add Dodge SFX exports
+	[Export] private AudioStreamPlayer dodgeSFX;
+	[Export] private AudioStream dodgeSFXFile;
+
 	// ===== RECOIL EXPORTS =====
 	[ExportGroup("Recoil System")]
 	[Export] private float hitRecoilDistance = 59f;
@@ -122,11 +126,8 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 
 	// NEW: last checkpoint the player actually rested at (interacted)
 	private Checkpoint _lastRestedCheckpoint;
-	
-	
-	
-	public bool IsDead => _isDying;
 
+	public bool IsDead => _isDying;
 
 	public override void _Ready()
 	{
@@ -150,7 +151,8 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 			dodgeCooldown,
 			dodgeStaminaCost,
 			dodgeIFrameStartNormalized,
-			dodgeIFrameDurationNormalized
+			dodgeIFrameDurationNormalized,
+			dodgeSFX    // Pass dodge SFX to DodgeSystem
 		);
 
 		recoilSystem = new RecoilSystem(hitRecoilDistance, hitRecoilTime, playerRecoilDistance, recoilTime);
@@ -193,6 +195,10 @@ public partial class Player : CharacterBody2D, IDamageable, IStunnable
 		// NEW: wire up potion SFX
 		if (HealthStimSFX != null && HealthStimFile != null)
 			HealthStimSFX.Stream = HealthStimFile;
+
+		// Wire up dodge SFX
+		if (dodgeSFX != null && dodgeSFXFile != null)
+			dodgeSFX.Stream = dodgeSFXFile;
 
 		if (uiReference != null)
 			uiReference.UpdatePotionDisplay(potionSystem.CurrentPotions);
