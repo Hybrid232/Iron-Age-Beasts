@@ -38,6 +38,7 @@ public partial class RangeEnemy : BaseEnemy
 	private Area2D          _detectionArea;
 	private Node2D          _rayCastOrigin;
 	private List<RayCast2D> _rays = new();
+	private Sprite2D _sprite;
 
 	// ── Tracking ─────────────────────────────────────────────────
 	private bool _playerInArea = false;  // broad-phase flag
@@ -47,9 +48,9 @@ public partial class RangeEnemy : BaseEnemy
 		base._Ready();
 		PickNewPatrolTarget();
 		GD.Print("[RangeEnemy] _Ready called!");
-
 		_detectionArea = GetNode<Area2D>("detection_area");
 		_rayCastOrigin = GetNode<Node2D>("RayCastOrigin");
+		_sprite = GetNode<Sprite2D>("RangeEnemy");
 
 		GD.Print($"[RangeEnemy] Nodes found: detectionArea={_detectionArea != null}, rayCastOrigin={_rayCastOrigin != null}");
 
@@ -63,6 +64,11 @@ public partial class RangeEnemy : BaseEnemy
 
 		_detectionArea.BodyEntered += OnDetectionBodyEntered;
 		_detectionArea.BodyExited  += OnDetectionBodyExited;
+	}
+	
+	private void UpdateFacingDirection(Vector2 targetPosition)
+	{
+		_sprite.FlipH = targetPosition.X > GlobalPosition.X;
 	}
 
 	// ── Main Loop ────────────────────────────────────────────────
@@ -154,6 +160,7 @@ public partial class RangeEnemy : BaseEnemy
 
 		// Face walking direction
 		_rayCastOrigin.Rotation = dir.Angle();
+		UpdateFacingDirection(_patrolTarget); 
 	}
 
 	private void PickNewPatrolTarget()
@@ -193,7 +200,8 @@ public partial class RangeEnemy : BaseEnemy
 		}
 
 		Velocity = Vector2.Zero;
-
+		UpdateFacingDirection(_player.GlobalPosition);
+		
 		if (CanAttack())
 			Attack(_player);
 	}

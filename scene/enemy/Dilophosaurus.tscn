@@ -12,7 +12,7 @@ radius = 2.1000001
 radius = 2.3391473
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_itp1y"]
-radius = 146.02174
+radius = 226.99422
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5tfgd"]
 size = Vector2(16, 8)
@@ -53,7 +53,6 @@ shape = SubResource("CircleShape2D_5tfgd")
 debug_color = Color(0.68824255, 0.28912774, 0.39706942, 0.41960785)
 
 [node name="detection_area" type="Area2D" parent="."]
-visible = false
 collision_layer = 2
 collision_mask = 3
 
