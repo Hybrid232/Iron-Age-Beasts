@@ -39,11 +39,11 @@ scale = Vector2(9.999999, 9.999999)
 shape = SubResource("CircleShape2D_dgp13")
 
 [node name="HealthBar" type="TextureProgressBar" parent="."]
-offset_left = -18.0
-offset_top = -28.999998
-offset_right = 1134.0
-offset_bottom = 619.0
-scale = Vector2(0.031391274, 0.007810322)
+offset_left = -19.0
+offset_top = -23.0
+offset_right = 1133.0
+offset_bottom = 625.0
+scale = Vector2(0.032383703, 0.0022456504)
 value = 100.0
 rounded = true
 texture_under = ExtResource("2_44mn6")
