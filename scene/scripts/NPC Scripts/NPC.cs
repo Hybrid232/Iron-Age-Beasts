@@ -15,6 +15,9 @@ public partial class NPC : Node2D
 	[Export] private Button _speakButton;
 	[Export] private Button _purchaseButton;
 	[Export] private Button _exitButton;
+	[ExportGroup("Dialogue Settings")]
+	[Export] private float _textSpeed = 0.03f;
+	private Tween _dialogueTween;
 
 	// Shop UI
 	[ExportGroup("Shop UI")]
@@ -350,7 +353,25 @@ public partial class NPC : Node2D
 		}
 
 		int i = _rng.RandiRange(0, _randomDialogues.Length - 1);
-		if (_dialogueLabel != null) _dialogueLabel.Text = _randomDialogues[i].Trim();
+		string chosenText = _randomDialogues[i].Trim();
+		
+		if (_dialogueLabel != null)
+		{
+			_dialogueLabel.Text = chosenText;
+			
+			// 1. Hide the text initially
+			_dialogueLabel.VisibleRatio = 0f;
+
+			// 2. Kill any currently running text animation
+			_dialogueTween?.Kill();
+			
+			// 3. Calculate how long the animation should take based on string length
+			float duration = chosenText.Length * _textSpeed;
+			
+			// 4. Animate the ratio from 0.0 to 1.0
+			_dialogueTween = CreateTween();
+			_dialogueTween.TweenProperty(_dialogueLabel, "visible_ratio", 1f, duration);
+		}
 	}
 
 	// ===== Shop panel buttons =====
