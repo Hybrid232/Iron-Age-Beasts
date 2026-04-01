@@ -453,7 +453,7 @@ theme_override_colors/font_outline_color = Color(0.99116415, 0.99116427, 0.99116
 theme_override_constants/outline_size = 15
 theme_override_fonts/font = ExtResource("2_6v1nw")
 theme_override_font_sizes/font_size = 40
-text = "Micha DeGraw"
+text = "Micah DeGraw"
 horizontal_alignment = 1
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
@@ -462,6 +462,7 @@ libraries = {
 }
 
 [node name="ColorRect" type="ColorRect" parent="."]
+visible = false
 layout_mode = 0
 offset_right = 1157.0
 offset_bottom = 653.0
