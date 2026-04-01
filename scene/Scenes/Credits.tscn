@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://b3mf52e6cgple"]
+[gd_scene load_steps=9 format=3 uid="uid://b3mf52e6cgple"]
 
 [ext_resource type="FontFile" uid="uid://cjhha6sdhxp87" path="res://scene/Fonts/FuturisticFont/Wallpoet-Regular.ttf" id="1_4n60e"]
+[ext_resource type="Script" uid="uid://cnvpk06lpdqj4" path="res://scene/Scenes/MainMenu/Credits.cs" id="1_6v1nw"]
 [ext_resource type="FontFile" uid="uid://b6gecg6ywmtyj" path="res://scene/Fonts/PrimalFont/Bahiana-Regular.ttf" id="2_6v1nw"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4j5ds"]
@@ -9,13 +10,234 @@ bg_color = Color(0, 0, 0, 1)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4n60e"]
 bg_color = Color(0, 0.7019608, 0.5529412, 0.34901962)
 
+[sub_resource type="Animation" id="Animation_4j5ds"]
+resource_name = "Credits"
+length = 16.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Panel:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.06666667, 1.5666667),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Panel/Thanks:self_modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(1.8, 2.6333334),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Panel/IronAge:self_modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(2.6333334, 3.3666666),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Panel/IronAge/Beasts:self_modulate")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(3.0666666, 3.4666667),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Panel/ProgramPanel:position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(3.6, 3.9666667, 4.1),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(14, 669.38), Vector2(14, 426.735), Vector2(14, 466.455)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Panel/ArtPanel:position")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(4.133333, 4.4333334, 4.5666666),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(467, 675.48), Vector2(467, 452.565), Vector2(467, 466.455)]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("Panel/MusicSFXPanel:position")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(4.8, 5.0333333, 5.2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(802, 677.635), Vector2(802, 394.28), Vector2(802, 466.455)]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("ColorRect:color")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(7.1666665, 14.633333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(0, 0, 0, 0), Color(0, 0, 0, 1)]
+}
+tracks/8/type = "method"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath(".")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(15.9),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"BackToMenu"
+}]
+}
+
+[sub_resource type="Animation" id="Animation_f24rh"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Panel:self_modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Panel/Thanks:self_modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Panel/IronAge:self_modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Panel/IronAge/Beasts:self_modulate")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Panel/ProgramPanel:position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(14, 472)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Panel/ArtPanel:position")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(467, 472)]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("Panel/MusicSFXPanel:position")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(802, 472)]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("ColorRect:color")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(0, 0, 0, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_wixr0"]
+_data = {
+&"Credits": SubResource("Animation_4j5ds"),
+&"RESET": SubResource("Animation_f24rh")
+}
+
 [node name="Credits" type="Control"]
+self_modulate = Color(1, 1, 1, 0)
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_6v1nw")
 
 [node name="Panel" type="Panel" parent="."]
 layout_mode = 1
@@ -41,7 +263,7 @@ theme_override_font_sizes/font_size = 50
 text = "Thanks for Playing"
 horizontal_alignment = 1
 
-[node name="IronAge" type="Label" parent="."]
+[node name="IronAge" type="Label" parent="Panel"]
 layout_mode = 0
 offset_left = 347.0
 offset_top = 75.0
@@ -55,7 +277,7 @@ theme_override_font_sizes/font_size = 90
 text = "Iron Age"
 vertical_alignment = 1
 
-[node name="Beasts" type="Label" parent="IronAge"]
+[node name="Beasts" type="Label" parent="Panel/IronAge"]
 layout_mode = 0
 offset_left = 174.0
 offset_top = 106.0
@@ -71,15 +293,15 @@ theme_override_fonts/font = ExtResource("2_6v1nw")
 theme_override_font_sizes/font_size = 150
 text = "Beasts"
 
-[node name="ProgramPanel" type="Panel" parent="."]
+[node name="ProgramPanel" type="Panel" parent="Panel"]
 layout_mode = 0
 offset_left = 14.0
 offset_top = 472.0
 offset_right = 391.0
-offset_bottom = 629.0
+offset_bottom = 628.9984
 theme_override_styles/panel = SubResource("StyleBoxFlat_4n60e")
 
-[node name="Programmers" type="Label" parent="ProgramPanel"]
+[node name="Programmers" type="Label" parent="Panel/ProgramPanel"]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -93,7 +315,7 @@ theme_override_font_sizes/font_size = 30
 text = "Program Engineers"
 horizontal_alignment = 1
 
-[node name="Emmitt" type="Label" parent="ProgramPanel"]
+[node name="Emmitt" type="Label" parent="Panel/ProgramPanel"]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -111,7 +333,7 @@ theme_override_font_sizes/font_size = 35
 text = "Emmitt Stevenson"
 horizontal_alignment = 1
 
-[node name="Jared" type="Label" parent="ProgramPanel"]
+[node name="Jared" type="Label" parent="Panel/ProgramPanel"]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -129,7 +351,7 @@ theme_override_font_sizes/font_size = 35
 text = "Jared garcia"
 horizontal_alignment = 1
 
-[node name="Neil" type="Label" parent="ProgramPanel"]
+[node name="Neil" type="Label" parent="Panel/ProgramPanel"]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -147,15 +369,15 @@ theme_override_font_sizes/font_size = 35
 text = "Neil Pack"
 horizontal_alignment = 1
 
-[node name="ArtPanel" type="Panel" parent="."]
+[node name="ArtPanel" type="Panel" parent="Panel"]
 layout_mode = 0
 offset_left = 467.0
 offset_top = 472.0
 offset_right = 756.0
-offset_bottom = 629.0
+offset_bottom = 629.0011
 theme_override_styles/panel = SubResource("StyleBoxFlat_4n60e")
 
-[node name="LeadArtist" type="Label" parent="ArtPanel"]
+[node name="LeadArtist" type="Label" parent="Panel/ArtPanel"]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -169,7 +391,7 @@ theme_override_font_sizes/font_size = 30
 text = "Lead Artist"
 horizontal_alignment = 1
 
-[node name="Lily" type="Label" parent="ArtPanel"]
+[node name="Lily" type="Label" parent="Panel/ArtPanel"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -190,15 +412,15 @@ theme_override_font_sizes/font_size = 35
 text = "Lily Benson-Andrus"
 horizontal_alignment = 1
 
-[node name="MusicSFXPanel" type="Panel" parent="."]
+[node name="MusicSFXPanel" type="Panel" parent="Panel"]
 layout_mode = 0
 offset_left = 802.0
 offset_top = 472.0
 offset_right = 1091.0
-offset_bottom = 629.0
+offset_bottom = 629.001
 theme_override_styles/panel = SubResource("StyleBoxFlat_4n60e")
 
-[node name="MscSFX" type="Label" parent="MusicSFXPanel"]
+[node name="MscSFX" type="Label" parent="Panel/MusicSFXPanel"]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -213,7 +435,7 @@ text = "Original Music
 & Custom SFX"
 horizontal_alignment = 1
 
-[node name="Micha" type="Label" parent="MusicSFXPanel"]
+[node name="Micha" type="Label" parent="Panel/MusicSFXPanel"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -233,3 +455,14 @@ theme_override_fonts/font = ExtResource("2_6v1nw")
 theme_override_font_sizes/font_size = 40
 text = "Micha DeGraw"
 horizontal_alignment = 1
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_wixr0")
+}
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 0
+offset_right = 1157.0
+offset_bottom = 653.0
+color = Color(0, 0, 0, 1)

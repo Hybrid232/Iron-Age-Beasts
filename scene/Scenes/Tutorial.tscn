@@ -260,7 +260,8 @@ mouse_filter = 2
 [node name="Player" parent="." unique_id=1137015308 node_paths=PackedStringArray("uiReference", "_deathScreenUI") groups=["enemy_hurtbox"] instance=ExtResource("1_00eeo")]
 light_mask = 2
 visibility_layer = 2
-position = Vector2(107, -1022)
+position = Vector2(114, -1044)
+uiReference = NodePath("../HUD")
 HealthStimFile = null
 dodgeIFrameStartNormalized = 0.45
 dodgeIFrameDurationNormalized = 0.85

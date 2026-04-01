@@ -40,8 +40,8 @@ public partial class MainMenu : Control
 	{
 		
 		_fadeAnim.Play("Fade_In");
-		//await ToSignal(_fadeAnim, "animation_finished");
-		GetTree().ChangeSceneToFile("res://scene/Scenes/Tutorial.tscn");
+		await ToSignal(_fadeAnim, "animation_finished");
+		GetTree().ChangeSceneToFile("res://scene/Scenes/Instructions.tscn");
 	}
 
 	private void OnSettingsPressed()
