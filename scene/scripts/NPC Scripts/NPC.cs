@@ -19,6 +19,15 @@ public partial class NPC : Node2D
 	[Export] private float _textSpeed = 0.03f;
 	private Tween _dialogueTween;
 
+	// Add Speak UI variables
+	[ExportGroup("Speak UI")]
+	[Export] private Control _speakPanel;
+	[Export] private Label _speakDialogueLabel;
+	[Export] private Button _bossButton;
+	[Export] private Button _whoButton;
+	[Export] private Button _checkpointsButton;
+	[Export] private Button _speakBackButton;
+
 	// Shop UI
 	[ExportGroup("Shop UI")]
 	[Export] private Label _shopDialogue;
@@ -83,7 +92,7 @@ public partial class NPC : Node2D
 
 	[ExportGroup("Dialogue Text")]
 	[Export(PropertyHint.MultilineText)]
-	private string[] _randomDialogues =
+	public string[] _randomDialogues =
 	{
 		"Heyo! It's your favorite dino pal, Boogins!",
 		"You look like you could use some help. Good thing I am here!",
@@ -96,7 +105,7 @@ public partial class NPC : Node2D
 	private readonly RandomNumberGenerator _rng = new();
 	private Player _activePlayer;
 
-	private enum MenuState { Dialogue, Shop }
+	private enum MenuState { Dialogue, Shop, Speak }
 	private MenuState _state = MenuState.Dialogue;
 
 	public override void _Ready()
@@ -110,6 +119,7 @@ public partial class NPC : Node2D
 		if (_menu != null) _menu.Visible = false;
 		if (_dialoguePanel != null) _dialoguePanel.Visible = false;
 		if (_shopPanel != null) _shopPanel.Visible = false;
+		if (_speakPanel != null) _speakPanel.Visible = false;
 		if (_interactPrompt != null) _interactPrompt.Visible = false;
 		if (_portraitLayer != null) _portraitLayer.Visible = false;
 
@@ -188,6 +198,7 @@ public partial class NPC : Node2D
 		_state = newState;
 		if (_dialoguePanel != null) _dialoguePanel.Visible = _state == MenuState.Dialogue;
 		if (_shopPanel != null) _shopPanel.Visible = _state == MenuState.Shop;
+		if (_speakPanel != null) _speakPanel.Visible = _state == MenuState.Speak;
 	}
 
 	private void ShowPortraits(bool show)
@@ -318,22 +329,9 @@ public partial class NPC : Node2D
 
 	// ===== Dialogue panel buttons =====
 
-	private void OnSpeakPressed()
-	{
-		// if (_randomDialogues == null || _randomDialogues.Length == 0)
-		// {
-		// 	if (_dialogueLabel != null) _dialogueLabel.Text = "...";
-		// 	return;
-		// }
-
-		// int i = _rng.RandiRange(0, _randomDialogues.Length - 1);
-		// if (_dialogueLabel != null) _dialogueLabel.Text = _randomDialogues[i];
-		// ShowPortraits(true);
-	}
-
 	private void OnPurchasePressed()
 	{
-		if (_shopDialogue != null) _shopDialogue.Text = "Whatchu want, lil bro?";
+		if (_shopDialogue != null) TypeText(_shopDialogue, "I got everything you need, for a price.");
 		SetMenuState(MenuState.Shop);
 		ShowPortraits(true);
 		_buyPotionButton?.GrabFocus();
@@ -344,34 +342,54 @@ public partial class NPC : Node2D
 		CloseMenu();
 	}
 
+	private void TypeText(Label label, string textToType)
+	{
+		if (label == null) return;
+
+		label.Text = textToType;
+		label.VisibleCharacters = 0;
+
+		_dialogueTween?.Kill();
+		_dialogueTween = CreateTween();
+
+		int lastStop = 0;
+
+		for (int i = 0; i < textToType.Length; i++)
+		{
+			if (textToType[i] == ',')
+			{
+				int charsToReveal = i + 1;
+				float duration = (charsToReveal - lastStop) * _textSpeed;
+				
+				_dialogueTween.TweenProperty(label, "visible_characters", charsToReveal, duration);
+				_dialogueTween.TweenInterval(0.5f); 
+				
+				lastStop = charsToReveal;
+			}
+		}
+
+		if (lastStop < textToType.Length)
+		{
+			float duration = (textToType.Length - lastStop) * _textSpeed;
+			_dialogueTween.TweenProperty(label, "visible_characters", textToType.Length, duration);
+		}
+	}
+
+	public string[] _dOptions =
+	{
+		"Heyo! It's your favorite dino pal, Boogins!",
+		"You look like you could use some help. Good thing I am here!",
+		"Does my helmet make me look fat?",
+		"You know how hard it is to be a vegan T-Rex? I can barely reach the leaves!",
+		"I'm not like other dinosaurs, I wear clothes."
+	};
+
 	private void ShowRandomDialogue()
 	{
-		if (_randomDialogues == null || _randomDialogues.Length == 0)
-		{
-			if (_dialogueLabel != null) _dialogueLabel.Text = "...";
-			return;
-		}
-
-		int i = _rng.RandiRange(0, _randomDialogues.Length - 1);
-		string chosenText = _randomDialogues[i].Trim();
+		int index = _rng.RandiRange(0, _dOptions.Length - 1);
+		string chosenText = _dOptions[index].Trim();
 		
-		if (_dialogueLabel != null)
-		{
-			_dialogueLabel.Text = chosenText;
-			
-			// 1. Hide the text initially
-			_dialogueLabel.VisibleRatio = 0f;
-
-			// 2. Kill any currently running text animation
-			_dialogueTween?.Kill();
-			
-			// 3. Calculate how long the animation should take based on string length
-			float duration = chosenText.Length * _textSpeed;
-			
-			// 4. Animate the ratio from 0.0 to 1.0
-			_dialogueTween = CreateTween();
-			_dialogueTween.TweenProperty(_dialogueLabel, "visible_ratio", 1f, duration);
-		}
+		TypeText(_dialogueLabel, chosenText);
 	}
 
 	// ===== Shop panel buttons =====
@@ -439,5 +457,35 @@ public partial class NPC : Node2D
 
 		_activePlayer.UpgradeStaminaFromShop();
 		if (_shopDialogue != null) _shopDialogue.Text = $"Stamina upgraded! (-{cost} XP)";
+	}
+	// ===== Speak Panel Buttons =====
+
+	private void OnSpeakPressed()
+	{
+		SetMenuState(MenuState.Speak);
+		TypeText(_speakDialogueLabel, "What do you want to know?");
+		_bossButton?.GrabFocus();
+	}
+
+	private void OnSpeakBackPressed()
+	{
+		SetMenuState(MenuState.Dialogue);
+		_speakButton?.GrabFocus();
+		ShowRandomDialogue(); // Give a fresh random line when going back
+	}
+
+	private void OnSpeakBossPressed()
+	{
+		TypeText(_speakDialogueLabel, "Careful out there! I've heard rumors of a big scary boss lurking around. I hope you come prepared!");
+	}
+
+	private void OnSpeakWhoAreYouPressed()
+	{
+		TypeText(_speakDialogueLabel, "I am Boogins, your friendly neighborhood dino-merchant! I wasn't a big fan of the dinosaur life, you know all of the pillaging and violence. So now I sell stuff!");
+	}
+
+	private void OnSpeakCheckpointsPressed()
+	{
+		TypeText(_speakDialogueLabel, "Those blue time crystals sure are everywhere! I bet you could save your progress at each one you find.");
 	}
 }

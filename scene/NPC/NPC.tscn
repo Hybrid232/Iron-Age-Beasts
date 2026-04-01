@@ -164,13 +164,19 @@ bg_color = Color(0, 0, 0, 0.75686276)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_aij3i"]
 bg_color = Color(0.078431375, 0.078431375, 0.078431375, 0.40392157)
 
-[node name="Boogins" type="Node2D" node_paths=PackedStringArray("_menu", "_dialoguePanel", "_shopPanel", "_dialogueLabel", "_speakButton", "_shopDialogue", "_buyPotionButton", "_upgradeDamageButton", "_upgradeHealthButton", "_upgradeStaminaButton", "_shopBackButton", "_interactPrompt", "_portraitLayer", "_booginsPortrait", "_playerPortrait", "booginsThemeSFX")]
+[node name="Boogins" type="Node2D" node_paths=PackedStringArray("_menu", "_dialoguePanel", "_shopPanel", "_dialogueLabel", "_speakButton", "_speakPanel", "_speakDialogueLabel", "_bossButton", "_whoButton", "_checkpointsButton", "_speakBackButton", "_shopDialogue", "_buyPotionButton", "_upgradeDamageButton", "_upgradeHealthButton", "_upgradeStaminaButton", "_shopBackButton", "_interactPrompt", "_portraitLayer", "_booginsPortrait", "_playerPortrait", "booginsThemeSFX")]
 script = ExtResource("1_hqct7")
 _menu = NodePath("CanvasLayer/BooginsShopUI")
 _dialoguePanel = NodePath("CanvasLayer/BooginsShopUI/Panel")
 _shopPanel = NodePath("CanvasLayer/BooginsShopUI/ShopPanel")
 _dialogueLabel = NodePath("CanvasLayer/BooginsShopUI/Panel/DialogueLabel")
 _speakButton = NodePath("CanvasLayer/BooginsShopUI/Panel/SpeakButton")
+_speakPanel = NodePath("CanvasLayer/BooginsShopUI/SpeakPanel")
+_speakDialogueLabel = NodePath("CanvasLayer/BooginsShopUI/SpeakPanel/Panel/DialogueLabel")
+_bossButton = NodePath("CanvasLayer/BooginsShopUI/SpeakPanel/BossButton")
+_whoButton = NodePath("CanvasLayer/BooginsShopUI/SpeakPanel/WhoButton")
+_checkpointsButton = NodePath("CanvasLayer/BooginsShopUI/SpeakPanel/CheckpointsButton")
+_speakBackButton = NodePath("CanvasLayer/BooginsShopUI/SpeakPanel/BackButton")
 _shopDialogue = NodePath("CanvasLayer/BooginsShopUI/ShopPanel/Panel/DialogueLabel")
 _buyPotionButton = NodePath("CanvasLayer/BooginsShopUI/ShopPanel/PotionButton")
 _upgradeDamageButton = NodePath("CanvasLayer/BooginsShopUI/ShopPanel/DamageButton")
@@ -432,6 +438,108 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_ct220")
 theme_override_styles/hover = SubResource("StyleBoxFlat_aij3i")
 text = "Back"
 
+[node name="SpeakPanel" type="Panel" parent="CanvasLayer/BooginsShopUI"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.8
+anchor_top = -4.6556535
+anchor_right = -0.8
+anchor_bottom = -4.6556535
+offset_left = 61.0
+offset_top = 461.2261
+offset_right = 1145.0
+offset_bottom = 819.22614
+theme_override_styles/panel = SubResource("StyleBoxFlat_ts6i4")
+metadata/_edit_use_anchors_ = true
+
+[node name="Panel" type="Panel" parent="CanvasLayer/BooginsShopUI/SpeakPanel"]
+layout_mode = 0
+offset_left = 595.0
+offset_top = 52.0
+offset_right = 1046.0
+offset_bottom = 320.0
+
+[node name="DialogueLabel" type="Label" parent="CanvasLayer/BooginsShopUI/SpeakPanel/Panel"]
+z_index = 9
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -212.5
+offset_top = 8.0
+offset_right = 223.5
+offset_bottom = 258.0
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("6_4qg82")
+theme_override_font_sizes/font_size = 30
+autowrap_mode = 2
+
+[node name="WhoButton" type="Button" parent="CanvasLayer/BooginsShopUI/SpeakPanel"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 36.0
+offset_top = -311.0
+offset_right = 239.0
+offset_bottom = -235.0
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("7_1e8w8")
+theme_override_styles/normal = SubResource("StyleBoxFlat_rkm81")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_4qg82")
+theme_override_styles/hover = SubResource("StyleBoxFlat_1e8w8")
+text = "Who are you?
+"
+
+[node name="CheckpointsButton" type="Button" parent="CanvasLayer/BooginsShopUI/SpeakPanel"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = -151.0
+offset_right = 239.0
+offset_bottom = -75.0
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("7_1e8w8")
+theme_override_styles/normal = SubResource("StyleBoxFlat_083nj")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_teo0y")
+theme_override_styles/hover = SubResource("StyleBoxFlat_5rqdx")
+text = "Checkpoints?"
+
+[node name="BossButton" type="Button" parent="CanvasLayer/BooginsShopUI/SpeakPanel"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 38.0
+offset_top = -232.0
+offset_right = 238.0
+offset_bottom = -156.0
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("7_1e8w8")
+theme_override_styles/normal = SubResource("StyleBoxFlat_4hqy0")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_gucvi")
+theme_override_styles/hover = SubResource("StyleBoxFlat_uuait")
+text = "Boss?"
+
+[node name="BackButton" type="Button" parent="CanvasLayer/BooginsShopUI/SpeakPanel"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 34.0
+offset_top = -70.0
+offset_right = 210.0
+offset_bottom = -39.0
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("6_4qg82")
+theme_override_font_sizes/font_size = 23
+theme_override_styles/normal = SubResource("StyleBoxFlat_hi6dq")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_ct220")
+theme_override_styles/hover = SubResource("StyleBoxFlat_aij3i")
+text = "Back"
+
 [node name="CharacterSprites" type="Control" parent="CanvasLayer"]
 layout_mode = 3
 anchors_preset = 0
@@ -468,3 +576,7 @@ offset_bottom = 584.0
 [connection signal="pressed" from="CanvasLayer/BooginsShopUI/ShopPanel/StaminaButton" to="." method="OnUpgradeStaminaPressed"]
 [connection signal="pressed" from="CanvasLayer/BooginsShopUI/ShopPanel/DamageButton" to="." method="OnUpgradeDamagePressed"]
 [connection signal="pressed" from="CanvasLayer/BooginsShopUI/ShopPanel/BackButton" to="." method="OnShopBackPressed"]
+[connection signal="pressed" from="CanvasLayer/BooginsShopUI/SpeakPanel/WhoButton" to="." method="OnSpeakWhoAreYouPressed"]
+[connection signal="pressed" from="CanvasLayer/BooginsShopUI/SpeakPanel/CheckpointsButton" to="." method="OnSpeakCheckpointsPressed"]
+[connection signal="pressed" from="CanvasLayer/BooginsShopUI/SpeakPanel/BossButton" to="." method="OnSpeakBossPressed"]
+[connection signal="pressed" from="CanvasLayer/BooginsShopUI/SpeakPanel/BackButton" to="." method="OnSpeakBackPressed"]
