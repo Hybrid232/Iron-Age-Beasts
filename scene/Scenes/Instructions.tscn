@@ -1,0 +1,158 @@
+[gd_scene load_steps=10 format=3 uid="uid://csnsmifai0cng"]
+
+[ext_resource type="Texture2D" uid="uid://bpamd5yylvyk3" path="res://sprites/game-controller-buttons.png" id="1_o1sw1"]
+[ext_resource type="Script" uid="uid://bec3kmp8a8s7i" path="res://scene/Scenes/Instructions.cs" id="1_tae64"]
+[ext_resource type="FontFile" uid="uid://cjhha6sdhxp87" path="res://scene/Fonts/FuturisticFont/Wallpoet-Regular.ttf" id="2_tae64"]
+[ext_resource type="FontFile" uid="uid://b6gecg6ywmtyj" path="res://scene/Fonts/PrimalFont/Bahiana-Regular.ttf" id="3_0enwi"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yijfr"]
+bg_color = Color(1, 1, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_aj273"]
+bg_color = Color(0.13725491, 0.13725491, 0.13725491, 0.87058824)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bt7v3"]
+bg_color = Color(2.4065375e-07, 0.48621857, 0.3727468, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ku3ku"]
+bg_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qh71l"]
+bg_color = Color(0.07450981, 0.07450981, 0.07450981, 0.9019608)
+
+[node name="Instructions" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_tae64")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_yijfr")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(243, 285)
+scale = Vector2(2.0845811, 2.0845811)
+texture = ExtResource("1_o1sw1")
+
+[node name="Attack" type="Label" parent="."]
+layout_mode = 0
+offset_left = 323.0
+offset_top = 98.0
+offset_right = 427.0
+offset_bottom = 124.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_tae64")
+theme_override_font_sizes/font_size = 25
+text = "Attack"
+
+[node name="Shoot" type="Label" parent="."]
+layout_mode = 0
+offset_left = 366.0
+offset_top = 154.0
+offset_right = 470.0
+offset_bottom = 180.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_tae64")
+theme_override_font_sizes/font_size = 25
+text = "Shoot"
+
+[node name="Interact" type="Label" parent="."]
+layout_mode = 0
+offset_left = 461.0
+offset_top = 195.0
+offset_right = 586.0
+offset_bottom = 221.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_tae64")
+theme_override_font_sizes/font_size = 25
+text = "Interact"
+
+[node name="Dodge" type="Label" parent="."]
+layout_mode = 0
+offset_left = 473.0
+offset_top = 225.0
+offset_right = 598.0
+offset_bottom = 251.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_tae64")
+theme_override_font_sizes/font_size = 25
+text = "Dodge"
+
+[node name="Heal" type="Label" parent="."]
+layout_mode = 0
+offset_left = 298.0
+offset_top = 444.0
+offset_right = 423.0
+offset_bottom = 470.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_tae64")
+theme_override_font_sizes/font_size = 25
+text = "Heal"
+
+[node name="Move" type="Label" parent="."]
+layout_mode = 0
+offset_left = 167.0
+offset_top = 435.0
+offset_right = 292.0
+offset_bottom = 461.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_tae64")
+theme_override_font_sizes/font_size = 25
+text = "Move"
+
+[node name="TipsPanel" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 696.0
+offset_right = 1151.0
+offset_bottom = 646.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_aj273")
+
+[node name="Tips" type="Label" parent="TipsPanel"]
+layout_mode = 0
+offset_right = 457.0
+offset_bottom = 81.0
+theme_override_fonts/font = ExtResource("3_0enwi")
+theme_override_font_sizes/font_size = 70
+text = "Tips"
+horizontal_alignment = 1
+
+[node name="List" type="Label" parent="TipsPanel"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 105.0
+offset_right = 445.0
+offset_bottom = 633.0
+theme_override_fonts/font = ExtResource("3_0enwi")
+theme_override_font_sizes/font_size = 40
+text = "- Watch your stamina, when you get low,
+you are unable to attack and dodge.
+
+- Don't forget to rest at checkpoints
+
+- To attack and shoot, you must be
+moving in a direction to do so.
+
+- Dodge at the perfect time to nullify 
+attacks. "
+
+[node name="ContinueButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 82.0
+offset_top = 570.0
+offset_right = 417.05884
+offset_bottom = 634.0
+theme_override_fonts/font = ExtResource("2_tae64")
+theme_override_font_sizes/font_size = 50
+theme_override_styles/normal = SubResource("StyleBoxFlat_bt7v3")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_ku3ku")
+theme_override_styles/hover = SubResource("StyleBoxFlat_qh71l")
+text = "Continue"

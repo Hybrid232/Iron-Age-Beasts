@@ -266,6 +266,11 @@ public partial class TutorialBoss : BaseEnemy
 	private bool _roarPulseFiredThisRoar = false;
 	private bool _chargeStompPlaying = false;
 
+	private AnimationPlayer _fadeAnim;
+
+	// Used to ensure we only trigger the credits transition once
+	private bool _creditsTriggered = false;
+
 	public override void _EnterTree()
 	{
 		base._EnterTree();
@@ -1485,15 +1490,14 @@ public partial class TutorialBoss : BaseEnemy
 
 	private void OnSpriteAnimationFinished()
 	{
-		// Death finished: keep corpse on frame 7 and do NOT despawn
+		// Death animation finished — freeze the corpse and go to credits
 		if (state == BossState.Dead && _deathAnimStarted && Sprite != null && Sprite.Animation == DeathAnimName)
 		{
 			_deathAnimStarted = false;
-
 			Sprite.Stop();
-
-			// Force the corpse pose you want
 			Sprite.Frame = Mathf.Max(0, DeathFinalFrameIndex);
+
+			GoToCredits();
 			return;
 		}
 
@@ -1559,24 +1563,25 @@ public partial class TutorialBoss : BaseEnemy
 
 	protected override void Die()
 	{
-		// Fade out boss music when the boss dies
+		// Guard: only trigger death once
+		if (_creditsTriggered) return;
+		if (state == BossState.Dead && _deathAnimStarted) return;
+
+		// Fade out boss music
 		FadeOutBossMusicAndStop();
 
-		// If we already started death animation, don't restart it.
-		if (state == BossState.Dead && _deathAnimStarted)
-			return;
-
-		// Mark dead + stop behavior
+		// Mark dead + stop all behavior
 		state = BossState.Dead;
 		fightStarted = false;
 		Velocity = Vector2.Zero;
 
-		// Turn off all damage sources/telegraphs/UI immediately
+		// Hide UI and telegraphs
 		if (_bossUIItem != null)
 			_bossUIItem.Visible = false;
 
 		HideAllTelegraphs();
 
+		// Disable all hitboxes
 		SetHitboxEnabled(BiteHitbox, false);
 		SetHitboxEnabled(TailHitbox, false);
 		SetHitboxEnabled(ChargeHitbox, false);
@@ -1586,27 +1591,42 @@ public partial class TutorialBoss : BaseEnemy
 
 		UnhookPlayerDeathEvents(_player);
 
-		// IMPORTANT: do NOT call base.Die() (it likely QueueFree()s / hides the boss)
+		GrantXpToPlayer();
+
+		// IMPORTANT: do NOT call base.Die() — it likely QueueFree()s the boss
 		if (Sprite == null)
-			return;
-
-		if (Sprite.SpriteFrames != null && Sprite.SpriteFrames.HasAnimation(DeathAnimName))
 		{
-			_deathAnimStarted = true;
-			_currentAnim = DeathAnimName;
-
-			// Ensure non-looping so AnimationFinished fires
-			Sprite.SpriteFrames.SetAnimationLoop(DeathAnimName, false);
-
-			Sprite.Visible = true;
-			Sprite.Play(DeathAnimName);
-			GrantXpToPlayer();
+			// No sprite at all — go straight to credits
+			GoToCredits();
 			return;
 		}
 
-		// Fallback: no Death animation, just freeze on frame 7 anyway if possible
+		if (Sprite.SpriteFrames != null && Sprite.SpriteFrames.HasAnimation(DeathAnimName))
+		{
+			// Play the death animation; GoToCredits() is called from OnSpriteAnimationFinished
+			_deathAnimStarted = true;
+			_currentAnim = DeathAnimName;
+			Sprite.SpriteFrames.SetAnimationLoop(DeathAnimName, false);
+			Sprite.Visible = true;
+			Sprite.Play(DeathAnimName);
+			return;
+		}
+
+		// No death animation — freeze on final frame and go straight to credits
 		Sprite.Stop();
 		Sprite.Frame = Mathf.Max(0, DeathFinalFrameIndex);
+		GoToCredits();
+	}
+
+	// Single place that changes the scene, guarded by _creditsTriggered so it
+	// can never fire twice no matter which code path reaches it.
+	private void GoToCredits()
+	{
+		if (_creditsTriggered) return;
+		_creditsTriggered = true;
+		
+		GD.Print("[Boss] Going to Credits scene.");
+		GetTree().ChangeSceneToFile("res://scene/Scenes/Credits.tscn");
 	}
 
 	public override void ResetEnemy()
@@ -1627,6 +1647,7 @@ public partial class TutorialBoss : BaseEnemy
 		Speed = baseSpeed;
 
 		_deathAnimStarted = false;
+		_creditsTriggered = false;
 
 		biteCd = 0f;
 		tailCd = 0f;
