@@ -166,6 +166,15 @@ bg_color = Color(0.078431375, 0.078431375, 0.078431375, 0.40392157)
 
 [node name="Boogins" type="Node2D" node_paths=PackedStringArray("_menu", "_dialoguePanel", "_shopPanel", "_dialogueLabel", "_speakButton", "_speakPanel", "_speakDialogueLabel", "_bossButton", "_whoButton", "_checkpointsButton", "_speakBackButton", "_shopDialogue", "_buyPotionButton", "_upgradeDamageButton", "_upgradeHealthButton", "_upgradeStaminaButton", "_shopBackButton", "_interactPrompt", "_portraitLayer", "_booginsPortrait", "_playerPortrait", "booginsThemeSFX")]
 script = ExtResource("1_hqct7")
+_booginsPortraitTexture = ExtResource("1_v5spc")
+_playerPortraitTexture = ExtResource("4_ts6i4")
+booginsThemeFile = ExtResource("2_p5v3q")
+_itemCosts = {
+0: 200,
+1: 1000,
+2: 500,
+3: 500
+}
 _menu = NodePath("CanvasLayer/BooginsShopUI")
 _dialoguePanel = NodePath("CanvasLayer/BooginsShopUI/Panel")
 _shopPanel = NodePath("CanvasLayer/BooginsShopUI/ShopPanel")
@@ -187,16 +196,7 @@ _interactPrompt = NodePath("CanvasLayer/Interact")
 _portraitLayer = NodePath("CanvasLayer/CharacterSprites")
 _booginsPortrait = NodePath("CanvasLayer/CharacterSprites/BooginsChatSprite")
 _playerPortrait = NodePath("CanvasLayer/CharacterSprites/MCChatSprite")
-_booginsPortraitTexture = ExtResource("1_v5spc")
-_playerPortraitTexture = ExtResource("4_ts6i4")
 booginsThemeSFX = NodePath("BooginsTheme")
-booginsThemeFile = ExtResource("2_p5v3q")
-_itemCosts = {
-0: 200,
-1: 1000,
-2: 500,
-3: 500
-}
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(4.8999987, 5.4)
@@ -565,6 +565,8 @@ offset_right = 786.0
 offset_bottom = 584.0
 
 [node name="BooginsTheme" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_p5v3q")
+parameters/looping = true
 
 [connection signal="body_entered" from="Area2D" to="." method="OnAreaBodyEntered"]
 [connection signal="body_exited" from="Area2D" to="." method="OnAreaBodyExited"]
