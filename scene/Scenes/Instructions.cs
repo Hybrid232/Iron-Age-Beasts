@@ -6,6 +6,8 @@ public partial class Instructions : Control
 	public override async void _Ready() 
 	{
 		Button continueButton = GetNode<Button>("ContinueButton");
+		
+		continueButton.GrabFocus();
 		continueButton.Pressed += OnContinuePressed;
 	}
 	

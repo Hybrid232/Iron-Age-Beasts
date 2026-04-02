@@ -5,12 +5,6 @@
 [ext_resource type="FontFile" uid="uid://cjhha6sdhxp87" path="res://scene/Fonts/FuturisticFont/Wallpoet-Regular.ttf" id="2_tae64"]
 [ext_resource type="FontFile" uid="uid://b6gecg6ywmtyj" path="res://scene/Fonts/PrimalFont/Bahiana-Regular.ttf" id="3_0enwi"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yijfr"]
-bg_color = Color(1, 1, 1, 1)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_aj273"]
-bg_color = Color(0.13725491, 0.13725491, 0.13725491, 0.87058824)
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bt7v3"]
 bg_color = Color(2.4065375e-07, 0.48621857, 0.3727468, 1)
 
@@ -20,6 +14,12 @@ bg_color = Color(0, 0, 0, 1)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qh71l"]
 bg_color = Color(0.07450981, 0.07450981, 0.07450981, 0.9019608)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yijfr"]
+bg_color = Color(1, 1, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_aj273"]
+bg_color = Color(0.13725491, 0.13725491, 0.13725491, 0.87058824)
+
 [node name="Instructions" type="Control"]
 layout_mode = 3
 anchors_preset = 15
@@ -28,6 +28,20 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_tae64")
+
+[node name="ContinueButton" type="Button" parent="."]
+z_index = 3
+layout_mode = 0
+offset_left = 82.0
+offset_top = 570.0
+offset_right = 417.05884
+offset_bottom = 634.0
+theme_override_fonts/font = ExtResource("2_tae64")
+theme_override_font_sizes/font_size = 50
+theme_override_styles/normal = SubResource("StyleBoxFlat_bt7v3")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_ku3ku")
+theme_override_styles/hover = SubResource("StyleBoxFlat_qh71l")
+text = "Continue"
 
 [node name="Panel" type="Panel" parent="."]
 layout_mode = 1
@@ -136,23 +150,10 @@ theme_override_font_sizes/font_size = 40
 text = "- Watch your stamina, when you get low,
 you are unable to attack and dodge.
 
-- Don't forget to rest at checkpoints
+- When you rest, all enemies will come back.
 
 - To attack and shoot, you must be
 moving in a direction to do so.
 
 - Dodge at the perfect time to nullify 
 attacks. "
-
-[node name="ContinueButton" type="Button" parent="."]
-layout_mode = 0
-offset_left = 82.0
-offset_top = 570.0
-offset_right = 417.05884
-offset_bottom = 634.0
-theme_override_fonts/font = ExtResource("2_tae64")
-theme_override_font_sizes/font_size = 50
-theme_override_styles/normal = SubResource("StyleBoxFlat_bt7v3")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_ku3ku")
-theme_override_styles/hover = SubResource("StyleBoxFlat_qh71l")
-text = "Continue"
