@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://d2npwq2hmgban"
+path="res://.godot/imported/Tragedy through time - Credits.mp3-fecee676ec1d9a28c0d25b61479eba72.mp3str"
+
+[deps]
+
+source_file="res://Audio/Music/Tragedy through time - Credits.mp3"
+dest_files=["res://.godot/imported/Tragedy through time - Credits.mp3-fecee676ec1d9a28c0d25b61479eba72.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
