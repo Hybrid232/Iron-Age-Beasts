@@ -552,13 +552,6 @@ position = Vector2(-22.304688, 1.1095581)
 scale = Vector2(0.9999997, 1)
 shape = SubResource("RectangleShape2D_ih1j1")
 
-[node name="Sprite2D" type="Sprite2D" parent="EnteranceGate" groups=["Player", "player"]]
-light_mask = 7
-visibility_layer = 7
-position = Vector2(-59.465164, -13.315132)
-scale = Vector2(0.99999994, 1)
-texture = ExtResource("5_pbiin")
-
 [node name="BossStart" type="Area2D" parent="." groups=["Player", "player"]]
 position = Vector2(7669, -1130)
 
